@@ -1,0 +1,493 @@
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset=".github/logo-dark.png">
+    <img src=".github/logo.png" alt="lodgely logo" width="360" />
+  </picture>
+</p>
+
+<p align="center">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-blue.svg" alt="License: GPL-3.0"></a>
+  <img src="https://img.shields.io/badge/PHP-8.4%2B-777BB4?logo=php&logoColor=white" alt="PHP 8.4+">
+  <img src="https://img.shields.io/badge/Laravel-12.x-FF2D20?logo=laravel&logoColor=white" alt="Laravel 12">
+  <img src="https://img.shields.io/badge/Livewire-3.x-FB70A9?logo=livewire&logoColor=white" alt="Livewire 3">
+  <img src="https://img.shields.io/badge/version-0.59.0-6366F1" alt="Version 0.59.0">
+  <a href="https://github.com/vidual-labs/lodgely/stargazers"><img src="https://img.shields.io/github/stars/vidual-labs/lodgely?style=social" alt="GitHub Stars"></a>
+</p>
+
+<p align="center">
+  <a href=".github/media/lodgely-tour.mp4" title="Watch the 44-second lodgely tour">
+    <img src=".github/media/lodgely-tour-poster.png" alt="Watch the 44-second lodgely tour: every lead, one inbox" width="480" />
+  </a>
+  <br>
+  <sub>▶ <a href=".github/media/lodgely-tour.mp4">Watch the 44-second tour</a> — intake, duplicates, AI ranking, reporting, client portals, self-hosting</sub>
+</p>
+
+# lodgely
+
+**lodgely** is a lightweight, open-source **lead intake hub** for small teams.
+It collects leads from CSV files, email (mock and real IMAP), webhook, Google Sheets fetch,
+Meta Lead Ads (API), OpenFlow forms, and manual entry, normalizes them into a single schema, and gives reviewers a
+clean inbox to prioritize, deduplicate and forward.
+
+> lodgely is intentionally **not** a CRM. No deals, no pipelines, no
+> sequences, no forecasts. It is the layer *before* a CRM — the place where
+> incoming leads from many sources stop being scattered and start being
+> actionable.
+
+---
+
+## Table of Contents
+
+- [Who it is for](#who-it-is-for)
+- [Features](#features)
+- [What's intentionally out of scope](#whats-intentionally-out-of-scope-for-now)
+- [Tech stack](#tech-stack)
+- [Quick start (Docker)](#quick-start-docker)
+- [Quick start (local PHP, no Docker)](#quick-start-local-php-no-docker)
+- [CSV import](#csv-import)
+- [Pairing with vigilo](#pairing-with-vigilo)
+- [Architecture at a glance](#architecture-at-a-glance)
+- [Privacy & GDPR notes for self-hosters](#privacy--gdpr-notes-for-self-hosters)
+- [Configuration reference](#configuration-reference)
+- [Roadmap](#roadmap)
+- [Ethical use](#ethical-use)
+- [License](#license)
+
+Deeper detail lives in [`docs/`](docs/): [Features](docs/FEATURES.md) ·
+[Architecture](docs/ARCHITECTURE.md) · [Configuration reference](docs/CONFIGURATION.md) ·
+[Privacy & GDPR](docs/PRIVACY.md) · [Roadmap](docs/ROADMAP.md) ·
+[Changelog](CHANGELOG.md).
+
+---
+
+## Who it is for
+
+- **Small businesses** that want to handle their own lead intake without a
+  €100/seat CRM.
+- **Agencies** that handle leads for several client brands. One lodgely
+  install hosts many `client_name`s; scoped logins let each client see only
+  their own leads.
+- **Inhouse marketing teams** that just need a sane shared inbox for the
+  leads coming out of forms, lists and inboxes.
+
+If you need a full sales pipeline, lodgely is the wrong tool. If you need a
+clean place to *triage* leads before anything else happens, you are at home.
+
+---
+
+## Features
+
+The full write-up for every bullet below — including config flags, edge
+cases and gotchas — lives in **[docs/FEATURES.md](docs/FEATURES.md)**.
+
+**Inbox & review**
+
+- 📥 Unified lead inbox — filters, saved views, column picker, sortable columns, pagination.
+- 🧹 Automatic duplicate detection on normalized email/phone.
+- 📝 Side-panel review — status, priority, notes, audit trail, Meta ad attribution.
+  Laid out so what you *do* (reach out, set status, write a note) stays open at the
+  top and what you only read (ad attribution, AI, older activity) collapses. The
+  activity log switches from "3 weeks ago" to an exact timestamp once an entry is
+  more than a day old.
+- 🎯 Outcome tracking — beyond the intake states (New / Reviewed / Incomplete /
+  Duplicate), leads carry what came back: **Pending**, **Offer sent**,
+  **Successful**, **Declined**, **No reply**, **Forwarded**. Status is a pill
+  row in the side panel (not a dropdown) and fills itself in for the first two
+  steps: opening a lead marks it Reviewed, the first outreach toggle marks it
+  Pending. Everything after that stays a deliberate click.
+- 💬 One-click note phrases — "Mailed them", "Declined — price", "Successful —
+  booked" and friends drop into the note box. Declined/Successful reasons
+  highlight the matching status pill as a nudge; there's deliberately no bare
+  "Declined"/"Sent offer" chip, since the status pill next to it already says
+  that precisely — the phrase adds the *why*.
+- 📞 One-click `tel:` / `mailto:` links on the phone/email in the lead side
+  panel — no copy-pasting a number to reach out.
+- ✅ Outreach state (Qualified / Called / Mailed) toggles with audit trail;
+  clicking a call/email link nudges (highlights) the matching pill as a
+  reminder to confirm the outcome yourself, since opening a dialer or mail
+  compose window doesn't mean the call connected or the email was sent.
+- ☑️ Bulk actions — status/priority change or delete across selected leads.
+- ⬇️ CSV / NDJSON export of the filtered inbox, streamed and audited.
+- 🔖 Saved filters & a starred default view per user.
+- 🧱 Per-user column picker, including auto-discovered custom-answer columns.
+
+**Lead intake**
+
+- 📂 CSV importer (10k rows/file, common header aliases recognized).
+- ✉️ Email importer — mock generator, or a real IMAP backend on a schedule.
+- 🔗 Signed-token webhook importer for any HTTP client.
+- ✍️ Manual entry for phone calls and walk-ins.
+- 📊 Google Sheets recurring lead source with auto column-mapping and idempotent re-fetches.
+- 📥 Meta Lead Ads (API) recurring lead source, idempotent on the Meta lead id.
+- 🌊 OpenFlow recurring lead source — add as many OpenFlow sources as you need
+  (any mix of forms and self-hosted installs), each pulling submissions into a
+  specific client with its own operator-defined field mapping. Idempotent on
+  the submission id, scoped to the OpenFlow install + form — so two forms (or
+  two installs) never collide, and two sources pointing at the *same* form
+  don't import it twice. Pulls hourly by default. Authenticates with a
+  read-only OpenFlow API token (recommended) or an email/password login.
+
+**Users & access**
+
+- 👥 In-app user management, client-name scoping, self-service password reset links. Deactivation and password changes invalidate existing sessions immediately.
+- 🔐 Two roles: `operator` (sees everything) and `client` (scoped to their `client_name`).
+- 🏷️ Client type presets (B2B / Jobs / B2C / Individual intent) — swaps the word "Lead" for "Applicant", "Prospect" or "Inquiry" on that client's own inbox, since not every client is sourcing B2B sales leads. Also relabels a handful of outcome statuses that read oddly outside B2B sales (Jobs: "Offer sent"/"Successful"/"Declined" → "Invited"/"Hired"/"Rejected"; Individual intent: "Successful" → "Enrolled") — most statuses stay as-is. Set per client user in `/users`; defaults to B2B (unchanged wording) when not set. Free-form label editing is not offered — presets only.
+- 👤 Per-user profile page (name, email, password, language, theme).
+- 🔑 Public password-recovery flow, enumeration-safe. Reset links are always built from `APP_URL`.
+- 🛡️ Optional two-factor authentication (TOTP authenticator app + single-use recovery codes) for operators, set up from the profile page. Lost both? `lodgely:user:2fa-reset <email>` on the server.
+
+**Reporting & AI**
+
+- 📈 Operator `/reporting` dashboard — KPI cards, trend charts, campaign breakdown, ad-spend ingestion from Meta + Google Ads (live or mock adapters). A per-client pill filter (`All clients / Client A / …`) narrows the whole dashboard to one client — lead figures by `client_name`, ad spend by that client's campaigns.
+- 🔌 Multiple Meta/Google Ads connectors — beyond the single default connector, `/settings/ad-platforms` lets an operator add a dedicated Meta and/or Google Ads connector per client (its own ad account, token/OAuth). That client's ad spend and creative rows are then reported to them alone on `/my-reports` and scheduled report emails, instead of the shared default connector's data. A connector can also be scoped to one brand within an ad account that serves several businesses — by Google Business Name asset id or Meta Page id, never the customer-facing name. Each client connector must carry its own ad account id / customer id — unlike the shared default connector, it does not inherit those from `.env`, so a half-configured connector cannot quietly re-import the default account's spend under a client's name.
+- 🎨 Creative performance overview on `/reporting` — top ads and age/gender segments from Meta, top keywords and ads from Google Ads, ranked by spend with clicks, leads and CPL per row. Fetched alongside the campaign metrics (same daily pull and "Fetch data now" button), aggregate numbers only.
+- 📊 Custom client reporting views, assignable per client, with a Live/Hidden toggle and a `/my-reports` client tab.
+- 🤖 AI summaries & lead qualification *(optional, inert until an operator enables it)* — OpenAI-compatible or Ollama, operator-reviewed drafts.
+- ✨ **Automatic AI lead ranking** *(optional)* — an hourly sweep ranks new leads against a built-in master prompt plus your "ideal customer" profile (operator-wide and per client) and writes priority, a one-line reason and tags onto the lead, marked with a sparkle. Anyone who changes the priority overrides it.
+- 📨 Scheduled/one-off client report emails, mobile-responsive HTML.
+- ✉️ In-app SMTP configuration that overrides `.env` mail settings at runtime.
+
+**Integrations**
+
+- 🔭 Read-only **lead-metadata API** for [vigilo](https://github.com/vidual-labs/vigilo), the ads watchdog (`GET /api/v1/lead-metadata`). A change feed per client with status, enrichment flags and Meta ad ids, so vigilo can tell when ads spend but no leads arrive. Never names, contact details, messages, answers or click ids. Operators create and revoke scoped tokens under *Settings → API tokens*; tokens are stored hashed and shown once. See [Pairing with vigilo](#pairing-with-vigilo).
+
+**Ops**
+
+- 🏠 Public landing page at `/` (product overview, deploy guide, discreet "Sign in" link). On by default; `LODGELY_LANDING_ENABLED=false` sends `/` straight to the inbox/login instead.
+- 🧾 Full audit log of lead lifecycle changes.
+- 🗑️ Retention-aware (`retention_until`) with an opt-in GDPR purge command.
+- 💾 Backup & recovery — one-click `.zip` backups, UI restore, and matching artisan commands. Optional passphrase encryption of the database dump inside the archive, plus optional retention pruning.
+- 🌙 Dark/Light mode, persisted per user.
+- 🌍 i18n — English and German, persisted per user.
+- 🧪 One-click demo data load/unload for a scoped, reversible demo dataset.
+
+---
+
+## What's intentionally out of scope (for now)
+
+Architecture seams are reserved but not yet implemented — see [ROADMAP.md](ROADMAP.md) (LG-14):
+
+- Multi-tenancy (`tenant_id` exists everywhere; only the default tenant is wired)
+
+---
+
+## Tech stack
+
+- PHP 8.4, Laravel 12
+- Livewire 3 + Alpine.js, Blade-first server rendering
+- Tailwind CSS 4
+- PostgreSQL 16
+- Caddy 2 (reverse proxy)
+- Database-driver queues (no Redis required)
+- Docker Compose for local + small-VPS deployments
+- Google Sheets v4 REST API + OAuth 2.0 (optional; for the Sheets import source)
+
+A typical lodgely install runs comfortably on ~512 MB RAM.
+
+---
+
+## Quick start (Docker)
+
+```bash
+# 1. Clone and configure
+git clone https://github.com/vidual-labs/lodgely.git
+cd lodgely
+cp .env.example .env
+```
+
+Open `.env` and set at minimum:
+
+| Key | What to set |
+|-----|-------------|
+| `APP_URL` | Your public URL, e.g. `https://lodgely.example.com` |
+| `DB_PASSWORD` | A strong password (must match across all `DB_*` vars) |
+| `LODGELY_HTTP_PORT` | Host port for HTTP (default `8080`); change if that port is taken |
+| `SESSION_SECURE_COOKIE` | `true` if serving over HTTPS, `false` for plain HTTP |
+| `SESSION_DRIVER` | `file` is simplest; `database` works but requires the DB to be up first |
+
+> **Set `DB_PASSWORD` before the very first `docker compose up`.** PostgreSQL
+> initialises its data volume on first boot using the credentials present at
+> that moment. If you change `DB_PASSWORD` in `.env` after the volume already
+> exists, the old password stays baked in and the app will get
+> `password authentication failed`. Fix: `docker compose down -v && docker compose up -d --build`
+> (the `-v` flag removes the stale volume — only safe when you have no data to keep).
+
+```bash
+# 2. Build and start
+docker compose up -d --build
+# Brings up postgres, the php-fpm app, a queue worker, the scheduler
+# (which runs the recurring imports — Google Sheets, IMAP, ad metrics,
+# report emails, GDPR purge) and caddy.
+
+# 3. Fix storage permissions (required on first start)
+docker compose exec app chown -R www-data:www-data storage bootstrap/cache
+
+# 4. First-time bootstrap
+docker compose exec app composer install
+docker compose exec app php artisan key:generate
+docker compose exec app php artisan migrate --seed
+docker compose exec app npm ci
+docker compose exec app npm run build
+```
+
+Then open your `APP_URL` and sign in with one of the seeded accounts:
+
+| Role     | Email                        | Password   | Sees                              |
+|----------|------------------------------|------------|-----------------------------------|
+| operator | `operator@example.com`       | `password` | everything                        |
+| client   | `client.northwind@example.com` | `password` | leads with `client_name = Northwind Studio` |
+| client   | `client.acme@example.com`    | `password` | leads with `client_name = Acme Wellness`    |
+
+> 🔒 **Change these before going live.** The seeded accounts exist so
+> you can take lodgely for a spin — they should be removed or rotated
+> on any real deployment.
+
+To create a fresh user:
+
+```bash
+docker compose exec app php artisan lodgely:user:create \
+  --name="Jane Doe" --email=jane@example.com --role=operator
+# or, scoped client:
+docker compose exec app php artisan lodgely:user:create \
+  --name="Brand Owner" --email=owner@example.com --role=client \
+  --client="Northwind Studio"
+```
+
+### Behind a reverse proxy or Cloudflare
+
+If lodgely sits behind Cloudflare, nginx, or any other reverse proxy:
+
+- Set `APP_URL` to the **public** HTTPS URL (e.g. `https://lodgely.example.com`), not the internal address.
+- The session cookie is `Secure` automatically once `APP_URL` starts with `https://` (the browser is on HTTPS even if the internal hop is HTTP). `SESSION_SECURE_COOKIE` overrides it if you need to.
+- Set `SESSION_DRIVER=file` or ensure `SESSION_DRIVER=database` is working before testing login.
+- Forwarded headers (`X-Forwarded-Proto` and friends) are trusted out of the box, so the app works behind a proxy with no extra config.
+- Once it works, **set `TRUSTED_PROXIES` to your proxy's address or CIDR** — `172.16.0.0/12` for the bundled Docker stack. The default trusts every proxy, which means the "client IP" is whatever the caller puts in `X-Forwarded-For`. Narrowing it makes your access logs and IP-based limits meaningful. (Login and password-reset throttling does not depend on this: it is keyed on the submitted email address as well as the IP, precisely so a forged header cannot buy extra attempts.)
+
+---
+
+### Hardening a production install
+
+The defaults are tuned so a fresh `docker compose up` works on a laptop over
+plain HTTP. An install holding real leads and live integration credentials
+wants a few of them changed:
+
+| Setting | Why |
+|---|---|
+| `APP_DEBUG=false` | Debug error pages render request and configuration detail. This is the default; make sure nothing in your shell or compose overrides it. |
+| `APP_ENV=production` | Enables production behaviour, including forcing `https://` in generated URLs. Set this **after** TLS works, or links will point at a scheme you do not serve. |
+| `APP_URL=https://…` (your public address) | Password-reset links are built from it, never from the request's `Host` header. It also turns the `Secure` session cookie on unless `SESSION_SECURE_COOKIE` says otherwise. |
+| `SESSION_SECURE_COOKIE` | Leave unset: it follows `APP_URL` (on for `https://`). Set `false` only for a plain-HTTP test install. |
+| `SESSION_ENCRYPT=true` | Already the default in `.env.example`; keep it. |
+| `TRUSTED_PROXIES=<your proxy CIDR>` | See above. |
+| `LODGELY_BACKUP_PASSPHRASE` | **A backup archive contains every lead's name, email, phone and message body in cleartext.** Setting a passphrase encrypts the database dump inside new archives. Existing unencrypted archives keep restoring normally. Store the passphrase somewhere other than the server it protects — an encrypted archive cannot be recovered without it. |
+| `LODGELY_BACKUP_KEEP` | Archives otherwise accumulate forever, and each one is a full copy of your data that outlives `retention_until`. Set it to the number of archives to keep. |
+| `LODGELY_DEFAULT_RETENTION_DAYS` | Empty means leads are kept until deleted by hand. Set a window and run the scheduler so `lodgely:leads:purge` can act on it. |
+
+Also on a public install:
+
+- **Turn on two-factor authentication** for every operator account
+  (Profile → Two-factor authentication). It is optional, but an operator
+  login reaches every lead, every integration credential and the backups.
+- **Rebuild the image** (`docker compose build`) after upgrading, so the
+  production PHP defaults in `docker/php/conf.d/` (`expose_php` and
+  `display_errors` off) are baked in.
+- **Install without dev dependencies** in production:
+  `composer install --no-dev --optimize-autoloader`. The debug error page
+  package is a dev dependency.
+- **Watch the auth log lines**: `lodgely.auth.login_failed` (masked email +
+  IP) and `lodgely.auth.two_factor_failed` show up in `docker compose logs app`.
+  A run of `two_factor_failed` means someone has that operator's password.
+
+The app logs a warning at boot when it is running in production (or with an
+`https://` `APP_URL`) with debug mode on, without a secure session cookie, or
+with `APP_URL` still pointing at localhost. A misconfiguration therefore shows
+up in `docker compose logs app` rather than staying silent.
+
+---
+
+## Quick start (local PHP, no Docker)
+
+```bash
+composer install
+cp .env.example .env
+php artisan key:generate
+
+# Point .env at a local Postgres 16 instance
+# DB_HOST=127.0.0.1, DB_DATABASE=lodgely, ...
+
+php artisan migrate --seed
+npm ci
+npm run build
+php artisan serve
+```
+
+Run the queue worker in a second terminal:
+
+```bash
+php artisan queue:work
+```
+
+And the scheduler in a third — without it none of the recurring jobs
+(Google Sheets fetch, Meta Lead Ads fetch, OpenFlow fetch, IMAP pull,
+ad-metrics import, report emails, GDPR purge) ever run:
+
+```bash
+php artisan schedule:work
+# or add to crontab: * * * * * cd /path/to/lodgely && php artisan schedule:run
+```
+
+---
+
+## CSV import
+
+Upload any UTF-8 CSV with a header row from **Imports → CSV import**. lodgely
+recognizes the following column aliases (case-insensitive):
+
+| Logical field | Accepted column names                                |
+|---------------|------------------------------------------------------|
+| `full_name`   | `name`, `full_name`, `contact`, `contact name`       |
+| `email`       | `email`, `email address`, `e-mail`, `mail`           |
+| `phone`       | `phone`, `phone number`, `tel`, `telephone`, `mobile`|
+| `message`     | `message`, `note`, `comment`, `enquiry`, `inquiry`   |
+| `client_name` | `client`, `client_name`, `brand`, `account`          |
+| `campaign_name` | `campaign`, `campaign name`, `source campaign`     |
+
+A working sample lives at `database/samples/leads-sample.csv`.
+
+---
+
+## Pairing with vigilo
+
+[vigilo](https://github.com/vidual-labs/vigilo) watches the agency's ad
+accounts once a day and reports what is broken. To spot "ads spend, but no
+leads arrive" and cost per lead from real leads, it reads lead **metadata**
+from lodgely: lead id, submission and update time, status, source type, Meta
+campaign/ad set/ad/form ids and the duplicate/qualified/contacted/organic
+flags. The feed is built from an explicit allow-list of columns, so it never
+carries a name, email, phone number, message, custom answer, raw payload,
+note, AI output or click id. Deleted leads go out once as `deleted: true`
+markers, so vigilo drops them too.
+
+1. In lodgely, open **Settings → API tokens**, create a token with the
+   *Lead metadata* access and copy it (it is shown once; only a hash is
+   stored).
+2. In vigilo's `.env`, set `VIGILO_LODGELY_ENABLED=true`,
+   `VIGILO_LODGELY_URL` (this install's `APP_URL`) and
+   `VIGILO_LODGELY_API_TOKEN`.
+3. In vigilo, enter each client's **lodgely client key**: the slug of the
+   lodgely client name (`Kanzlei Brenner & Partner` →
+   `kanzlei-brenner-partner`). Renaming the client in lodgely changes the key.
+
+vigilo fetches its own ad data with the same agency credentials. Copy the
+values across; lodgely does not hand out ad-platform tokens over the API:
+
+| lodgely | vigilo |
+|---|---|
+| `LODGELY_GOOGLE_ADS_*` | `VIGILO_GOOGLE_ADS_*` |
+| `LODGELY_META_ADS_ACCESS_TOKEN` | `VIGILO_META_ADS_ACCESS_TOKEN` |
+
+The endpoint is `GET /api/v1/lead-metadata?client=&cursor=&updated_since=&limit=`
+(bearer token, scope `lead-metadata:read`, 60 requests/minute per token,
+every request logged with token id, client key and row count only). The
+contract is specified in vigilo's
+[`docs/LODGELY-CONTRACT.md`](https://github.com/vidual-labs/vigilo/blob/main/docs/LODGELY-CONTRACT.md).
+Revoking a token on the same page cuts vigilo off immediately.
+
+---
+
+## Architecture at a glance
+
+A **modular monolith**: server-rendered Blade + Livewire, no SPA. Domain
+code lives under `app/Domain/` (`Leads/`, `Reporting/`, `Ai/`, `Demo/`),
+adapters for both lead sources and ad-metrics sources live under
+`app/Importers/`, and UI lives in `app/Livewire/`.
+
+Adding a new lead source means:
+
+1. Drop a class under `app/Importers/<Name>/` implementing `LeadSource`.
+2. Register it in `AppServiceProvider::IMPORTERS`.
+3. (Optionally) add a Livewire page to expose it in the UI.
+
+No changes to migrations, models or the inbox are needed.
+
+The full directory tree, the AI summary generation/review flow, and the
+Meta Lead Ads field mapping are documented in
+**[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)**.
+
+---
+
+## Privacy & GDPR notes for self-hosters
+
+lodgely is built with privacy-by-design defaults, but **you, the operator,
+are the data controller** for everything you put in it. The product gives
+you the tools; the policies are yours: data minimization (only schema
+fields are stored, raw payloads kept only for audit), per-lead
+`retention_until` with an opt-in purge command, soft deletes, an audit
+trail (`lead_events`), strict client-scoped access, and no telemetry or
+external calls out of the box.
+
+Full detail, including what lodgely deliberately does **not** do yet
+(consent capture, DSAR export, automatic erasure), is in
+**[docs/PRIVACY.md](docs/PRIVACY.md)**.
+
+---
+
+## Configuration reference
+
+The handful of variables you're most likely to touch on a first install:
+
+| Variable | Purpose | Default |
+|----------|---------|---------|
+| `APP_URL` | Public URL of the install | `http://localhost:8080` |
+| `LODGELY_DEFAULT_RETENTION_DAYS` | Default lead retention for new leads; empty = keep until deleted by hand | empty (`.env.example` sets `365`) |
+| `LODGELY_EMAIL_IMPORT_DRIVER` | `mock` or `imap` | `mock` |
+| `LODGELY_AI_ENABLED` | Hard kill-switch for the AI module (opt-out). The normal on/off is the operator toggle on `/settings/ai` | `true` |
+| `LODGELY_AI_MAX_CALLS_PER_DAY` | Daily cap on completed AI calls per tenant, shared by summaries, qualification and automatic ranking (`0` = no cap) | `100` |
+| `TRUSTED_PROXIES` | Proxy address/CIDR to trust for `X-Forwarded-*` | `*` (all) |
+| `LODGELY_BACKUP_PASSPHRASE` | Encrypts the dump inside new backup archives | empty (off) |
+| `LODGELY_BACKUP_KEEP` | Backup archives to retain on disk | empty (keep all) |
+| `LODGELY_LANDING_ENABLED` | Show the public landing page at `/`; `false` sends `/` straight to the inbox/login | `true` |
+| `MAIL_MAILER` | Outbound mail transport (`log`, `smtp`) — prefer Settings → Email instead | `log` |
+| `DB_*` | Postgres credentials | see `.env.example` |
+
+Every other variable — IMAP, Meta/Google Ads, Google Sheets OAuth, AI
+provider tuning, SMTP — has an in-app Settings page and an env-var
+fallback. The full reference (40+ variables) is in
+**[docs/CONFIGURATION.md](docs/CONFIGURATION.md)**.
+
+---
+
+## Roadmap
+
+The forward roadmap — phased, with the shared OpenFlow ↔ lodgely interface
+contract — lives in **[ROADMAP.md](ROADMAP.md)**. In short: a versioned
+OpenFlow contract and a push path first, then rule-based qualification,
+attribution, and a real GDPR lifecycle (hard deletion, per-person export and
+erasure across both systems). The vigilo ↔ lodgely interface (the
+lead-metadata feed, LG-15) has its own shared section there.
+
+The history of everything already shipped (reporting, AI, Meta Lead Ads,
+Google Sheets, i18n, dark mode, …) is in
+**[docs/ROADMAP.md](docs/ROADMAP.md)**; line-by-line changes are in
+[CHANGELOG.md](CHANGELOG.md).
+
+---
+
+## Ethical use
+
+lodgely is a marketing tool. We ask, as a non-binding ethical request,
+that you do **not** use lodgely to run lead intake for clients in:
+
+- **Weapons and armaments**
+- **Fossil-fuel energy** (extraction, refining, distribution, generation)
+- **Internal-combustion / fossil-fuel passenger vehicles** — electric
+  vehicles, bicycles and public transit are explicitly fine.
+
+This is a request from the maintainers, not a legal restriction (lodgely
+remains GPL-3.0). See the preamble in `LICENSE` for the full statement.
+
+---
+
+## License
+
+GPL-3.0 — see `LICENSE`.

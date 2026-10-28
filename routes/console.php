@@ -1,0 +1,52 @@
+<?php
+
+use App\Console\Commands\DispatchScheduledReportEmails;
+use App\Console\Commands\FetchGoogleSheets;
+use App\Console\Commands\FetchMetaLeads;
+use App\Console\Commands\FetchOpenflow;
+use App\Console\Commands\ImportAdMetrics;
+use App\Console\Commands\ImportEmailsImap;
+use App\Console\Commands\ImportEmailsMock;
+use App\Console\Commands\PurgeExpiredLeads;
+use App\Console\Commands\RankLeadsWithAi;
+use Illuminate\Support\Facades\Schedule;
+
+// Daily mock email pull — generates fake demo leads, useful for demos and dev.
+// Opt-in only: real installs would otherwise keep getting synthetic leads at 06:00.
+// The manual command (lodgely:import:email-mock) and the in-app "pull now" button
+// still work regardless of this flag.
+if (config('lodgely.importers.email.mock_schedule_enabled')) {
+    Schedule::command(ImportEmailsMock::class)->dailyAt('06:00')->withoutOverlapping();
+}
+
+// Scheduled IMAP pull — only runs when a host is configured.
+if (config('lodgely.importers.email.imap.host')) {
+    Schedule::command(ImportEmailsImap::class)->everyFifteenMinutes()->withoutOverlapping();
+}
+
+// GDPR-friendly cleanup pass; only acts on leads with a retention_until in the past.
+Schedule::command(PurgeExpiredLeads::class)->dailyAt('03:00');
+
+// Daily ad metrics pull — fetches yesterday's aggregate spend data from all configured sources.
+Schedule::command(ImportAdMetrics::class, ['--days=1'])->dailyAt('05:00')->withoutOverlapping();
+
+// Hourly sweep that fires any due report-email schedules. Schedules carry their own
+// hour-of-day and timezone, so hourly granularity is sufficient — minute is always 0.
+Schedule::command(DispatchScheduledReportEmails::class)->hourly()->withoutOverlapping();
+
+// Hourly pass over active Google Sheet sources; each source decides internally whether
+// it is due (based on its own refresh_hours interval).
+Schedule::command(FetchGoogleSheets::class)->hourly()->withoutOverlapping();
+
+// Hourly pass over active Meta Lead Ads connections; each source decides internally
+// whether it is due (based on its own refresh_hours interval).
+Schedule::command(FetchMetaLeads::class)->hourly()->withoutOverlapping();
+
+// Hourly pass over active OpenFlow sources; each source decides internally whether
+// it is due (based on its own refresh_hours interval).
+Schedule::command(FetchOpenflow::class)->hourly()->withoutOverlapping();
+
+// Hourly AI lead ranking sweep — queues the oldest unranked leads (batch size from
+// /settings/ai, bounded by the daily call cap). Quiet no-op until an operator turns
+// on AI, the ranking task and the data-sharing consent.
+Schedule::command(RankLeadsWithAi::class)->hourly()->withoutOverlapping();

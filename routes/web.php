@@ -1,0 +1,181 @@
+<?php
+
+use App\Http\Controllers\AdPlatformConnectorController;
+use App\Http\Controllers\AiLeadRankingController;
+use App\Http\Controllers\ApiTokenController;
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\PasswordResetController;
+use App\Http\Controllers\Auth\TwoFactorChallengeController;
+use App\Http\Controllers\Auth\TwoFactorController;
+use App\Http\Controllers\Imports\GoogleSheetsImportController;
+use App\Http\Controllers\Imports\MetaLeadsImportController;
+use App\Http\Controllers\Imports\OpenflowImportController;
+use App\Http\Controllers\InboxColumnPickerController;
+use App\Http\Controllers\InboxFilterPickerController;
+use App\Http\Controllers\InboxSavedFilterController;
+use App\Http\Controllers\LandingController;
+use App\Http\Controllers\LeadExportController;
+use App\Http\Controllers\OAuth\GoogleAdsOAuthController;
+use App\Http\Controllers\ReportingDataController;
+use App\Http\Controllers\OAuth\GoogleSheetsOAuthController;
+use App\Livewire\Imports\GoogleSheetsImportPage;
+use App\Livewire\Imports\MetaLeadsImportPage;
+use App\Livewire\Imports\OpenflowImportPage;
+use App\Livewire\Settings\GoogleSheetsSettingsPage;
+use App\Livewire\Ai\DraftsPage;
+use App\Livewire\Inbox\InboxPage;
+use App\Livewire\Imports\CsvImportPage;
+use App\Livewire\Imports\EmailImapImportPage;
+use App\Livewire\Imports\EmailMockImportPage;
+use App\Livewire\Reporting\MyReportsPage;
+use App\Livewire\Reporting\ReportEmailsPage;
+use App\Livewire\Reporting\ReportingPage;
+use App\Livewire\Reporting\ReportingViewsPage;
+use App\Http\Controllers\BackupController;
+use App\Http\Controllers\BackupDownloadController;
+use App\Livewire\Settings\AdPlatformsPage;
+use App\Livewire\Settings\ApiTokensPage;
+use App\Livewire\Settings\AiSettingsPage;
+use App\Livewire\Settings\BackupsPage;
+use App\Livewire\Settings\DemoDataPage;
+use App\Livewire\Settings\MailSettingsPage;
+use App\Livewire\Settings\ProfilePage;
+use App\Livewire\Users\UsersPage;
+use App\Livewire\Webhooks\WebhooksPage;
+use App\Http\Middleware\SetLocale;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
+
+// Public landing page; falls back to the old "/" → inbox redirect when
+// LODGELY_LANDING_ENABLED=false, and always for signed-in users.
+Route::get('/', LandingController::class)->name('landing');
+
+Route::post('/locale', function (Request $request) {
+    $locale = $request->input('locale');
+    if (in_array($locale, SetLocale::SUPPORTED, true)) {
+        session(['locale' => $locale]);
+        $request->user()?->update(['locale' => $locale]);
+    }
+    return back();
+})->name('locale');
+
+Route::post('/user/theme', function (Request $request) {
+    $theme = $request->input('theme');
+    if (in_array($theme, ['light', 'dark'], true)) {
+        $request->user()?->update(['ui_theme' => $theme]);
+    }
+    return response()->noContent();
+})->middleware('auth')->name('user.theme');
+
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [LoginController::class, 'show'])->name('login');
+    // The named limiters key on the submitted email as well as the IP, so a
+    // spoofed X-Forwarded-For cannot buy extra attempts against one account.
+    // See AppServiceProvider::bootRateLimiters().
+    Route::post('/login', [LoginController::class, 'authenticate'])->middleware('throttle:login')->name('login.attempt');
+
+    // Second login step for users with 2FA. Throttled per pending user, not
+    // per IP, for the same spoofing reason as the login limiter.
+    Route::get('/two-factor-challenge',  [TwoFactorChallengeController::class, 'show'])->name('two-factor.challenge');
+    Route::post('/two-factor-challenge', [TwoFactorChallengeController::class, 'verify'])->middleware('throttle:two-factor')->name('two-factor.verify');
+
+    Route::get('/forgot-password',          [PasswordResetController::class, 'requestForm'])->name('password.request');
+    Route::post('/forgot-password',         [PasswordResetController::class, 'sendLink'])->middleware('throttle:password-reset')->name('password.email');
+    Route::get('/reset-password/{token}',   [PasswordResetController::class, 'resetForm'])->name('password.reset');
+    Route::post('/reset-password',          [PasswordResetController::class, 'reset'])->middleware('throttle:password-reset')->name('password.update');
+});
+
+Route::middleware('auth')->group(function () {
+    Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+
+    Route::get('/profile', ProfilePage::class)->name('profile');
+    Route::post('/profile/two-factor',                [TwoFactorController::class, 'enable'])->middleware('throttle:two-factor-manage')->name('two-factor.enable');
+    Route::post('/profile/two-factor/confirm',        [TwoFactorController::class, 'confirm'])->middleware('throttle:two-factor-manage')->name('two-factor.confirm');
+    Route::post('/profile/two-factor/cancel',         [TwoFactorController::class, 'cancel'])->name('two-factor.cancel');
+    Route::post('/profile/two-factor/recovery-codes', [TwoFactorController::class, 'regenerateRecoveryCodes'])->middleware('throttle:two-factor-manage')->name('two-factor.recovery-codes');
+    Route::post('/profile/two-factor/disable',        [TwoFactorController::class, 'disable'])->middleware('throttle:two-factor-manage')->name('two-factor.disable');
+
+    Route::get('/inbox',                       InboxPage::class)->name('inbox');
+    Route::get('/inbox/export',                LeadExportController::class)->name('inbox.export');
+    Route::post('/inbox/columns',              [InboxColumnPickerController::class, 'update'])->name('inbox.columns.update');
+    Route::post('/inbox/filters',              [InboxFilterPickerController::class, 'update'])->name('inbox.filters.update');
+    Route::post('/inbox/saved-filters',        [InboxSavedFilterController::class, 'store'])->name('inbox.saved-filters.store');
+    Route::post('/inbox/saved-filters/{filter}', [InboxSavedFilterController::class, 'action'])->name('inbox.saved-filters.action');
+    Route::get('/imports/csv',        CsvImportPage::class)->name('imports.csv');
+    Route::get('/imports/email',      EmailMockImportPage::class)->name('imports.email');
+    Route::get('/imports/email-imap',    EmailImapImportPage::class)->name('imports.email-imap');
+    Route::get('/imports/google-sheets', GoogleSheetsImportPage::class)->name('imports.google-sheets');
+    Route::post('/imports/google-sheets/sources/{source}/fetch', [GoogleSheetsImportController::class, 'fetch'])->name('imports.google-sheets.fetch');
+    Route::post('/imports/google-sheets/imports', [GoogleSheetsImportController::class, 'destroyAll'])->name('imports.google-sheets.imports.destroy-all');
+    Route::post('/imports/google-sheets/imports/{import}', [GoogleSheetsImportController::class, 'destroy'])->name('imports.google-sheets.imports.destroy');
+    Route::get('/imports/meta-leads', MetaLeadsImportPage::class)->name('imports.meta-leads');
+    Route::post('/imports/meta-leads/imports', [MetaLeadsImportController::class, 'destroyAll'])->name('imports.meta-leads.imports.destroy-all');
+    Route::post('/imports/meta-leads/imports/{import}', [MetaLeadsImportController::class, 'destroy'])->name('imports.meta-leads.imports.destroy');
+    Route::get('/imports/openflow', OpenflowImportPage::class)->name('imports.openflow');
+    Route::post('/imports/openflow/sources/{source}/fetch', [OpenflowImportController::class, 'fetch'])->name('imports.openflow.fetch');
+    Route::post('/imports/openflow/imports', [OpenflowImportController::class, 'destroyAll'])->name('imports.openflow.imports.destroy-all');
+    Route::post('/imports/openflow/imports/{import}', [OpenflowImportController::class, 'destroy'])->name('imports.openflow.imports.destroy');
+    Route::get('/users',           UsersPage::class)->name('users');
+    Route::get('/webhooks',        WebhooksPage::class)->name('webhooks');
+    Route::get('/reporting',       ReportingPage::class)->name('reporting');
+    Route::post('/reporting/ad-metrics/fetch', [ReportingDataController::class, 'fetch'])->name('reporting.ad-metrics.fetch');
+    Route::post('/reporting/ad-metrics/purge', [ReportingDataController::class, 'purge'])->name('reporting.ad-metrics.purge');
+    Route::get('/reporting/views',  ReportingViewsPage::class)->name('reporting.views');
+    Route::get('/reporting/emails', ReportEmailsPage::class)->name('reporting.emails');
+    Route::get('/my-reports',       MyReportsPage::class)->name('my-reports');
+
+    Route::middleware('ai.enabled')->group(function () {
+        Route::get('/settings/ai', AiSettingsPage::class)->name('settings.ai');
+        Route::post('/settings/ai/rank-leads', [AiLeadRankingController::class, 'rankNow'])->name('settings.ai.rank-leads');
+        Route::get('/ai/drafts',   DraftsPage::class)->name('ai.drafts');
+    });
+
+    Route::get('/settings/google-sheets', GoogleSheetsSettingsPage::class)->name('settings.google-sheets');
+
+    // Ad platform (Meta / Google Ads) credentials + Google Ads OAuth handshake.
+    // Operator-only enforcement lives in the page/controller.
+    Route::get('/settings/ad-platforms', AdPlatformsPage::class)->name('settings.ad-platforms');
+    Route::get('/settings/ad-platforms/google/connect',  [GoogleAdsOAuthController::class, 'connect'])->name('settings.ad-platforms.google.connect');
+    Route::get('/settings/ad-platforms/google/callback', [GoogleAdsOAuthController::class, 'callback'])->name('settings.ad-platforms.google.callback');
+
+    // Per-client ad-platform connectors (a second Meta/Google account assigned
+    // to one client). Native form → controller → redirect, same reasoning as
+    // the backup page — see AdPlatformConnectorController.
+    Route::post('/settings/ad-platforms/connectors', [AdPlatformConnectorController::class, 'store'])->name('settings.ad-platforms.connectors.store');
+    Route::get('/settings/ad-platforms/connectors/{connector}', [AdPlatformConnectorController::class, 'edit'])->name('settings.ad-platforms.connectors.edit');
+    Route::post('/settings/ad-platforms/connectors/{connector}', [AdPlatformConnectorController::class, 'update'])->name('settings.ad-platforms.connectors.update');
+    Route::delete('/settings/ad-platforms/connectors/{connector}', [AdPlatformConnectorController::class, 'destroy'])->name('settings.ad-platforms.connectors.destroy');
+    Route::post('/settings/ad-platforms/connectors/{connector}/google/disconnect', [AdPlatformConnectorController::class, 'disconnectGoogle'])->name('settings.ad-platforms.connectors.google.disconnect');
+    Route::post('/settings/ad-platforms/connectors/{connector}/test/{platform}', [AdPlatformConnectorController::class, 'test'])->name('settings.ad-platforms.connectors.test');
+    Route::post('/settings/ad-platforms/connectors/{connector}/meta/page-filter', [AdPlatformConnectorController::class, 'resolveMetaPage'])->name('settings.ad-platforms.connectors.meta.page-filter');
+    Route::post('/settings/ad-platforms/connectors/{connector}/google/business-name-filter', [AdPlatformConnectorController::class, 'resolveGoogleBusinessName'])->name('settings.ad-platforms.connectors.google.business-name-filter');
+
+    Route::get('/settings/demo-data', DemoDataPage::class)->name('settings.demo-data');
+
+    // Outbound mail (SMTP) configuration. Operator-only enforcement lives in
+    // the page; the saved row overrides the .env MAIL_* config at runtime.
+    Route::get('/settings/mail', MailSettingsPage::class)->name('settings.mail');
+
+    // Read-only API tokens for other tools (vigilo's lead-metadata feed).
+    // Renders via Livewire; create/revoke are native form posts, same rail as
+    // the backup page below. Operator-only enforcement lives in both.
+    Route::get('/settings/api-tokens',                 ApiTokensPage::class)->name('settings.api-tokens');
+    Route::post('/settings/api-tokens',                [ApiTokenController::class, 'store'])->name('settings.api-tokens.store');
+    Route::post('/settings/api-tokens/{token}/revoke', [ApiTokenController::class, 'revoke'])->whereNumber('token')->name('settings.api-tokens.revoke');
+
+    // The backup page renders via Livewire, but every mutation (create,
+    // delete, restore) posts to a native controller and redirects back —
+    // the Livewire file-upload + wire:submit path silently dropped in
+    // production (see BackupController / CLAUDE.md).
+    Route::get('/settings/backups',          BackupsPage::class)->name('settings.backups');
+    Route::post('/settings/backups/create',  [BackupController::class, 'create'])->name('settings.backups.create');
+    Route::post('/settings/backups/delete',  [BackupController::class, 'destroy'])->name('settings.backups.delete');
+    Route::post('/settings/backups/restore', [BackupController::class, 'restore'])->name('settings.backups.restore');
+    Route::get('/settings/backups/{filename}/download', BackupDownloadController::class)->name('settings.backups.download');
+
+    // Google Sheets OAuth handshake. Operator-only enforcement lives in the
+    // controller; the callback URL must match the redirect URI configured on
+    // the OAuth client in Google Cloud Console.
+    Route::get('/settings/google-sheets/connect',  [GoogleSheetsOAuthController::class, 'connect'])->name('settings.google-sheets.connect');
+    Route::get('/settings/google-sheets/callback', [GoogleSheetsOAuthController::class, 'callback'])->name('settings.google-sheets.callback');
+});

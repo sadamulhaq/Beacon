@@ -1,0 +1,38 @@
+# Minimal Caddy config for lodgely.
+#
+# Local development: served plain HTTP on the host port set via LODGELY_HTTP_PORT.
+# Production: replace `:80` with your real hostname (e.g. leads.example.com)
+# and Caddy will obtain a Let's Encrypt cert automatically.
+
+:80 {
+    root * /app/public
+    encode zstd gzip
+
+    php_fastcgi app:9000
+
+    file_server
+
+    # Reasonable defaults for a small B2B tool.
+    header {
+        X-Content-Type-Options "nosniff"
+        Referrer-Policy "strict-origin-when-cross-origin"
+        X-Frame-Options "SAMEORIGIN"
+        -Server
+        -X-Powered-By
+    }
+
+    # Access log, with the secrets that travel in URL paths redacted: webhook
+    # endpoint tokens (long-lived — anyone holding one can post leads) and
+    # password-reset tokens plus the email in their query string. The Referer
+    # header too: assets loaded from the reset page carry its full URL there.
+    log {
+        output stdout
+        format filter {
+            wrap console
+            fields {
+                request>uri regexp "^/(api/webhooks|reset-password)/.*$" "/$1/REDACTED"
+                request>headers>Referer regexp "/(api/webhooks|reset-password)/.*$" "/$1/REDACTED"
+            }
+        }
+    }
+}

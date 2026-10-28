@@ -1,0 +1,347 @@
+<?php
+
+namespace App\Livewire\Inbox;
+
+use App\Domain\Ai\Enums\AiSummaryKind;
+use App\Domain\Ai\Enums\AiSummaryStatus;
+use App\Domain\Ai\Exceptions\AiDisabledException;
+use App\Domain\Ai\Services\AiSummarizer;
+use App\Domain\Ai\Services\LeadRanker;
+use App\Domain\Leads\Enums\ClientType;
+use App\Domain\Leads\Enums\LeadNoteSnippet;
+use App\Domain\Leads\Enums\LeadPriority;
+use App\Domain\Leads\Enums\LeadStatus;
+use App\Domain\Leads\Enums\PrioritySource;
+use App\Domain\Leads\Services\DuplicateDetector;
+use App\Domain\Leads\Services\LeadKpis;
+use App\Domain\Leads\Services\LeadStatusAutomation;
+use App\Livewire\Inbox\Concerns\WithBulkLeadActions;
+use App\Livewire\Inbox\Concerns\WithColumnPicker;
+use App\Livewire\Inbox\Concerns\WithFilterPicker;
+use App\Livewire\Inbox\Concerns\WithLeadFilters;
+use App\Livewire\Inbox\Concerns\WithManualLeadForm;
+use App\Livewire\Inbox\Concerns\WithSavedFilters;
+use App\Models\AiSetting;
+use App\Models\AiSummary;
+use App\Models\Lead;
+use App\Models\Tenant;
+use App\Support\Audit\AuditLogger;
+use Illuminate\Contracts\View\View;
+use Livewire\Attributes\Layout;
+use Livewire\Component;
+use Livewire\WithPagination;
+
+#[Layout('components.layouts.app')]
+class InboxPage extends Component
+{
+    use WithBulkLeadActions;
+    use WithColumnPicker;
+    use WithFilterPicker;
+    use WithLeadFilters;
+    use WithManualLeadForm;
+    use WithPagination;
+    use WithSavedFilters;
+
+    private const SOURCE_LABELS = [
+        'csv' => 'CSV',
+        'email_mock' => 'Email (mock)',
+        'email_imap' => 'Email (IMAP)',
+        'manual' => 'Manual',
+        'webhook' => 'Webhook',
+        'meta_ads' => 'Meta Lead Ads',
+        'meta_leads' => 'Meta Lead Ads',
+        'google_sheets' => 'Google Sheets',
+    ];
+
+    /** Outreach toggle fields — settable by clients and operators alike. */
+    private const OUTREACH_FIELDS = ['qualified_at', 'called_at', 'mailed_at'];
+
+    public ?int $selectedLeadId = null;
+
+    public ?string $newNoteBody = null;
+
+    protected function rules(): array
+    {
+        return [
+            'newNoteBody' => ['nullable', 'string', 'max:5000'],
+        ];
+    }
+
+    public function mount(): void
+    {
+        if (! request()->hasAny(self::FILTER_URL_KEYS)) {
+            $this->loadDefaultSavedFilter();
+        }
+
+        $this->loadColumnPicker();
+        $this->loadFilterPicker();
+    }
+
+    public function updating($name): void
+    {
+        if (in_array($name, self::FILTER_PROPERTIES, true)) {
+            $this->resetPage();
+            $this->bulkSelected = [];
+        }
+    }
+
+    /**
+     * Opening a lead is the moment it stops being unread, so the panel marks a
+     * New lead Reviewed on the way in — see {@see LeadStatusAutomation} for why
+     * that can only ever move New → Reviewed. Deliberately tolerant of an id the
+     * caller can't see: that already rendered as an empty panel rather than an
+     * error, and it stays that way.
+     */
+    public function selectLead(int $id, LeadStatusAutomation $automation): void
+    {
+        $this->selectedLeadId = $id;
+        $this->newNoteBody = null;
+
+        $lead = Lead::query()->visibleTo(auth()->user())->find($id);
+
+        if ($lead !== null) {
+            $automation->markReviewed($lead);
+        }
+    }
+
+    public function closePanel(): void
+    {
+        $this->selectedLeadId = null;
+        $this->newNoteBody = null;
+    }
+
+    /**
+     * Both operators and clients may change status/priority on a lead they
+     * can see — {@see guardedLead()} is what actually scopes this to leads
+     * visible to the caller, the same as {@see toggleOutreach()}.
+     */
+    public function setStatus(int $leadId, string $status, AuditLogger $audit): void
+    {
+        abort_unless(auth()->check(), 403);
+
+        $status = LeadStatus::from($status);
+        $lead = $this->guardedLead($leadId);
+
+        if ($lead->status === $status) {
+            return;
+        }
+
+        $previous = $lead->status?->value;
+        $lead->status = $status;
+        $lead->save();
+
+        $audit->record($lead, 'lead.status_changed', [
+            'from' => $previous,
+            'to' => $status->value,
+        ]);
+    }
+
+    /** Both operators and clients may call this — see {@see setStatus()}. */
+    public function setPriority(int $leadId, string $priority, AuditLogger $audit): void
+    {
+        abort_unless(auth()->check(), 403);
+
+        $priority = LeadPriority::from($priority);
+        $lead = $this->guardedLead($leadId);
+
+        if ($lead->priority === $priority) {
+            return;
+        }
+
+        $previous  = $lead->priority?->value;
+        $overrodeAi = $lead->isAiRanked();
+
+        // A person's choice always wins over the AI ranker, and the ranker
+        // never revisits a lead once a person has set its priority.
+        $lead->priority = $priority;
+        $lead->priority_source = PrioritySource::User;
+        $lead->save();
+
+        $payload = ['from' => $previous, 'to' => $priority->value];
+        if ($overrodeAi) {
+            $payload['overrode_ai'] = true;
+        }
+
+        $audit->record($lead, 'lead.priority_changed', $payload);
+    }
+
+    /**
+     * Toggle one of the client-driven outreach fields (qualified / called /
+     * mailed). Both operators and clients may call this — these fields
+     * represent in-tool activity, not data from the upstream source.
+     */
+    public function toggleOutreach(int $leadId, string $field, AuditLogger $audit, LeadStatusAutomation $automation): void
+    {
+        abort_unless(in_array($field, self::OUTREACH_FIELDS, true), 422);
+
+        $lead = $this->guardedLead($leadId);
+
+        $previous = $lead->{$field};
+        $lead->{$field} = $previous ? null : now();
+        $lead->save();
+
+        $audit->record($lead, 'lead.outreach_toggled', [
+            'field' => $field,
+            'set' => $previous === null,
+        ]);
+
+        // Recording a first contact means this lead is now waiting on the other
+        // side — only when switching a toggle *on*, and only from New/Reviewed.
+        // Clearing a toggle never walks the status back: the contact still
+        // happened, the client just corrected the pill.
+        if ($previous === null) {
+            $automation->markPending($lead);
+        }
+    }
+
+    public function reconcileDuplicate(int $leadId, DuplicateDetector $detector, AuditLogger $audit): void
+    {
+        abort_unless(auth()->user()?->isOperator(), 403);
+
+        $lead = $this->guardedLead($leadId);
+        if ($detector->reconcile($lead)) {
+            $audit->record($lead, 'lead.duplicate_reconciled', [
+                'duplicate_flag' => $lead->duplicate_flag,
+                'duplicate_of' => $lead->duplicate_of_id,
+            ]);
+        }
+    }
+
+    public function evaluateLeadWithAi(int $leadId, AiSummarizer $summarizer): void
+    {
+        abort_unless(auth()->user()?->isOperator(), 403);
+
+        $lead = $this->guardedLead($leadId);
+
+        try {
+            $summarizer->requestLeadQualification($lead, auth()->user());
+            $this->dispatch('toast', message: __('AI evaluation queued. Review it in AI drafts.'), type: 'success');
+        } catch (AiDisabledException $e) {
+            $this->dispatch('toast', message: $e->getMessage(), type: 'error');
+        }
+    }
+
+    /**
+     * Operator-only: queue a fresh automatic ranking for one lead, even if it
+     * was ranked before or a person set the priority (force). The priority
+     * updates once the queued job has the model's answer.
+     */
+    public function rankLeadWithAi(int $leadId, LeadRanker $ranker): void
+    {
+        abort_unless(auth()->user()?->isOperator(), 403);
+
+        $lead = $this->guardedLead($leadId);
+
+        try {
+            $ranker->request($lead, auth()->user(), force: true);
+            $this->dispatch('toast', message: __('AI ranking queued — the priority updates once the model answers.'), type: 'success');
+        } catch (AiDisabledException $e) {
+            $this->dispatch('toast', message: $e->getMessage(), type: 'error');
+        }
+    }
+
+    /** Both operators and clients may leave notes on a lead they can see. */
+    public function addNote(AuditLogger $audit): void
+    {
+        abort_unless(auth()->check(), 403);
+
+        $this->validate();
+        $body = trim((string) $this->newNoteBody);
+        if ($body === '' || $this->selectedLeadId === null) {
+            return;
+        }
+
+        $lead = $this->guardedLead($this->selectedLeadId);
+        $note = $lead->notes()->create([
+            'user_id' => auth()->id(),
+            'body' => $body,
+        ]);
+
+        $audit->record($lead, 'lead.note_added', ['note_id' => $note->id]);
+        $this->newNoteBody = null;
+    }
+
+    public function render(LeadKpis $kpis): View
+    {
+        $user = auth()->user();
+
+        $base = Lead::query()->visibleTo($user);
+
+        $leads = $this->applySort($this->applyFilters($base))
+            ->paginate(config('lodgely.pagination.per_page'));
+
+        $clientOptions = (clone $base)
+            ->whereNotNull('client_name')
+            ->distinct()
+            ->orderBy('client_name')
+            ->pluck('client_name')
+            ->all();
+
+        $sourceOptions = (clone $base)
+            ->distinct()
+            ->orderBy('source')
+            ->pluck('source')
+            ->map(fn ($s) => [
+                'value' => $s,
+                'label' => self::SOURCE_LABELS[$s] ?? ucwords(str_replace('_', ' ', $s)),
+            ])
+            ->all();
+
+        $selected = $this->selectedLeadId
+            ? (clone $base)->with([
+                'notes.user',
+                'events.user',
+                // Duplicate detection matches across the whole tenant, so the
+                // original can belong to another client. Scope the relation
+                // too, or a client sees that other client's lead in the panel.
+                'duplicateOf' => fn ($q) => $q->visibleTo($user),
+                'import',
+            ])->find($this->selectedLeadId)
+            : null;
+
+        $leadAiSummary = null;
+        if ($selected && $user?->isOperator() && AiSetting::resolveSafe(Tenant::DEFAULT_ID)->isActive()) {
+            $leadAiSummary = AiSummary::query()
+                ->where('tenant_id', Tenant::DEFAULT_ID)
+                ->where('kind', AiSummaryKind::LeadQualification->value)
+                ->where('subject_type', Lead::class)
+                ->where('subject_id', $selected->id)
+                ->whereIn('status', [AiSummaryStatus::Approved->value, AiSummaryStatus::Shared->value])
+                ->with('operator')
+                ->latest('approved_at')
+                ->first();
+        }
+
+        $availableQuestions = $this->availableQuestionsFor($base);
+
+        // Drop picked questions that no longer have any matching leads
+        // (e.g. retention purge or form removal). Don't persist the trim —
+        // the question might come back. Just hide from this render pass.
+        $activeQuestions = array_values(array_intersect($this->pickedQuestions, $availableQuestions));
+
+        return view('livewire.inbox.inbox-page', [
+            'leads' => $leads,
+            'kpis' => $kpis->compute($base),
+            'clientOptions' => $clientOptions,
+            'sourceOptions' => $sourceOptions,
+            'selected' => $selected,
+            'statusOptions' => LeadStatus::options(ClientType::current()),
+            'statusGroups' => LeadStatus::grouped(ClientType::current()),
+            'noteSnippets' => LeadNoteSnippet::options(),
+            'priorityOptions' => LeadPriority::options(),
+            'savedFilters' => $this->userSavedFilters(),
+            'leadAiSummary' => $leadAiSummary,
+            'activeColumns' => $this->pickedColumns,
+            'activeQuestions' => $activeQuestions,
+            'availableQuestions' => $availableQuestions,
+        ]);
+    }
+
+    private function guardedLead(int $id): Lead
+    {
+        /** @var Lead $lead */
+        $lead = Lead::query()->visibleTo(auth()->user())->findOrFail($id);
+
+        return $lead;
+    }
+}

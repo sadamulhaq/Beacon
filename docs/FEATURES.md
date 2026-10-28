@@ -1,0 +1,245 @@
+# Features
+
+Full detail behind the condensed list in the [README](../README.md#features).
+See also [Architecture](ARCHITECTURE.md) for how each of these is implemented,
+and [Configuration reference](CONFIGURATION.md) for every env var mentioned
+below.
+
+- 📥 **Unified lead inbox** — server-rendered table with a compact inline filter
+  bar (search, source, status, priority, client, sort), active-filter count badge,
+  per-query lead count, sortable column headers (click to cycle asc/desc/default),
+  column picker, saved views, and pagination.
+- 🧹 **Duplicate detection** — leads with a matching normalized email or
+  phone are flagged automatically; you can re-check on demand.
+- 🎯 **Lead status, intake + outcome** — the intake states (New, Reviewed,
+  Incomplete, Duplicate) describe the lead as it arrived; the outcome states
+  (Pending, Offer sent, Successful, Declined, No reply, Forwarded) describe what
+  came back after someone reached out. Both halves live in one field, so the
+  status filter, saved views, bulk edit, sorting and CSV export cover them
+  alike. The side panel sets status with a grouped pill row rather than a
+  dropdown, and two steps happen on their own: opening a lead moves New →
+  Reviewed, the first outreach toggle moves New/Reviewed → Pending. The
+  automation is forward-only and never overwrites a status someone chose —
+  every automatic move is audited with `automatic: true`.
+- 💬 **One-click note phrases** — a row of quick chips above the note box
+  ("Called them, no answer", "Mailed them", "Declined — price", "Declined —
+  chose a competitor", "Declined — bad timing", "Successful — booked",
+  "Successful — signed", …) inserts the phrase into the note. The status pill
+  already logs and filters Declined/Successful precisely, so there is no bare
+  "Declined"/"Successful" chip that would just restate it — the reason phrases
+  add the one thing the status can't hold, and highlight the matching status
+  pill as a nudge without ever writing it themselves.
+- 📝 **Side-panel review** — open any lead, change status & priority,
+  add notes, see the audit trail. The panel is ordered by what you do with it:
+  Contact, one **Status** card (outreach toggles + status pills together), the
+  lead's own words, then Notes — with ad attribution, AI evaluation and older
+  activity collapsed into `<details>` below. Intake statuses collapse behind an
+  "Intake" disclosure unless the lead is currently on one; the header keeps the
+  current status badge in view while the body scrolls. Activity entries older
+  than a day show an exact timestamp rather than "3 weeks ago"
+  (`App\Support\Dates::relativeOrExact()`), with the full stamp on hover. For Meta Lead Ads leads the panel also
+  shows the ad-source attribution (platform, organic/paid, campaign,
+  adset, ad and form names) and the form's custom-question answers — so
+  clients can see at a glance *where* a lead came from and what they said.
+- ✅ **Outreach state (Qualified / Called / Mailed)** — three timestamped
+  pill toggles on every lead, settable by both operators and clients,
+  with corresponding `Q` / `C` / `M` badges on the inbox row. The
+  toggles represent activity inside lodgely (not data from the upstream
+  lead source) and write a `lead.outreach_toggled` audit event so the
+  history is preserved.
+- 📂 **CSV importer** — common header names recognized (`name`, `email`,
+  `phone`, `message`, `client`, `campaign`). Up to 10k rows per file.
+- ✉️ **Email importer** — mock generator for demos, plus a real IMAP backend
+  (`LODGELY_EMAIL_IMPORT_DRIVER=imap`) that polls unseen messages on a
+  15-minute schedule and parses contact-form bodies automatically.
+- 🔗 **Webhook importer** — operators create signed token URLs at `/webhooks`;
+  any HTTP client can POST JSON leads and they flow through the full ingest
+  pipeline instantly.
+- ✍️ **Manual entry** — quick "new lead" modal for phone calls and walk-ins.
+- 📊 **Google Sheets lead source** — configure multiple Google Sheets as
+  recurring lead sources at `/imports/google-sheets` (Imports nav). Paste the
+  full sheet URL (or just the ID) and the page strips it down automatically.
+  "Load columns" fetches the first row and **auto-maps** recognised headers
+  (`name`, `email`, `phone`, `utm_*`, `created_time`, etc.) — operators review
+  and adjust as needed. 27 mappable lead fields are supported, including the
+  external `lead_id` / `form_id` / `created_time`, status / priority,
+  outreach toggles, UTM attribution, and a free-form **"Custom answer (named
+  key)…"** option that lets operators choose their own key for any extra
+  column (the sheet header becomes the question label in the inbox).
+  Each sheet source has its own refresh interval (hourly to weekly), default
+  client/campaign, and active toggle. "Fetch now" triggers an immediate import
+  and shows a result toast; a Delete button on each import row removes the
+  import and its leads, and **"Delete all imports"** clears the whole backlog in
+  one click. The scheduler pulls all due sources hourly via
+  `lodgely:google-sheets:fetch`. **Re-fetches are idempotent** — each row gets a
+  stable content fingerprint, so re-reading the same sheet skips rows already
+  imported instead of creating duplicates (the import summary shows a *Skipped*
+  count). Run `lodgely:google-sheets:dedupe` once to collapse any duplicate
+  backlog left by older versions. Google OAuth credentials (client ID + secret,
+  stored encrypted in the DB) are managed at `/settings/google-sheets`. A fetch
+  that fails (e.g. an expired refresh token — see the production-consent note
+  below) is recorded with its reason and shown as a red **Failed** row under
+  "Recent imports" instead of a silent empty import, and the source then waits
+  for its next scheduled slot rather than retrying every hour; fix the cause and
+  hit **Fetch** to retry right away.
+- 📥 **Meta Lead Ads lead source (API)** — pull leads straight from Meta Lead
+  Ads instead of routing them through a Google Sheet. Once Meta is connected
+  under **Settings → Ad platforms**, an **Imports → Meta Lead Ads (API)** page
+  (`/imports/meta-leads`) appears. Configure one or more connections by Facebook
+  Page ID (every active lead form on the page is pulled) or pin a single Form ID;
+  a **"Load forms"** button validates the token and lists the page's lead forms.
+  Standard Meta fields (`full_name`, `email`, `phone_number`, first/last name)
+  map onto the core lead columns plus the pre-wired Meta attribution fields
+  (ad / adset / campaign / form / platform), and every other answer is preserved
+  as a custom answer. The Meta lead id is the stable `external_id`, so re-fetches
+  are **idempotent**. Each connection has its own look-back window, refresh
+  interval and active toggle; "Fetch now" runs an immediate import, and the
+  scheduler sweeps due connections hourly via `lodgely:meta-leads:fetch`. Reuses
+  the existing Meta access token — it must additionally carry the
+  `leads_retrieval` permission and access to the page that owns the forms.
+  **Set the Google OAuth consent screen to "In production"** — apps left in
+  Testing status get their refresh tokens expired by Google after 7 days,
+  which silently breaks the connection every week.
+- 🌊 **OpenFlow lead source** — pull submissions from a self-hosted
+  [OpenFlow](https://github.com/vidual-labs/openflow) form straight into a
+  lodgely client. The **Imports → OpenFlow** page (`/imports/openflow`) lets an
+  operator add one or more sources; each stores the OpenFlow base URL and an
+  auth credential — a **read-only OpenFlow API token** (recommended; created in
+  OpenFlow under Settings → API Tokens, stored **encrypted**, sent as a Bearer
+  token) or an email + **encrypted** password login (the connector then signs in
+  to mint a short-lived JWT, scraped from the login cookie). A **"Load forms"**
+  button validates the credential and lists the account's
+  forms; **"Load fields"** then fetches the picked form's fields so the operator
+  can map each one to a lead column (`full_name` / `email` / `phone` / `message`
+  / status / priority / named custom answer). Any unmapped field is preserved as
+  a custom answer using the OpenFlow field label, so the full submission
+  survives. Each source is assigned to a **Client** (the source's default client
+  name), so the leads land in exactly one customer's scope. The `external_id`
+  is the OpenFlow submission id scoped to the install + form
+  (`sha1(base_url|form_id)-<submission id>`), making re-fetches
+  **idempotent** — including against soft-deleted leads, so a purged or
+  deleted lead is not re-imported. `last_successful_fetch_at` (minus a
+  60-minute overlap) bounds incremental pulls so the whole backlog isn't
+  re-walked each run; OpenFlow's offset-less timestamps are read as UTC.
+  "Delete all imports" resets that mark so the next fetch rebuilds the
+  backlog. Each source has its own refresh interval (hourly by default) and
+  active toggle; "Fetch" runs an immediate import, and the scheduler sweeps
+  due sources hourly via `lodgely:openflow:fetch`.
+- 👥 **In-app user management** — operators create, edit and enable/disable
+  users at `/users`, including client-name scoping, without needing artisan.
+  A one-click "Reset link" issues a single-use email so users can choose
+  their own password without an operator ever seeing it. Deactivating a
+  user takes effect immediately: their existing sessions (including
+  remember-me logins) are terminated on the next request, not just blocked
+  at the next login. Changing a user's password — from the profile page, an
+  admin edit or a reset link — likewise signs out every *other* session for
+  that account.
+- 🔐 **Multi-user logins, two roles**:
+  - `operator` — agency or inhouse team. Sees every lead, can import.
+  - `client` — scoped to one or more `client_name` values. Read-friendly,
+    review-only access to *their* leads.
+- 👤 **Per-user profile page** at `/profile` (linked from the topbar avatar
+  for every role) — change name, email, password (with current-password
+  challenge), interface language and theme. Clients use the same page to
+  manage their own account without seeing any operator screens.
+- 🔑 **Password recovery** — public `/forgot-password` flow that issues a
+  rate-limited reset email through Laravel's password broker. Inactive
+  accounts never receive a link. The form response is uniform, and the lookup
+  and send run after the response, so neither the message nor the response
+  time reveals whether an account exists. The reset form gives one message for
+  "unknown email" and "bad token". Reset links are always built from
+  `APP_URL`, so a forged `Host` / `X-Forwarded-Host` header cannot redirect
+  them. Changing your email on the profile page asks for your current password.
+- 🛡️ **Optional two-factor authentication (operators)** — Profile →
+  Two-factor authentication. Setup:
+  1. Enter your current password.
+  2. Scan the QR code (drawn on the server as inline SVG, no external
+     service) with any TOTP app.
+  3. Confirm with a 6-digit code.
+  4. Save the 8 single-use recovery codes, which are shown once.
+
+  From then on, sign-in asks for a code after the password. Nobody is
+  signed in until the code checks out, and the half-finished login expires
+  after 10 minutes. The challenge is limited to 5 attempts/min and 30/hour per
+  account, and a code is never accepted twice. Generating new recovery codes
+  asks for the password; turning 2FA off asks for the password *and* a code.
+  Turning it on also invalidates existing remember-me cookies. The secret and
+  recovery codes are encrypted at rest. 2FA stays enforced if an enrolled
+  operator is later changed to a client. Lost phone *and* recovery codes:
+  `php artisan lodgely:user:2fa-reset <email>` on the server, which is
+  deliberately not a web button, so a hijacked operator session can't strip
+  someone else's second factor.
+- 🧾 **Audit log** of lead lifecycle changes (created, status changed,
+  priority changed, note added, duplicate reconciled).
+- 🗑️ **Retention awareness** — every lead carries a `retention_until`
+  field, with an opt-in `php artisan lodgely:leads:purge` command.
+- 📊 **Inbox KPIs** — new, duplicates, incomplete, total, leads by source.
+- ☑️ **Bulk actions** — both operators and clients select multiple leads via
+  checkboxes (with select-all toggle) and apply a status or priority change to
+  all in one step, each scoped to the leads they can already see. Bulk delete
+  stays operator-only, since it's destructive. Audit events recorded per lead.
+- ⬇️ **Inbox export** — both operators and clients can download the currently
+  filtered inbox as CSV (`/inbox/export?format=csv`), scoped to the leads they
+  can see — Excel opens it directly. Newline-delimited JSON
+  (`?format=ndjson`) stays operator-only. Streams in chunks so it stays
+  memory-safe at any size; honours the same `q / status / priority / source /
+  client / sort` filters as the inbox URL. Excludes `raw_payload` and internal
+  dedupe keys. Each export writes a `lead.exported` log line for auditability.
+- 💾 **Backup & recovery** (`/settings/backups`, operator-only) — create a
+  full-database backup as a single downloadable `.zip` (a `pg_dump` archive
+  plus a manifest), download it to a local machine, prune old ones, or
+  restore the database from a previously downloaded archive straight from
+  the UI (typed "RESTORE" confirmation, since it overwrites every table and
+  signs the operator out). The same flows ship as artisan commands —
+  `lodgely:backup:create [--keep=N]` and `lodgely:backup:restore <path>` —
+  for cron jobs and scripted server migrations. **The dump inside the archive
+  is cleartext by default** — treat a backup as a full copy of every lead's
+  name, email, phone and message body, and note that it outlives the
+  `retention_until` window. Set `LODGELY_BACKUP_PASSPHRASE` to encrypt the dump
+  inside new archives (AES-256-GCM); archives taken before you set it keep
+  restoring normally, since the manifest records which shape each archive is.
+  `LODGELY_BACKUP_KEEP` prunes old archives automatically. **Note:** integration
+  secrets (Google Sheets, Google Ads, Meta, AI keys) are encrypted with the
+  install's `APP_KEY`, so a backup restored onto a *different* server — or
+  after `APP_KEY` rotation — can't decrypt them; you'll be prompted to
+  re-enter and re-verify those credentials under Settings after such a
+  restore.
+- 🔖 **Saved filters & default views** — any filter combination (search, status,
+  priority, source, client, outreach, sort) can be saved as a named view. Saved
+  views appear as chips in the filter bar; one can be starred as the user's
+  default, loaded automatically on each inbox visit.
+- 🎚️ **Outreach filter** — filters the inbox by the qualified/called/mailed
+  toggles (Not contacted / Qualified / Called / Mailed), the same signal shown
+  as pills in the Outreach table column and lead panel.
+- 🧰 **Per-user filter-dropdown picker** — a "Filter options" toggle in the
+  filter bar lets each user choose which of Status / Priority / Source /
+  Outreach show up as toolbar dropdowns (Search and Sort aren't optional; the
+  operator-only Client dropdown is a role affordance, not a preference, so it
+  stays outside the picker). A client whose workflow lives in outreach status
+  rather than priority can drop one and add the other. Persists to
+  `users.inbox_filters`; defaults to Status/Priority/Source (today's fixed
+  set) so nobody's inbox rearranges itself on upgrade. Unchecking a dropdown
+  also clears any value it had applied, so a list can never stay invisibly
+  filtered by a dropdown that's no longer shown.
+- 🧱 **Per-user column picker** — a "Custom columns" toggle in the filter bar
+  expands an inline chip row where each user picks which fields the inbox
+  table renders (`received`, `name`, `email`, `phone`, `client`, `source`,
+  `campaign`, `form`, `platform`, `status`, `priority`, `outreach`). Each
+  chip toggle auto-persists to `users.inbox_columns`. The picker also
+  auto-discovers questions present in the user's leads'
+  `custom_answers` and offers each as a column — clients whose Meta form asks
+  "Event size" can promote it to its own column. Capped at 8 columns total
+  (5 custom-question columns max) to keep the table readable. Defaults are
+  role-aware: operators see `client`, clients drop it as redundant. Even
+  `received` is removable — operators tracking a different date in custom
+  answers can swap it for that custom column.
+- 🌙 **Dark / Light mode switch** — OS preference is respected on first load; a labeled pill toggle (`Light · Dark`) in the topbar lets users switch manually. For authenticated users the choice is saved to `users.ui_theme` in the database and injected server-side on the next load (no localStorage flash); guests fall back to `localStorage`.
+- 🌍 **i18n ready** — all UI strings go through Laravel's `__()` helper. Ships with English (`en`) and German (`de`). Language is switched via a `POST /locale` route; for authenticated users the preference is saved to `users.locale` in the database; for guests it falls back to session.
+- 📈 **Reporting** — operator-only `/reporting` page with platform/date-range filters, KPI cards (total spend, clicks, impressions, cost per lead, lodgely lead count), a row of **modern trend charts** (TradingView-style daily area/line charts — smooth line, gradient fill and an interactive hover crosshair + tooltip, all dependency-free inline SVG, no chart library), a per-campaign breakdown table (spend, CPL, platform leads vs. lodgely leads), and a leads-by-source table. A **"Clear ad-metrics data"** button wipes the `ad_spend_reports` rows — the mock spend a demo install ships with has no per-import tag, so this is the way to get a clean slate (mock sources repopulate on the next import run). Ad spend data is ingested via swappable adapter classes (`AdMetricsSource`) — ships with deterministic mock adapters for Meta and Google Ads, plus live API adapters that pull aggregate campaign metrics from Meta's Marketing API and Google Ads' REST API once credentials are configured. Operators connect both platforms from **Settings → Ad platforms** (`/settings/ad-platforms`): paste the Meta access token / ad account, and for Google Ads click **"Connect Google Ads"** for a one-click OAuth flow that captures the refresh token automatically — no `.env` editing or token scripts. Credentials are stored encrypted, each platform has a "Test connection" button, and per-platform Enable toggles control the daily pull. Env vars (see [Configuration reference](CONFIGURATION.md)) remain supported as a fallback. Scheduled to pull yesterday's data daily at 05:00 — so a freshly connected platform shows an empty report until that run. A **"Fetch data now"** button (header toolbar and empty state) triggers an immediate pull of the last 7 days, so reporting fills right after you connect a platform without waiting for the cron. Run `php artisan lodgely:import:ad-metrics --days=30` to seed/backfill a wider window from the CLI.
+- 📊 **Custom client reporting views** — operators define named reporting views by selecting any combination of metrics (Leads, Clicks, Impressions, CTR, Ad Spend, Cost per Lead, Platform Leads, **CPC**, **CPM**, **Conversion rate**, etc.) and assign each view to specific client users. Each view has a **Live / Hidden** toggle: views default to Live (assigning a client makes them visible), and an operator can take a view offline without unassigning anyone — hidden views disappear from clients' "My reports" and pause their scheduled report emails. Clients see a "My reports" tab page at `/my-reports` with per-metric monthly **trend charts** (the same modern TradingView-style area/line charts as the operator dashboard, with a hover crosshair + tooltip — dependency-free inline SVG) above a monthly table, showing only their assigned columns. Different clients can see entirely different views — client A might see only Leads and Clicks, client B sees full ad performance metrics. Lead data is always scoped to each client's own leads.
+- ✨ **Automatic AI lead ranking** *(optional)* — switch on the *Automatic lead ranking* task at `/settings/ai` and an hourly sweep (`lodgely:ai:rank-leads`, or the **"Rank unranked leads now"** button) sends each new lead, pseudonymized, to the model with a built-in master prompt plus two free-text "ideal customer" profiles: an operator-wide one on `/settings/ai` and a per-client one that client users edit on their profile page. The answer — priority, a one-sentence reason and up to five tags — is written straight onto the lead and marked with a violet sparkle in the inbox and the lead panel (hover for reason and tags; an optional **AI tags** column exists in the column picker). Anyone who changes the priority overrides the AI; the ranker never revisits a lead a person prioritised, and operators can force a re-run from the lead panel. Every attempt is auditable on `/ai/drafts` (status *Applied*) and counts against the shared daily cap.
+- 🤖 **AI summaries & lead qualification** *(optional, inert until an operator enables it)* — admins plug in either an OpenAI-compatible API (OpenAI, Together, Groq, LM Studio, …) or a local Ollama endpoint at `/settings/ai`, set a free-text "house style" instruction, and choose which AI tasks to enable. Two kinds in v1: **report-view summaries** (narrative + evaluation + follow-ups on a custom reporting view, aggregate data only) and **lead qualification** (priority recommendation with pseudonymized lead context). Every AI output is a draft that an operator reviews at `/ai/drafts` — approve, reject, regenerate, then share with the client. API keys are stored encrypted; lead-level kinds require an explicit consent toggle; a daily per-tenant cap prevents cost runaway. See [Architecture → How AI summaries work](ARCHITECTURE.md#how-ai-summaries-work) for the full generation/review flow.
+- 📨 **Custom client report emails** — operators compose modular report emails at `/reporting/emails` and either send them now, schedule them as a one-off, or recur them weekly / monthly. Each template picks any combination of: a free-text intro (markdown — raw HTML is stripped, and link schemes are restricted to http(s)/mailto, since the intro renders unescaped in the client's inbox), the KPI summary strip, the monthly metrics table, and the latest operator-approved AI summary for a reporting view. The HTML email is **mobile-responsive** — a `<style>` media query stacks the KPI cards one-per-row and lets the metrics table scroll/shrink on phones, so it reads cleanly in iOS / Gmail / webmail. Recipients are existing Client users (visibility is honoured because the metrics are built against the recipient). Every dispatch writes a `client_report_email_sends` audit row that surfaces as a "Recent sends" history. The `lodgely:report-emails:dispatch` artisan command runs hourly via the scheduler and advances each schedule's `next_run_at`.
+- ✉️ **Outbound mail (SMTP) settings** — operators configure the mail server from **Settings → Email** (`/settings/mail`): transport (SMTP or log-only), host, port, encryption (STARTTLS / SSL / none), username, password, and the From identity — no `.env` editing required. The password is stored encrypted, and the saved settings override the `MAIL_*` env config at runtime for **both** web requests (password resets) and the queue worker (reporting emails). A **"Send test email"** button sends a real message synchronously so SMTP errors surface immediately. The default `MAIL_MAILER=log` driver writes mail to the log instead of sending it — the usual reason reporting emails appear not to arrive — so switching this to SMTP here is what gets mail flowing. Env vars remain supported as a fallback when the toggle is off.
+- 🔭 **Lead-metadata API for vigilo** — `GET /api/v1/lead-metadata?client=&cursor=&updated_since=&limit=` serves contract v1 of vigilo's [`docs/LODGELY-CONTRACT.md`](https://github.com/vidual-labs/vigilo/blob/main/docs/LODGELY-CONTRACT.md): a change feed per client ordered by `(updated_at, id)` with an opaque cursor, `has_more`, and `deleted: true` tombstones for soft-deleted leads. Each item carries the lead id (`ld_<id>`), submission time (`created_at` until LG-3), status, when the status last changed (from the audit trail), source type (`meta_leads` → `meta_lead_ads`, both email importers → `email`), Meta campaign/ad set/ad/form ids and the duplicate/qualified/contacted/organic flags. `has_gclid` is always `false` and the UTM fields are `null` until per-lead attribution (LG-6) exists. The client key is `Str::slug(client_name)`; names that differ only in case or punctuation share a key. Built in `LeadMetadataFeed` from an explicit column allow-list, so no PII column can leak; `LeadMetadataApiTest` fails if a PII key or value shows up. Auth is a bearer token with the `lead-metadata:read` scope, created and revoked by operators on **Settings → API tokens** (`/settings/api-tokens`, native form posts); only a SHA-256 hash is stored and the plaintext is shown once. Rate limited at 60/min per token (`Retry-After` on 429); each request logs token id, client key and row count, nothing else.
+- 🧪 **Demo data toggle** — operators get a `/settings/demo-data` page (under the topbar **Settings** menu) with two buttons: load the canonical demo dataset (~60 neutral leads + 12 Meta Lead Ads leads across two demo clients, a known duplicate pair, and the two scoped demo client logins `client.northwind@example.com` / `client.acme@example.com` with password `password`) or wipe it again. Demo leads are tagged by attaching them to a dedicated `imports` row with `source = 'demo_seed'`, so unloading is a single scoped delete — real CSV / webhook / IMAP imports are never touched. Unloading **also clears the mock ad-spend rows** behind Reporting (skipped automatically once a live Meta or Google Ads connection exists, so real spend is never deleted — clear that from the Reporting page instead). Same code path the `DatabaseSeeder` uses, lifted into a reusable `App\Domain\Demo\DemoDataManager` service.
