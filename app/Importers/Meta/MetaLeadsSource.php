@@ -330,7 +330,7 @@ class MetaLeadsSource implements LeadSource
      */
     private function requestPaged(string $url, array $params): iterable
     {
-        $timeout = (int) config('lodgely.reporting.http_timeout_sec', 30);
+        $timeout = (int) config('beacon.reporting.http_timeout_sec', 30);
 
         do {
             $response = Http::timeout($timeout)

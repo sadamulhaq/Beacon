@@ -11,13 +11,13 @@ class BackupManagerRestoreCommandTest extends TestCase
 {
     private function makeArchive(): string
     {
-        $dir = sys_get_temp_dir().'/lodgely-test-'.uniqid();
+        $dir = sys_get_temp_dir().'/beacon-test-'.uniqid();
         mkdir($dir);
         $zipPath = $dir.'/backup.zip';
 
         $zip = new ZipArchive();
         $zip->open($zipPath, ZipArchive::CREATE);
-        $zip->addFromString('manifest.json', json_encode(['app' => 'lodgely', 'db_driver' => 'pgsql']));
+        $zip->addFromString('manifest.json', json_encode(['app' => 'beacon', 'db_driver' => 'pgsql']));
         $zip->addFromString('database.dump', 'dummy-dump-contents');
         $zip->close();
 

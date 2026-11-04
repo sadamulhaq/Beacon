@@ -20,7 +20,7 @@ class LeadExportTest extends TestCase
 
     private function operator(): User
     {
-        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'lodgely']);
+        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'beacon']);
 
         return User::create([
             'name' => 'Op', 'email' => 'op@example.com', 'password' => Hash::make('p'),
@@ -30,7 +30,7 @@ class LeadExportTest extends TestCase
 
     private function clientFor(string $clientName): User
     {
-        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'lodgely']);
+        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'beacon']);
 
         $client = User::create([
             'name' => 'C', 'email' => 'c@example.com', 'password' => Hash::make('p'),

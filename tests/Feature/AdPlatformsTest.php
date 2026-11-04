@@ -20,7 +20,7 @@ class AdPlatformsTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'lodgely']);
+        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'beacon']);
     }
 
     private function operator(): User
@@ -44,7 +44,7 @@ class AdPlatformsTest extends TestCase
 
         // Effective getter falls back to env config when the column is empty
         // (ad_account_id defaults to '', so it is genuinely unset here).
-        config()->set('lodgely.reporting.meta.ad_account_id', '777');
+        config()->set('beacon.reporting.meta.ad_account_id', '777');
         $fresh = AdPlatformSetting::forTenant(Tenant::DEFAULT_ID);
         $this->assertSame('777', $fresh->effectiveMetaAccountId());
     }
@@ -52,7 +52,7 @@ class AdPlatformsTest extends TestCase
     public function test_active_source_keys_keep_mocks_until_a_platform_is_connected(): void
     {
         // Demo install: no live platform connected → the mock base list stands.
-        config()->set('lodgely.reporting.sources', ['meta_mock', 'google_mock']);
+        config()->set('beacon.reporting.sources', ['meta_mock', 'google_mock']);
 
         $this->assertEqualsCanonicalizing(
             ['meta_mock', 'google_mock'],
@@ -65,7 +65,7 @@ class AdPlatformsTest extends TestCase
         // Operator has gone live on Meta: the deterministic demo campaigns must
         // not pollute real reporting, so meta_mock/google_mock are dropped and
         // only the live `meta` adapter remains.
-        config()->set('lodgely.reporting.sources', ['meta_mock', 'google_mock']);
+        config()->set('beacon.reporting.sources', ['meta_mock', 'google_mock']);
 
         $row = AdPlatformSetting::forTenant(Tenant::DEFAULT_ID);
         $row->meta_enabled = true;
@@ -80,7 +80,7 @@ class AdPlatformsTest extends TestCase
 
     public function test_connecting_both_platforms_runs_both_live_adapters_only(): void
     {
-        config()->set('lodgely.reporting.sources', ['meta_mock', 'google_mock']);
+        config()->set('beacon.reporting.sources', ['meta_mock', 'google_mock']);
 
         $row = AdPlatformSetting::forTenant(Tenant::DEFAULT_ID);
         $row->meta_enabled = true;
@@ -102,8 +102,8 @@ class AdPlatformsTest extends TestCase
         $row->save();
 
         // Config holds a different token; the DB value must win.
-        config()->set('lodgely.reporting.meta.access_token', 'env-token');
-        config()->set('lodgely.reporting.meta.ad_account_id', '111');
+        config()->set('beacon.reporting.meta.access_token', 'env-token');
+        config()->set('beacon.reporting.meta.ad_account_id', '111');
 
         Http::fake(['graph.facebook.com/*' => Http::response(['data' => []], 200)]);
 

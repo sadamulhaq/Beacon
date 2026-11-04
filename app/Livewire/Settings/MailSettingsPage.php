@@ -12,12 +12,12 @@ use Livewire\Attributes\Layout;
 use Livewire\Component;
 
 /**
- * Operator-only UI for outbound mail (SMTP). Lets an operator point lodgely at
+ * Operator-only UI for outbound mail (SMTP). Lets an operator point beacon at
  * their mail server without editing .env, so reporting emails and password
  * resets actually leave the box. The password is write-only in the form
  * (blank = "leave as-is") and stored encrypted on the MailSetting row.
  *
- * When "Use these settings" is off the page is inert and lodgely falls back to
+ * When "Use these settings" is off the page is inert and beacon falls back to
  * the .env / config mail settings, so env-only installs keep working.
  */
 #[Layout('components.layouts.app')]
@@ -130,7 +130,7 @@ class MailSettingsPage extends Component
             $row->applyToConfig();
 
             Mail::to($this->form['test_recipient'])
-                ->send(new TestMailMessage((string) config('lodgely.brand.name', 'lodgely')));
+                ->send(new TestMailMessage((string) config('beacon.brand.name', 'beacon')));
 
             $this->testResult = 'success:'.__('Test email sent to :email. Check the inbox (and the spam folder).', [
                 'email' => $this->form['test_recipient'],

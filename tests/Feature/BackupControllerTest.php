@@ -19,7 +19,7 @@ class BackupControllerTest extends TestCase
     {
         return Tenant::firstOrCreate(
             ['id' => Tenant::DEFAULT_ID],
-            ['slug' => 'default', 'name' => 'lodgely'],
+            ['slug' => 'default', 'name' => 'beacon'],
         );
     }
 
@@ -51,7 +51,7 @@ class BackupControllerTest extends TestCase
 
     private function zipUpload(): UploadedFile
     {
-        return UploadedFile::fake()->create('lodgely-backup.zip', 64, 'application/zip');
+        return UploadedFile::fake()->create('beacon-backup.zip', 64, 'application/zip');
     }
 
     public function test_client_cannot_create_backup(): void
@@ -65,7 +65,7 @@ class BackupControllerTest extends TestCase
     {
         $manager = Mockery::mock(BackupManager::class);
         $manager->shouldReceive('create')->once()->andReturn([
-            'filename' => 'lodgely-backup-20260101-120000.zip',
+            'filename' => 'beacon-backup-20260101-120000.zip',
             'path' => '/tmp/x.zip',
             'size' => 2048,
             'created_at' => now()->toIso8601String(),
@@ -81,11 +81,11 @@ class BackupControllerTest extends TestCase
     public function test_operator_can_delete_backup_via_native_form(): void
     {
         $manager = Mockery::mock(BackupManager::class);
-        $manager->shouldReceive('delete')->once()->with('lodgely-backup-20260101-120000.zip');
+        $manager->shouldReceive('delete')->once()->with('beacon-backup-20260101-120000.zip');
         $this->instance(BackupManager::class, $manager);
 
         $this->actingAs($this->operator())
-            ->post(route('settings.backups.delete'), ['filename' => 'lodgely-backup-20260101-120000.zip'])
+            ->post(route('settings.backups.delete'), ['filename' => 'beacon-backup-20260101-120000.zip'])
             ->assertRedirect(route('settings.backups'))
             ->assertSessionHas('backups.notice');
     }

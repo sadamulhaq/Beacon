@@ -146,7 +146,7 @@ class UsersPage extends Component
             $user->update($payload);
             $this->syncScopes($user, $data['scopes_input']);
 
-            Log::info('lodgely.user.updated', [
+            Log::info('beacon.user.updated', [
                 'id' => $user->id,
                 'actor' => auth()->id(),
                 'before' => $before,
@@ -157,7 +157,7 @@ class UsersPage extends Component
             $user = User::create($payload);
             $this->syncScopes($user, $data['scopes_input']);
 
-            Log::info('lodgely.user.created', [
+            Log::info('beacon.user.created', [
                 'id' => $user->id,
                 'actor' => auth()->id(),
                 'role' => $user->role->value,
@@ -181,7 +181,7 @@ class UsersPage extends Component
 
         $status = Password::sendResetLink(['email' => $user->email]);
 
-        Log::info('lodgely.user.reset_link_sent', [
+        Log::info('beacon.user.reset_link_sent', [
             'id' => $user->id,
             'actor' => auth()->id(),
             'status' => $status,
@@ -202,7 +202,7 @@ class UsersPage extends Component
         }
 
         $user->update(['is_active' => ! $user->is_active]);
-        Log::info('lodgely.user.toggled', [
+        Log::info('beacon.user.toggled', [
             'id' => $user->id,
             'actor' => auth()->id(),
             'is_active' => $user->is_active,

@@ -30,7 +30,7 @@
             <span>
                 <span class="text-sm font-medium text-slate-800 dark:text-slate-200">{{ __('Use these mail settings') }}</span>
                 <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                    {{ __('When off, lodgely uses the MAIL_* values from .env (default: the log driver, which writes mail to the log instead of sending it — the usual reason reporting emails "don\'t arrive").') }}
+                    {{ __('When off, beacon uses the MAIL_* values from .env (default: the log driver, which writes mail to the log instead of sending it — the usual reason reporting emails "don\'t arrive").') }}
                 </p>
             </span>
         </label>

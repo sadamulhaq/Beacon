@@ -22,7 +22,7 @@ class InboxPageTest extends TestCase
 
     private function operator(): User
     {
-        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'lodgely']);
+        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'beacon']);
 
         return User::create([
             'name' => 'Op', 'email' => 'op@example.com', 'password' => Hash::make('p'),
@@ -32,7 +32,7 @@ class InboxPageTest extends TestCase
 
     private function clientFor(string $clientName): User
     {
-        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'lodgely']);
+        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'beacon']);
 
         $client = User::create([
             'name' => 'C', 'email' => 'c@example.com', 'password' => Hash::make('p'),
@@ -630,7 +630,7 @@ class InboxPageTest extends TestCase
     public function test_operator_can_rerun_ai_ranking_but_client_cannot(): void
     {
         \Illuminate\Support\Facades\Queue::fake();
-        config()->set('lodgely.ai.enabled', true);
+        config()->set('beacon.ai.enabled', true);
         $op = $this->operator();
         $row = \App\Models\AiSetting::forTenant(Tenant::DEFAULT_ID);
         $row->enabled = true;

@@ -20,7 +20,7 @@ class AiSettingsPageTest extends TestCase
 
     private function setupTenantAndOperator(): User
     {
-        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'lodgely']);
+        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'beacon']);
 
         return User::create([
             'name'      => 'Op',
@@ -33,7 +33,7 @@ class AiSettingsPageTest extends TestCase
 
     public function test_settings_route_404s_when_ai_disabled(): void
     {
-        config()->set('lodgely.ai.enabled', false);
+        config()->set('beacon.ai.enabled', false);
         $op = $this->setupTenantAndOperator();
 
         $this->actingAs($op)->get('/settings/ai')->assertNotFound();
@@ -41,8 +41,8 @@ class AiSettingsPageTest extends TestCase
 
     public function test_client_cannot_open_settings_page_even_when_ai_enabled(): void
     {
-        config()->set('lodgely.ai.enabled', true);
-        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'lodgely']);
+        config()->set('beacon.ai.enabled', true);
+        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'beacon']);
 
         $client = User::create([
             'name' => 'C', 'email' => 'c@example.com', 'password' => Hash::make('p'),
@@ -54,7 +54,7 @@ class AiSettingsPageTest extends TestCase
 
     public function test_operator_saves_settings_and_api_key_is_encrypted_at_rest(): void
     {
-        config()->set('lodgely.ai.enabled', true);
+        config()->set('beacon.ai.enabled', true);
         $op = $this->setupTenantAndOperator();
 
         Livewire::actingAs($op)
@@ -80,7 +80,7 @@ class AiSettingsPageTest extends TestCase
 
     public function test_blank_api_key_input_does_not_clear_the_stored_one(): void
     {
-        config()->set('lodgely.ai.enabled', true);
+        config()->set('beacon.ai.enabled', true);
         $op = $this->setupTenantAndOperator();
 
         // First save: set a key.
@@ -105,7 +105,7 @@ class AiSettingsPageTest extends TestCase
 
     public function test_test_connection_uses_provider_ping(): void
     {
-        config()->set('lodgely.ai.enabled', true);
+        config()->set('beacon.ai.enabled', true);
         $op = $this->setupTenantAndOperator();
 
         $fake = new FakeLlmProvider();
@@ -126,7 +126,7 @@ class AiSettingsPageTest extends TestCase
 
     public function test_settings_page_is_reachable_with_the_default_config(): void
     {
-        // No config override: LODGELY_AI_ENABLED defaults to true, so the page
+        // No config override: BEACON_AI_ENABLED defaults to true, so the page
         // exists before any .env edit.
         $op = $this->setupTenantAndOperator();
 
@@ -135,7 +135,7 @@ class AiSettingsPageTest extends TestCase
 
     public function test_operator_saves_ranking_fields(): void
     {
-        config()->set('lodgely.ai.enabled', true);
+        config()->set('beacon.ai.enabled', true);
         $op = $this->setupTenantAndOperator();
 
         Livewire::actingAs($op)
@@ -158,7 +158,7 @@ class AiSettingsPageTest extends TestCase
 
     public function test_operator_saves_client_profiles_case_insensitively(): void
     {
-        config()->set('lodgely.ai.enabled', true);
+        config()->set('beacon.ai.enabled', true);
         $op = $this->setupTenantAndOperator();
         \App\Models\Lead::factory()->create(['client_name' => 'Acme']);
         \App\Models\Lead::factory()->create(['client_name' => 'acme']);
@@ -185,7 +185,7 @@ class AiSettingsPageTest extends TestCase
     public function test_rank_now_is_operator_only_and_reports_the_count(): void
     {
         \Illuminate\Support\Facades\Queue::fake();
-        config()->set('lodgely.ai.enabled', true);
+        config()->set('beacon.ai.enabled', true);
         $op = $this->setupTenantAndOperator();
 
         // Gates off → explanatory status, nothing queued.
@@ -206,9 +206,9 @@ class AiSettingsPageTest extends TestCase
             ->assertSessionHas('status', 'Queued 3 lead(s) for AI ranking.');
         \Illuminate\Support\Facades\Queue::assertPushed(\App\Jobs\RankLeadWithAi::class, 3);
 
-        config()->set('lodgely.ai.enabled', false);
+        config()->set('beacon.ai.enabled', false);
         $this->actingAs($op)->post('/settings/ai/rank-leads')->assertNotFound();
-        config()->set('lodgely.ai.enabled', true);
+        config()->set('beacon.ai.enabled', true);
 
         // Fresh session for the second user — AuthenticateSession logs out a
         // session whose password hash belongs to someone else.

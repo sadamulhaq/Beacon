@@ -2,12 +2,12 @@
 
 /*
 |--------------------------------------------------------------------------
-| lodgely product configuration
+| beacon product configuration
 |--------------------------------------------------------------------------
 |
-| Centralized, opinionated knobs for the lodgely product. Anything that
+| Centralized, opinionated knobs for the beacon product. Anything that
 | might reasonably be tweaked per deployment lives here, so the rest of
-| the codebase can read settings via config('lodgely.*') instead of
+| the codebase can read settings via config('beacon.*') instead of
 | reading env() directly.
 |
 */
@@ -27,24 +27,24 @@ return [
     })(),
 
     'brand' => [
-        'name' => env('LODGELY_BRAND_NAME', 'lodgely'),
-        'tagline' => env('LODGELY_BRAND_TAGLINE', 'Lead intake, unified.'),
-        // Hardcoded on purpose: lodgely is GPL-3.0, and the footer link to the
+        'name' => env('BEACON_BRAND_NAME', 'beacon'),
+        'tagline' => env('BEACON_BRAND_TAGLINE', 'Lead intake, unified.'),
+        // Hardcoded on purpose: beacon is GPL-3.0, and the footer link to the
         // upstream source repository is part of preserving attribution. Forks may
         // edit this value in their own copy, but it must not be a deploy-time toggle.
-        'github_url' => 'https://github.com/vidual-labs/lodgely',
-        // The team behind lodgely, linked from the public landing page for
+        'github_url' => 'https://github.com/sadamulhaq/Beacon',
+        // The team behind beacon, linked from the public landing page for
         // setup and integration help. Hardcoded for the same reason as
         // github_url; installs that don't want it shown disable the landing.
         'vidual_url' => 'https://vidual.org',
     ],
 
-    // Public landing page at "/". On by default; set LODGELY_LANDING_ENABLED
+    // Public landing page at "/". On by default; set BEACON_LANDING_ENABLED
     // to false to skip it and send "/" straight to the inbox (and from there
-    // to the login form for guests), which is how lodgely behaved before the
+    // to the login form for guests), which is how beacon behaved before the
     // landing page existed. Signed-in users never see it either way.
     'landing' => [
-        'enabled' => (bool) env('LODGELY_LANDING_ENABLED', true),
+        'enabled' => (bool) env('BEACON_LANDING_ENABLED', true),
     ],
 
     // TRUSTED_PROXIES is deliberately *not* mirrored here: it is consumed in
@@ -62,60 +62,60 @@ return [
         // so turning this on does not invalidate existing backups — but keep
         // the passphrase somewhere safe, because an encrypted archive is
         // unrecoverable without it.
-        'passphrase' => env('LODGELY_BACKUP_PASSPHRASE'),
+        'passphrase' => env('BEACON_BACKUP_PASSPHRASE'),
 
         // How many archives to keep on disk after a new one is created. null
         // (the default) keeps every archive forever — pruning is opt-in so an
         // upgrade never silently deletes an operator's backups.
-        'keep' => env('LODGELY_BACKUP_KEEP') !== null && env('LODGELY_BACKUP_KEEP') !== ''
-            ? max(1, (int) env('LODGELY_BACKUP_KEEP'))
+        'keep' => env('BEACON_BACKUP_KEEP') !== null && env('BEACON_BACKUP_KEEP') !== ''
+            ? max(1, (int) env('BEACON_BACKUP_KEEP'))
             : null,
     ],
 
     'importers' => [
         'csv' => [
-            'max_rows' => (int) env('LODGELY_CSV_MAX_ROWS', 10000),
+            'max_rows' => (int) env('BEACON_CSV_MAX_ROWS', 10000),
         ],
         'google_sheets' => [
             // OAuth installed-application credentials for the Google Sheets API.
             // Operators run the in-app authorize flow at /settings/google-sheets/connect
             // to exchange a one-time code for a long-lived refresh token, then
-            // paste it back into LODGELY_GOOGLE_SHEETS_REFRESH_TOKEN.
-            'client_id' => env('LODGELY_GOOGLE_SHEETS_CLIENT_ID', ''),
-            'client_secret' => env('LODGELY_GOOGLE_SHEETS_CLIENT_SECRET', ''),
-            'refresh_token' => env('LODGELY_GOOGLE_SHEETS_REFRESH_TOKEN', ''),
+            // paste it back into BEACON_GOOGLE_SHEETS_REFRESH_TOKEN.
+            'client_id' => env('BEACON_GOOGLE_SHEETS_CLIENT_ID', ''),
+            'client_secret' => env('BEACON_GOOGLE_SHEETS_CLIENT_SECRET', ''),
+            'refresh_token' => env('BEACON_GOOGLE_SHEETS_REFRESH_TOKEN', ''),
             // OAuth scopes requested during the authorize flow. Read-only is
             // enough for both ad-hoc data fetches and the planned leads source.
             'scopes' => [
                 'https://www.googleapis.com/auth/spreadsheets.readonly',
             ],
             // HTTP timeout (seconds) for outbound calls to Google APIs.
-            'http_timeout_sec' => (int) env('LODGELY_GOOGLE_SHEETS_HTTP_TIMEOUT', 30),
+            'http_timeout_sec' => (int) env('BEACON_GOOGLE_SHEETS_HTTP_TIMEOUT', 30),
         ],
         'openflow' => [
             // HTTP timeout (seconds) for outbound calls to an OpenFlow install.
             // Each source stores its own base URL + API token (or login
             // fallback); there are no global OpenFlow credentials.
-            'http_timeout_sec' => (int) env('LODGELY_OPENFLOW_HTTP_TIMEOUT', 30),
+            'http_timeout_sec' => (int) env('BEACON_OPENFLOW_HTTP_TIMEOUT', 30),
         ],
         'email' => [
             // 'mock' generates simulated leads; 'imap' connects to a real mailbox.
-            'driver' => env('LODGELY_EMAIL_IMPORT_DRIVER', 'mock'),
+            'driver' => env('BEACON_EMAIL_IMPORT_DRIVER', 'mock'),
             // Opt-in switch for the daily 06:00 scheduled mock-email pull. Off by
             // default so real installs are not flooded with synthetic demo leads;
             // the manual command and the in-app "pull now" button still work.
-            'mock_schedule_enabled' => (bool) env('LODGELY_EMAIL_MOCK_SCHEDULE', false),
+            'mock_schedule_enabled' => (bool) env('BEACON_EMAIL_MOCK_SCHEDULE', false),
             'imap' => [
-                'host' => env('LODGELY_IMAP_HOST', ''),
-                'port' => (int) env('LODGELY_IMAP_PORT', 993),
-                'encryption' => env('LODGELY_IMAP_ENCRYPTION', 'ssl'), // ssl | tls | notls
-                'validate_cert' => (bool) env('LODGELY_IMAP_VALIDATE_CERT', true),
-                'username' => env('LODGELY_IMAP_USERNAME', ''),
-                'password' => env('LODGELY_IMAP_PASSWORD', ''),
-                'mailbox' => env('LODGELY_IMAP_MAILBOX', 'INBOX'),
-                'max_messages' => (int) env('LODGELY_IMAP_MAX_MESSAGES', 50),
-                'default_client_name' => env('LODGELY_IMAP_DEFAULT_CLIENT', ''),
-                'default_campaign_name' => env('LODGELY_IMAP_DEFAULT_CAMPAIGN', ''),
+                'host' => env('BEACON_IMAP_HOST', ''),
+                'port' => (int) env('BEACON_IMAP_PORT', 993),
+                'encryption' => env('BEACON_IMAP_ENCRYPTION', 'ssl'), // ssl | tls | notls
+                'validate_cert' => (bool) env('BEACON_IMAP_VALIDATE_CERT', true),
+                'username' => env('BEACON_IMAP_USERNAME', ''),
+                'password' => env('BEACON_IMAP_PASSWORD', ''),
+                'mailbox' => env('BEACON_IMAP_MAILBOX', 'INBOX'),
+                'max_messages' => (int) env('BEACON_IMAP_MAX_MESSAGES', 50),
+                'default_client_name' => env('BEACON_IMAP_DEFAULT_CLIENT', ''),
+                'default_campaign_name' => env('BEACON_IMAP_DEFAULT_CAMPAIGN', ''),
             ],
         ],
     ],
@@ -123,8 +123,8 @@ return [
     'compliance' => [
         // Default retention window in days for newly created leads.
         // null = retain until manually deleted. The cleanup command is opt-in.
-        'default_retention_days' => env('LODGELY_DEFAULT_RETENTION_DAYS') !== null && env('LODGELY_DEFAULT_RETENTION_DAYS') !== ''
-            ? (int) env('LODGELY_DEFAULT_RETENTION_DAYS')
+        'default_retention_days' => env('BEACON_DEFAULT_RETENTION_DAYS') !== null && env('BEACON_DEFAULT_RETENTION_DAYS') !== ''
+            ? (int) env('BEACON_DEFAULT_RETENTION_DAYS')
             : null,
     ],
 
@@ -134,46 +134,46 @@ return [
 
     'reporting' => [
         // Comma-separated list of ad metrics source keys to run on schedule
-        // and via `php artisan lodgely:import:ad-metrics`.
+        // and via `php artisan beacon:import:ad-metrics`.
         // Available keys: meta_mock, google_mock, meta, google.
         // Default keeps the mock adapters active for demo installs; swap to
         // 'meta,google' once API credentials below are filled in.
-        'sources' => explode(',', env('LODGELY_AD_METRICS_SOURCES', 'meta_mock,google_mock')),
+        'sources' => explode(',', env('BEACON_AD_METRICS_SOURCES', 'meta_mock,google_mock')),
 
         // HTTP timeout (seconds) for outbound calls to ad platform APIs.
-        'http_timeout_sec' => (int) env('LODGELY_AD_METRICS_HTTP_TIMEOUT', 30),
+        'http_timeout_sec' => (int) env('BEACON_AD_METRICS_HTTP_TIMEOUT', 30),
 
         // How many days the reporting page's "Fetch data now" button backfills
         // in one go. The daily 05:00 scheduler only pulls yesterday, so this is
         // what fills the 30-/90-day reporting views right after an operator
         // connects a platform (each day is a separate API call per source, so
         // very large windows make the synchronous fetch slow).
-        'backfill_days' => (int) env('LODGELY_AD_METRICS_BACKFILL_DAYS', 30),
+        'backfill_days' => (int) env('BEACON_AD_METRICS_BACKFILL_DAYS', 30),
 
         // Meta (Facebook/Instagram) Marketing API credentials. Only consulted
         // when the `meta` key is in the `sources` list above.
         'meta' => [
-            'access_token' => env('LODGELY_META_ADS_ACCESS_TOKEN', ''),
-            'ad_account_id' => env('LODGELY_META_ADS_ACCOUNT_ID', ''),
-            'api_version' => env('LODGELY_META_ADS_API_VERSION', 'v21.0'),
+            'access_token' => env('BEACON_META_ADS_ACCESS_TOKEN', ''),
+            'ad_account_id' => env('BEACON_META_ADS_ACCOUNT_ID', ''),
+            'api_version' => env('BEACON_META_ADS_API_VERSION', 'v21.0'),
             // Meta returns spend in account currency; we store cents and a
             // currency code, so set this to whatever the ad account is set to.
-            'currency' => env('LODGELY_META_ADS_CURRENCY', 'USD'),
+            'currency' => env('BEACON_META_ADS_CURRENCY', 'USD'),
         ],
 
         // Google Ads REST API credentials. Only consulted when the `google`
         // key is in the `sources` list above. Requires an approved developer
         // token plus an OAuth installed-app refresh token.
         'google' => [
-            'client_id' => env('LODGELY_GOOGLE_ADS_CLIENT_ID', ''),
-            'client_secret' => env('LODGELY_GOOGLE_ADS_CLIENT_SECRET', ''),
-            'refresh_token' => env('LODGELY_GOOGLE_ADS_REFRESH_TOKEN', ''),
-            'developer_token' => env('LODGELY_GOOGLE_ADS_DEVELOPER_TOKEN', ''),
+            'client_id' => env('BEACON_GOOGLE_ADS_CLIENT_ID', ''),
+            'client_secret' => env('BEACON_GOOGLE_ADS_CLIENT_SECRET', ''),
+            'refresh_token' => env('BEACON_GOOGLE_ADS_REFRESH_TOKEN', ''),
+            'developer_token' => env('BEACON_GOOGLE_ADS_DEVELOPER_TOKEN', ''),
             // Required when the OAuth user authenticates via an MCC/manager
             // account; leave blank for direct (single-customer) auth.
-            'login_customer_id' => env('LODGELY_GOOGLE_ADS_LOGIN_CUSTOMER_ID', ''),
-            'customer_id' => env('LODGELY_GOOGLE_ADS_CUSTOMER_ID', ''),
-            'api_version' => env('LODGELY_GOOGLE_ADS_API_VERSION', 'v18'),
+            'login_customer_id' => env('BEACON_GOOGLE_ADS_LOGIN_CUSTOMER_ID', ''),
+            'customer_id' => env('BEACON_GOOGLE_ADS_CUSTOMER_ID', ''),
+            'api_version' => env('BEACON_GOOGLE_ADS_API_VERSION', 'v18'),
         ],
     ],
 
@@ -183,14 +183,14 @@ return [
         // the AI menu exist without touching .env — nothing is sent to a model
         // until an operator enables AI and picks a provider on /settings/ai
         // (the per-tenant `enabled` toggle is the normal on/off switch).
-        'enabled' => (bool) env('LODGELY_AI_ENABLED', true),
+        'enabled' => (bool) env('BEACON_AI_ENABLED', true),
 
         // Maximum number of *completed* AI generations per tenant per day.
         // Set to 0 to disable the cap.
-        'max_calls_per_day' => (int) env('LODGELY_AI_MAX_CALLS_PER_DAY', 100),
+        'max_calls_per_day' => (int) env('BEACON_AI_MAX_CALLS_PER_DAY', 100),
 
         // HTTP timeout for a single provider call, in seconds.
-        'request_timeout_sec' => (int) env('LODGELY_AI_TIMEOUT', 60),
+        'request_timeout_sec' => (int) env('BEACON_AI_TIMEOUT', 60),
 
         // Per-provider defaults, used when an admin leaves the base URL or
         // model blank on the AI settings page.

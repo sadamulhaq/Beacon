@@ -1,6 +1,6 @@
-# Minimal Caddy config for lodgely.
+# Minimal Caddy config for beacon.
 #
-# Local development: served plain HTTP on the host port set via LODGELY_HTTP_PORT.
+# Local development: served plain HTTP on the host port set via BEACON_HTTP_PORT.
 # Production: replace `:80` with your real hostname (e.g. leads.example.com)
 # and Caddy will obtain a Let's Encrypt cert automatically.
 

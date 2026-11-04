@@ -57,7 +57,7 @@ class GoogleAdsSource implements AdMetricsSource
         $loginCustomerId = (string) preg_replace('/\D/', '', $settings->effectiveGoogleLoginCustomerId());
         $developerToken = trim($settings->effectiveGoogleDeveloperToken());
         $apiVersion = trim($settings->effectiveGoogleApiVersion());
-        $timeout = (int) config('lodgely.reporting.http_timeout_sec', 30);
+        $timeout = (int) config('beacon.reporting.http_timeout_sec', 30);
 
         if ($customerId === '' || $developerToken === '') {
             throw new RuntimeException(

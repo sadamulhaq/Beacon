@@ -36,7 +36,7 @@ class DemoDataPage extends Component
         if ($result['already_loaded']) {
             $this->dispatch('toast', message: __('Demo data is already loaded.'));
         } else {
-            Log::info('lodgely.demo.loaded', [
+            Log::info('beacon.demo.loaded', [
                 'user_id' => auth()->id(),
                 'created_leads' => $result['created_leads'],
                 'created_users' => $result['created_users'],
@@ -54,7 +54,7 @@ class DemoDataPage extends Component
 
         $result = $manager->unload();
 
-        Log::info('lodgely.demo.unloaded', [
+        Log::info('beacon.demo.unloaded', [
             'user_id' => auth()->id(),
             'deleted_leads' => $result['deleted_leads'],
             'deleted_users' => $result['deleted_users'],

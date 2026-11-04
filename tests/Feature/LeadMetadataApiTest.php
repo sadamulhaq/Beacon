@@ -16,8 +16,8 @@ use Tests\TestCase;
 
 /**
  * Contract test for `GET /api/v1/lead-metadata` (LG-15), the feed vigilo
- * reads. The shape follows vigilo's docs/LODGELY-CONTRACT.md (contract v1);
- * the PII test is the one the contract asks lodgely to keep.
+ * reads. The shape follows vigilo's docs/BEACON-CONTRACT.md (contract v1);
+ * the PII test is the one the contract asks beacon to keep.
  */
 class LeadMetadataApiTest extends TestCase
 {
@@ -35,7 +35,7 @@ class LeadMetadataApiTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'lodgely']);
+        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'beacon']);
         [, $this->token] = ApiToken::issue(Tenant::DEFAULT_ID, 'vigilo', [ApiTokenScope::LeadMetadataRead]);
     }
 
@@ -321,7 +321,7 @@ class LeadMetadataApiTest extends TestCase
         $this->feed()->assertOk();
 
         Log::shouldHaveReceived('info')->withArgs(function (string $message, array $context) {
-            return $message === 'lodgely.api.lead_metadata'
+            return $message === 'beacon.api.lead_metadata'
                 && $context['client'] === 'kanzlei-brenner-partner'
                 && $context['rows'] === 1
                 && is_int($context['api_token_id'])

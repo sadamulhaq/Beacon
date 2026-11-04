@@ -1,6 +1,6 @@
 @php
-    $github = config('lodgely.brand.github_url');
-    $vidual = config('lodgely.brand.vidual_url');
+    $github = config('beacon.brand.github_url');
+    $vidual = config('beacon.brand.vidual_url');
     // No version number here: this page is public, and the exact version
     // tells a scanner which advisories to try. Signed-in users see it in the
     // app footer.
@@ -27,7 +27,7 @@
 
     $marquee = ['Meta Lead Ads', 'Google Sheets', 'Webhooks', 'IMAP', 'CSV', 'OpenFlow', 'Meta Marketing API', 'Google Ads API', 'Ollama', 'OpenAI-compatible', 'PostgreSQL', 'Docker', 'SMTP', 'NDJSON'];
 
-    $statement = 'lodgely is the layer *before* your CRM. No deals, no pipelines, no forecasts — just every incoming lead, *normalized,* *deduplicated* and in front of the right person within minutes.';
+    $statement = 'beacon is the layer *before* your CRM. No deals, no pipelines, no forecasts — just every incoming lead, *normalized,* *deduplicated* and in front of the right person within minutes.';
 
     $stats = [
         [7, 'lead sources'],
@@ -39,7 +39,7 @@
     // [kind, text] — "cmd" lines are what the copy button puts on the clipboard.
     $terminal = [
         ['cmt', '# 1 · clone and configure'],
-        ['cmd', 'git clone https://github.com/vidual-labs/lodgely.git && cd lodgely'],
+        ['cmd', 'git clone https://github.com/sadamulhaq/Beacon.git && cd beacon'],
         ['cmd', 'cp .env.example .env   # set APP_URL + DB_PASSWORD first'],
         ['cmt', '# 2 · postgres, app, queue worker, scheduler, caddy'],
         ['cmd', 'docker compose up -d --build'],
@@ -49,7 +49,7 @@
         ['cmd', 'docker compose exec app php artisan key:generate'],
         ['cmd', 'docker compose exec app php artisan migrate --seed'],
         ['cmd', 'docker compose exec app npm ci && docker compose exec app npm run build'],
-        ['out', '✓ lodgely is up — open your APP_URL and sign in'],
+        ['out', '✓ beacon is up — open your APP_URL and sign in'],
     ];
     $terminalCopy = collect($terminal)->where(0, 'cmd')->pluck(1)->implode("\n");
 @endphp
@@ -58,7 +58,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>lodgely — the open-source lead intake hub</title>
+    <title>beacon — the open-source lead intake hub</title>
     <meta name="description" content="Self-hosted lead intake for technical marketers: Meta Lead Ads, Google Sheets, webhooks, IMAP, CSV and OpenFlow in one deduplicated, GDPR-aware inbox — with ad-spend reporting and client portals.">
     <meta name="theme-color" content="#050507">
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
@@ -71,7 +71,7 @@
 {{-- ───────────── Nav ───────────── --}}
 <header class="nav">
     <div class="shell">
-        <a href="#top" class="brand" aria-label="lodgely home">
+        <a href="#top" class="brand" aria-label="beacon home">
             <svg viewBox="8 8 44 44" aria-hidden="true">
                 <defs>
                     <linearGradient id="lg-ic" x1="14" y1="14" x2="46" y2="46" gradientUnits="userSpaceOnUse">
@@ -86,7 +86,7 @@
                     @endfor
                 @endforeach
             </svg>
-            lodgely
+            beacon
         </a>
         <nav class="nav-links" aria-label="Sections">
             <a href="#features">Features</a>
@@ -124,13 +124,13 @@
                 @endforeach
             </h1>
             <p class="lead-text">
-                lodgely pulls leads from Meta Lead Ads, Google Sheets, webhooks, IMAP, CSV and OpenFlow
+                beacon pulls leads from Meta Lead Ads, Google Sheets, webhooks, IMAP, CSV and OpenFlow
                 into one deduplicated, GDPR-aware inbox — with ad-spend reporting and client portals built in.
                 Deliberately not a CRM.
             </p>
             <div class="hero-ctas">
                 <a href="#deploy" class="btn btn-solid">
-                    Deploy lodgely
+                    Deploy beacon
                     <svg class="arrow" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
                 </a>
                 <a href="{{ $github }}" target="_blank" rel="noopener" class="btn btn-ghost">
@@ -149,7 +149,7 @@
 
             {{-- Sources → inbox. The wires are drawn by scripts.blade.php from the
                  live chip positions, so the diagram survives any font / layout. --}}
-            <div class="flow" id="flow" aria-label="Leads flowing from seven sources into the lodgely inbox" role="img">
+            <div class="flow" id="flow" aria-label="Leads flowing from seven sources into the beacon inbox" role="img">
                 <div class="sources">
                     @foreach ($sources as [$label, $color])
                         <div class="src" data-src="{{ $label }}" style="--c: {{ $color }}"><i></i>{{ $label }}</div>
@@ -207,7 +207,7 @@
     @include('landing.partials.features')
 
     {{-- ───────────── Stats ───────────── --}}
-    <section class="sec stats" aria-label="lodgely in numbers">
+    <section class="sec stats" aria-label="beacon in numbers">
         @foreach ($stats as $n => [$value, $label])
             <div class="stat reveal" style="--d: {{ $n * 90 }}ms">
                 <div class="num" data-count="{{ $value }}">{{ $value }}</div>
@@ -287,18 +287,18 @@
 <div class="panel" id="tab-env" role="tabpanel" aria-labelledby="t-env"><pre><code><span class="tk-v">APP_URL</span>=<span class="tk-s">https://leads.example.com</span>
 
 <span class="tk-c"># Compliance defaults</span>
-<span class="tk-v">LODGELY_DEFAULT_RETENTION_DAYS</span>=<span class="tk-n">365</span>
-<span class="tk-v">LODGELY_BACKUP_PASSPHRASE</span>=<span class="tk-s">change-me</span>
+<span class="tk-v">BEACON_DEFAULT_RETENTION_DAYS</span>=<span class="tk-n">365</span>
+<span class="tk-v">BEACON_BACKUP_PASSPHRASE</span>=<span class="tk-s">change-me</span>
 
 <span class="tk-c"># Intake + reporting</span>
-<span class="tk-v">LODGELY_EMAIL_IMPORT_DRIVER</span>=<span class="tk-s">imap</span>
-<span class="tk-v">LODGELY_AD_METRICS_SOURCES</span>=<span class="tk-s">meta,google</span>
+<span class="tk-v">BEACON_EMAIL_IMPORT_DRIVER</span>=<span class="tk-s">imap</span>
+<span class="tk-v">BEACON_AD_METRICS_SOURCES</span>=<span class="tk-s">meta,google</span>
 
 <span class="tk-c"># Opt-out kill-switch — AI stays inert until an operator turns it on in the UI</span>
-<span class="tk-v">LODGELY_AI_ENABLED</span>=<span class="tk-k">false</span>
+<span class="tk-v">BEACON_AI_ENABLED</span>=<span class="tk-k">false</span>
 
 <span class="tk-c"># This page. false = "/" goes straight to the login.</span>
-<span class="tk-v">LODGELY_LANDING_ENABLED</span>=<span class="tk-k">true</span></code></pre></div>
+<span class="tk-v">BEACON_LANDING_ENABLED</span>=<span class="tk-k">true</span></code></pre></div>
             </div>
         </div>
     </section>
@@ -324,7 +324,7 @@
                     </li>
                 </ol>
                 <p class="note reveal" style="--d: 340ms">
-                    Rather have the login as your front door? Set <code>LODGELY_LANDING_ENABLED=false</code> in <code>.env</code>
+                    Rather have the login as your front door? Set <code>BEACON_LANDING_ENABLED=false</code> in <code>.env</code>
                     and <code>/</code> goes straight to the inbox.
                     <a href="{{ $github }}#quick-start-docker" target="_blank" rel="noopener" style="color: var(--text); text-decoration: underline; text-underline-offset: 3px;">Full install guide →</a>
                 </p>
@@ -333,7 +333,7 @@
             <div class="window term reveal" style="--d: 120ms">
                 <div class="window-bar">
                     <span class="lights" aria-hidden="true"><span></span><span></span><span></span></span>
-                    <span class="mono" style="font-size: 12px; color: var(--dim);">~/lodgely — zsh</span>
+                    <span class="mono" style="font-size: 12px; color: var(--dim);">~/beacon — zsh</span>
                     <button type="button" class="copy" data-copy="{{ $terminalCopy }}" aria-label="Copy install commands">
                         <svg class="idle" width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><rect x="5" y="5" width="9" height="9" rx="1.5"/><path d="M11 5V3.5A1.5 1.5 0 009.5 2h-6A1.5 1.5 0 002 3.5v6A1.5 1.5 0 003.5 11H5"/></svg>
                         <svg class="ok" width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 8.5l3 3 7-7"/></svg>
@@ -352,10 +352,10 @@
             <div class="glow glow-b"></div>
         </div>
         <div class="cta-inner">
-            <a href="{{ $vidual }}" target="_blank" rel="noopener" class="by reveal"><b>vidual</b> lodgely is built &amp; maintained by vidual</a>
-            <h2 class="reveal" style="--d: 80ms">Get the most<br><span class="grad">out of lodgely.</span></h2>
+            <a href="{{ $vidual }}" target="_blank" rel="noopener" class="by reveal"><b>vidual</b> beacon is built &amp; maintained by vidual</a>
+            <h2 class="reveal" style="--d: 80ms">Get the most<br><span class="grad">out of beacon.</span></h2>
             <p class="lead-text reveal" style="--d: 160ms">
-                Open source means you can run it yourself. When you’d rather not, the team behind lodgely
+                Open source means you can run it yourself. When you’d rather not, the team behind beacon
                 sets it up, connects your ad accounts and lead sources, builds custom adapters and keeps it
                 running — so your people work leads, not infrastructure.
             </p>
@@ -379,8 +379,8 @@
     <footer class="sec">
         <div class="pad-sm foot">
             <div>
-                <a href="#top" class="brand" aria-label="lodgely" style="color: var(--text);"><x-brand-logo height="26px" /></a>
-                <p class="tag">{{ config('lodgely.brand.tagline') }} The open-source lead intake hub for agencies and in-house marketing teams.</p>
+                <a href="#top" class="brand" aria-label="beacon" style="color: var(--text);"><x-brand-logo height="26px" /></a>
+                <p class="tag">{{ config('beacon.brand.tagline') }} The open-source lead intake hub for agencies and in-house marketing teams.</p>
             </div>
             <div>
                 <h4>Product</h4>
@@ -411,7 +411,7 @@
         </div>
         <div class="sec legal">
             <span>© {{ date('Y') }} <a href="{{ $vidual }}" target="_blank" rel="noopener">vidual</a> · GPL-3.0</span>
-            <span>lodgely</span>
+            <span>beacon</span>
         </div>
     </footer>
 </div>

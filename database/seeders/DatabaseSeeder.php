@@ -18,7 +18,7 @@ class DatabaseSeeder extends Seeder
         // Default tenant — single-tenant MVP, but schema is ready for more.
         Tenant::firstOrCreate(
             ['id' => Tenant::DEFAULT_ID],
-            ['slug' => 'default', 'name' => config('lodgely.brand.name')],
+            ['slug' => 'default', 'name' => config('beacon.brand.name')],
         );
 
         // Operator account (e.g. the agency / inhouse marketing lead).

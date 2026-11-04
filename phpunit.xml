@@ -27,6 +27,6 @@
         <env name="MAIL_MAILER" value="array"/>
         <env name="QUEUE_CONNECTION" value="sync"/>
         <env name="SESSION_DRIVER" value="array"/>
-        <env name="LODGELY_DEFAULT_RETENTION_DAYS" value="365"/>
+        <env name="BEACON_DEFAULT_RETENTION_DAYS" value="365"/>
     </php>
 </phpunit>

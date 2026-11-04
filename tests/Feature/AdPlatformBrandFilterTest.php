@@ -24,7 +24,7 @@ class AdPlatformBrandFilterTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'lodgely']);
+        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'beacon']);
     }
 
     private function operator(): User

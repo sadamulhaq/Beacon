@@ -10,7 +10,7 @@ use Illuminate\Console\Command;
 
 class ImportEmailsImap extends Command
 {
-    protected $signature = 'lodgely:import:email-imap
+    protected $signature = 'beacon:import:email-imap
         {--client= : Override default client name for this pull}
         {--campaign= : Override default campaign name for this pull}
         {--max= : Maximum unseen messages to process (default: config value)}';
@@ -19,8 +19,8 @@ class ImportEmailsImap extends Command
 
     public function handle(ImportRunner $runner, ImapLeadSource $source): int
     {
-        if (empty(config('lodgely.importers.email.imap.host'))) {
-            $this->error('IMAP is not configured. Set LODGELY_IMAP_HOST (and related vars) in your .env.');
+        if (empty(config('beacon.importers.email.imap.host'))) {
+            $this->error('IMAP is not configured. Set BEACON_IMAP_HOST (and related vars) in your .env.');
 
             return self::FAILURE;
         }

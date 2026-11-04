@@ -6,7 +6,7 @@ use App\Models\AiSummary;
 
 /**
  * The per-tenant daily cap on completed AI generations
- * (LODGELY_AI_MAX_CALLS_PER_DAY). Shared by every kind — manual summaries,
+ * (BEACON_AI_MAX_CALLS_PER_DAY). Shared by every kind — manual summaries,
  * lead qualification and the automatic lead ranker all count against the
  * same budget, so a batch of rankings can never starve an operator's
  * report summary beyond what the cap allows.
@@ -15,7 +15,7 @@ class DailyCap
 {
     public function cap(): int
     {
-        return max(0, (int) config('lodgely.ai.max_calls_per_day', 100));
+        return max(0, (int) config('beacon.ai.max_calls_per_day', 100));
     }
 
     /** Completed generations (rows with a response) for this tenant today. */

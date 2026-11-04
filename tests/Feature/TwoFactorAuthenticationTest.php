@@ -26,7 +26,7 @@ class TwoFactorAuthenticationTest extends TestCase
 
     private function makeUser(string $role = 'operator', array $overrides = []): User
     {
-        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'lodgely']);
+        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'beacon']);
 
         return User::create(array_merge([
             'name'      => 'Olive',
@@ -305,7 +305,7 @@ class TwoFactorAuthenticationTest extends TestCase
     {
         $user = $this->enrolledUser();
 
-        $this->artisan('lodgely:user:2fa-reset', ['email' => 'olive@example.com', '--force' => true])
+        $this->artisan('beacon:user:2fa-reset', ['email' => 'olive@example.com', '--force' => true])
             ->assertSuccessful();
 
         $this->assertFalse($user->fresh()->hasTwoFactorEnabled());

@@ -1,5 +1,5 @@
 {{--
-    The lodgely logo: dotted staircase icon + "lodgely" wordmark, drawn inline so
+    The beacon logo: dotted staircase icon + "beacon" wordmark, drawn inline so
     the wordmark takes the surrounding text colour (dark on light, light on dark)
     instead of shipping two images. The wordmark is Inter SemiBold converted to
     outlines, so it looks the same whatever fonts the viewer has. Static copies
@@ -10,7 +10,7 @@
 --}}
 @props(['height' => '1.75rem'])
 @php($gid = 'brand-ic-'.\Illuminate\Support\Str::random(8))
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="1.009 2.409 97.596 23.982" role="img" aria-label="lodgely"
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="1.009 2.409 97.596 23.982" role="img" aria-label="beacon"
      {{ $attributes->merge(['class' => 'text-slate-900 dark:text-slate-50', 'style' => "height: {$height}; width: auto; display: block;"]) }}>
     <defs>
         <linearGradient id="{{ $gid }}" x1="3.545" y1="4.945" x2="22.455" y2="23.855" gradientUnits="userSpaceOnUse">

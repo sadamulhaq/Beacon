@@ -45,7 +45,7 @@ class BackupsPage extends Component
         try {
             $backup = $manager->create();
 
-            Log::info('lodgely.backup.created', [
+            Log::info('beacon.backup.created', [
                 'user_id' => auth()->id(),
                 'filename' => $backup['filename'],
                 'size' => $backup['size'],
@@ -56,7 +56,7 @@ class BackupsPage extends Component
                 'size' => $this->humanSize($backup['size']),
             ]);
         } catch (Throwable $e) {
-            Log::error('lodgely.backup.create_failed', ['user_id' => auth()->id(), 'error' => $e->getMessage()]);
+            Log::error('beacon.backup.create_failed', ['user_id' => auth()->id(), 'error' => $e->getMessage()]);
             $this->error = __('Could not create a backup: :error', ['error' => $e->getMessage()]);
         }
     }
@@ -68,7 +68,7 @@ class BackupsPage extends Component
 
         $manager->delete($filename);
 
-        Log::info('lodgely.backup.deleted', ['user_id' => auth()->id(), 'filename' => $filename]);
+        Log::info('beacon.backup.deleted', ['user_id' => auth()->id(), 'filename' => $filename]);
 
         $this->notice = __('Deleted :name.', ['name' => $filename]);
     }
@@ -99,14 +99,14 @@ class BackupsPage extends Component
         $absolute = storage_path('app/private/'.$storedPath);
 
         try {
-            Log::warning('lodgely.backup.restore_started', [
+            Log::warning('beacon.backup.restore_started', [
                 'user_id' => auth()->id(),
                 'original_name' => $this->restoreFile->getClientOriginalName(),
             ]);
 
             $manager->restore($absolute);
 
-            Log::warning('lodgely.backup.restore_finished', ['user_id' => auth()->id()]);
+            Log::warning('beacon.backup.restore_finished', ['user_id' => auth()->id()]);
 
             // The dump just dropped and recreated every table, including
             // sessions — the current session is no longer valid. Send the
@@ -119,7 +119,7 @@ class BackupsPage extends Component
             $this->redirectRoute('login', navigate: false);
             return;
         } catch (Throwable $e) {
-            Log::error('lodgely.backup.restore_failed', ['user_id' => auth()->id(), 'error' => $e->getMessage()]);
+            Log::error('beacon.backup.restore_failed', ['user_id' => auth()->id(), 'error' => $e->getMessage()]);
             $this->error = __('Restore failed: :error', ['error' => $e->getMessage()]);
         } finally {
             $this->isWorking = false;

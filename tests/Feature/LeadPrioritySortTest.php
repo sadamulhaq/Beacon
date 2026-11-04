@@ -22,7 +22,7 @@ class LeadPrioritySortTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'lodgely']);
+        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'beacon']);
 
         foreach ([LeadPriority::Medium, LeadPriority::High, LeadPriority::Low] as $priority) {
             Lead::create([

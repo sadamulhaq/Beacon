@@ -2,11 +2,11 @@
     <div>
         <h1 class="text-xl font-semibold text-slate-900 dark:text-slate-50">{{ __('CSV import') }}</h1>
         <p class="text-sm text-slate-500 dark:text-slate-400">
-            Upload a UTF-8 CSV with a header row. lodgely recognizes common column names
+            Upload a UTF-8 CSV with a header row. beacon recognizes common column names
             (<code class="text-xs dark:text-slate-300">name</code>, <code class="text-xs dark:text-slate-300">email</code>,
              <code class="text-xs dark:text-slate-300">phone</code>, <code class="text-xs dark:text-slate-300">message</code>,
              <code class="text-xs dark:text-slate-300">client</code>, <code class="text-xs dark:text-slate-300">campaign</code>).
-            {{ __('Max :rows rows per file.', ['rows' => number_format(config('lodgely.importers.csv.max_rows'))]) }}
+            {{ __('Max :rows rows per file.', ['rows' => number_format(config('beacon.importers.csv.max_rows'))]) }}
         </p>
     </div>
 

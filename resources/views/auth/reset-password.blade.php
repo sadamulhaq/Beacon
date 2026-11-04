@@ -1,7 +1,7 @@
 <x-layouts.guest>
     <div class="w-full max-w-sm">
         <div class="mb-6 text-center">
-            <a href="{{ url('/') }}" aria-label="{{ config('lodgely.brand.name') }}" style="display: inline-block;">
+            <a href="{{ url('/') }}" aria-label="{{ config('beacon.brand.name') }}" style="display: inline-block;">
                 <x-brand-logo height="2.5rem" />
             </a>
             <p class="mt-3 text-sm text-slate-500 dark:text-slate-400">{{ __('Choose a new password') }}</p>

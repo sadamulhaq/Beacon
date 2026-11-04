@@ -15,7 +15,7 @@ class FetchOpenflow extends Command
 {
     use FetchesRecurringLeadSources;
 
-    protected $signature = 'lodgely:openflow:fetch
+    protected $signature = 'beacon:openflow:fetch
         {--source= : Only fetch a specific OpenFlow source ID}
         {--force  : Fetch even if not yet due}';
 

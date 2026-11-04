@@ -51,7 +51,7 @@ class TwoFactorChallengeController extends Controller
         } elseif ($recovery !== '' && $twoFactor->useRecoveryCode($user, $recovery)) {
             $usedRecovery = true;
         } else {
-            Log::warning('lodgely.auth.two_factor_failed', ['user_id' => $user->id, 'ip' => $request->ip()]);
+            Log::warning('beacon.auth.two_factor_failed', ['user_id' => $user->id, 'ip' => $request->ip()]);
 
             throw ValidationException::withMessages([
                 'code' => __('That code is not valid. Try again, or use a recovery code.'),
@@ -63,7 +63,7 @@ class TwoFactorChallengeController extends Controller
         Auth::login($user, (bool) ($pending['remember'] ?? false));
         $request->session()->regenerate();
 
-        Log::info('lodgely.auth.login', [
+        Log::info('beacon.auth.login', [
             'user_id'       => $user->id,
             'ip'            => $request->ip(),
             'two_factor'    => true,

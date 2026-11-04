@@ -12,8 +12,8 @@ use Throwable;
 
 /**
  * The shared body of the recurring-source fetch commands
- * (`lodgely:google-sheets:fetch`, `lodgely:meta-leads:fetch`,
- * `lodgely:openflow:fetch`).
+ * (`beacon:google-sheets:fetch`, `beacon:meta-leads:fetch`,
+ * `beacon:openflow:fetch`).
  *
  * All three do exactly the same thing — walk the tenant's active source rows,
  * skip the ones that aren't due, open an Import, hand it to the runner, and

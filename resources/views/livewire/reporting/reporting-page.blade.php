@@ -49,7 +49,7 @@
                 @endforeach
             </div>
 
-            {{-- Client filter (operators only). Clients in lodgely are just the
+            {{-- Client filter (operators only). Clients in beacon are just the
                  distinct client_name values on leads; this scopes lead figures by
                  client_name and ad spend by the campaigns those leads carry. --}}
             @if(auth()->user()->isOperator() && count($clientOptions))
@@ -118,8 +118,8 @@
                 tone="emerald"
             />
             <x-kpi-card
-                label="{{ __('Lodgely leads') }}"
-                value="{{ number_format($kpis['total_lodgely_leads']) }}"
+                label="{{ __('Beacon leads') }}"
+                value="{{ number_format($kpis['total_beacon_leads']) }}"
                 tone="amber"
             />
         </div>
@@ -146,7 +146,7 @@
                 ['title' => __('Clicks'),         'tone' => 'slate',   'key' => 'clicks',         'money' => false],
                 ['title' => __('Impressions'),    'tone' => 'slate',   'key' => 'impressions',    'money' => false],
                 ['title' => __('Platform leads'), 'tone' => 'emerald', 'key' => 'platform_leads', 'money' => false],
-                ['title' => __('Lodgely leads'),  'tone' => 'amber',   'key' => 'lodgely_leads',  'money' => false],
+                ['title' => __('Beacon leads'),  'tone' => 'amber',   'key' => 'beacon_leads',  'money' => false],
             ];
         @endphp
 
@@ -188,7 +188,7 @@
                             <th class="px-3 py-2.5 text-right">{{ __('Spend') }}</th>
                             <th class="px-3 py-2.5 text-right">{{ __('CPL') }}</th>
                             <th class="px-3 py-2.5 text-right">{{ __('Platform leads') }}</th>
-                            <th class="px-3 py-2.5 text-right">{{ __('Lodgely leads') }}</th>
+                            <th class="px-3 py-2.5 text-right">{{ __('Beacon leads') }}</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
@@ -213,7 +213,7 @@
                                 <td class="px-3 py-2.5 text-right text-slate-800 dark:text-slate-200 tabular-nums font-medium">{{ \App\Support\Money::fromCents($row->spend_cents, $row->currency) }}</td>
                                 <td class="px-3 py-2.5 text-right text-slate-600 dark:text-slate-400 tabular-nums">{{ $rowCpl }}</td>
                                 <td class="px-3 py-2.5 text-right text-slate-600 dark:text-slate-400 tabular-nums">{{ number_format($row->platform_leads) }}</td>
-                                <td class="px-3 py-2.5 text-right text-slate-600 dark:text-slate-400 tabular-nums">{{ number_format($row->lodgely_leads) }}</td>
+                                <td class="px-3 py-2.5 text-right text-slate-600 dark:text-slate-400 tabular-nums">{{ number_format($row->beacon_leads) }}</td>
                             </tr>
                         @empty
                             <tr>
@@ -281,7 +281,7 @@
         @endif
     @endif
 
-    {{-- Lead source breakdown (always shown, from lodgely's own data) --}}
+    {{-- Lead source breakdown (always shown, from beacon's own data) --}}
     @if($bySource->isNotEmpty())
         <div>
             <h2 class="text-sm font-semibold text-slate-900 dark:text-slate-50 mb-2">{{ __('Leads by source') }}</h2>

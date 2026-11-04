@@ -20,7 +20,7 @@ class ReportingClientFilterTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'lodgely']);
+        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'beacon']);
     }
 
     private function seedSpend(string $campaignId, int $spendCents, int $clicks = 10): void
@@ -66,18 +66,18 @@ class ReportingClientFilterTest extends TestCase
         // Unscoped: everything.
         $all = $rollup->kpis(Tenant::DEFAULT_ID, $from, $to);
         $this->assertSame(500_00, $all['total_spend_cents']);
-        $this->assertSame(3, $all['total_lodgely_leads']);
+        $this->assertSame(3, $all['total_beacon_leads']);
 
         // Scoped to Acme: only C1 spend, only Acme leads.
         $acme = $rollup->kpis(Tenant::DEFAULT_ID, $from, $to, null, 'Acme');
         $this->assertSame(100_00, $acme['total_spend_cents']);
-        $this->assertSame(2, $acme['total_lodgely_leads']);
+        $this->assertSame(2, $acme['total_beacon_leads']);
 
         // By-campaign rollup for Acme returns only C1.
         $campaigns = $rollup->forTenant(Tenant::DEFAULT_ID, $from, $to, null, 'Acme');
         $this->assertCount(1, $campaigns);
         $this->assertSame('C1', $campaigns->first()->campaign_id);
-        $this->assertSame(2, $campaigns->first()->lodgely_leads);
+        $this->assertSame(2, $campaigns->first()->beacon_leads);
     }
 
     public function test_client_filter_is_case_insensitive(): void
@@ -91,7 +91,7 @@ class ReportingClientFilterTest extends TestCase
 
         $kpis = $rollup->kpis(Tenant::DEFAULT_ID, $from, $to, null, 'acme');
         $this->assertSame(100_00, $kpis['total_spend_cents']);
-        $this->assertSame(1, $kpis['total_lodgely_leads']);
+        $this->assertSame(1, $kpis['total_beacon_leads']);
     }
 
     public function test_client_with_no_campaign_leads_yields_zero_spend(): void
@@ -106,7 +106,7 @@ class ReportingClientFilterTest extends TestCase
 
         $kpis = $rollup->kpis(Tenant::DEFAULT_ID, $from, $to, null, 'Acme');
         $this->assertSame(0, $kpis['total_spend_cents']);
-        $this->assertSame(1, $kpis['total_lodgely_leads']);
+        $this->assertSame(1, $kpis['total_beacon_leads']);
         $this->assertFalse($kpis['has_data']);
     }
 

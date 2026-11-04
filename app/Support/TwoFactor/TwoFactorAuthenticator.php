@@ -43,7 +43,7 @@ class TwoFactorAuthenticator
     public function otpauthUrl(User $user, string $secret): string
     {
         return $this->google2fa->getQRCodeUrl(
-            (string) config('lodgely.brand.name', 'lodgely'),
+            (string) config('beacon.brand.name', 'beacon'),
             $user->email,
             $secret,
         );

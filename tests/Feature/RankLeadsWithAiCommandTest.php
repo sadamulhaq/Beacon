@@ -20,8 +20,8 @@ class RankLeadsWithAiCommandTest extends TestCase
 
     private function bootstrap(bool $on = true, int $batch = 25): void
     {
-        config()->set('lodgely.ai.enabled', true);
-        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'lodgely']);
+        config()->set('beacon.ai.enabled', true);
+        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'beacon']);
 
         $row = AiSetting::forTenant(Tenant::DEFAULT_ID);
         $row->enabled = $on;
@@ -67,7 +67,7 @@ class RankLeadsWithAiCommandTest extends TestCase
         ]);
         $old->forceFill(['created_at' => now()->subDays(2)])->save();
 
-        $this->artisan('lodgely:ai:rank-leads')
+        $this->artisan('beacon:ai:rank-leads')
             ->expectsOutputToContain('Queued 2 lead(s)')
             ->assertSuccessful();
 
@@ -88,17 +88,17 @@ class RankLeadsWithAiCommandTest extends TestCase
             $this->lead();
         }
 
-        $this->artisan('lodgely:ai:rank-leads')->expectsOutputToContain('Queued 2 lead(s)')->assertSuccessful();
-        $this->artisan('lodgely:ai:rank-leads', ['--limit' => 1])->expectsOutputToContain('Queued 1 lead(s)')->assertSuccessful();
+        $this->artisan('beacon:ai:rank-leads')->expectsOutputToContain('Queued 2 lead(s)')->assertSuccessful();
+        $this->artisan('beacon:ai:rank-leads', ['--limit' => 1])->expectsOutputToContain('Queued 1 lead(s)')->assertSuccessful();
 
         // Two of today's rows already have a response → with a cap of 3 only one call is left.
-        config()->set('lodgely.ai.max_calls_per_day', 3);
+        config()->set('beacon.ai.max_calls_per_day', 3);
         AiSummary::query()->limit(2)->get()->each(fn (AiSummary $s) => $s->forceFill(['response' => '{}'])->save());
 
-        $this->artisan('lodgely:ai:rank-leads')->expectsOutputToContain('Queued 1 lead(s)')->assertSuccessful();
+        $this->artisan('beacon:ai:rank-leads')->expectsOutputToContain('Queued 1 lead(s)')->assertSuccessful();
 
         AiSummary::query()->get()->each(fn (AiSummary $s) => $s->forceFill(['response' => '{}'])->save());
-        $this->artisan('lodgely:ai:rank-leads')->expectsOutputToContain('cap reached')->assertSuccessful();
+        $this->artisan('beacon:ai:rank-leads')->expectsOutputToContain('cap reached')->assertSuccessful();
 
         Queue::assertPushed(RankLeadWithAi::class, 4);
     }
@@ -109,11 +109,11 @@ class RankLeadsWithAiCommandTest extends TestCase
         $this->bootstrap(on: false);
         $this->lead();
 
-        $this->artisan('lodgely:ai:rank-leads')->expectsOutputToContain('Skipped')->assertSuccessful();
+        $this->artisan('beacon:ai:rank-leads')->expectsOutputToContain('Skipped')->assertSuccessful();
         Queue::assertNothingPushed();
 
         $this->bootstrap(on: true);
-        $this->artisan('lodgely:ai:rank-leads', ['--dry-run' => true])->expectsOutputToContain('Would rank lead(s)')->assertSuccessful();
+        $this->artisan('beacon:ai:rank-leads', ['--dry-run' => true])->expectsOutputToContain('Would rank lead(s)')->assertSuccessful();
         Queue::assertNothingPushed();
         $this->assertSame(0, AiSummary::count());
     }

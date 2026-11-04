@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Schema;
 
 /**
  * Per-tenant AI provider configuration. One row per tenant; the global
- * kill-switch lives in config (LODGELY_AI_ENABLED) independently of
+ * kill-switch lives in config (BEACON_AI_ENABLED) independently of
  * tenant-level `enabled`.
  *
  * `api_key_encrypted` is the ciphertext produced by Crypt::encryptString();

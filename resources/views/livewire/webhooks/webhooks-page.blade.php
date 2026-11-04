@@ -3,7 +3,7 @@
         <div>
             <h1 class="text-xl font-semibold text-slate-900 dark:text-slate-50">{{ __('Webhook endpoints') }}</h1>
             <p class="text-sm text-slate-500 dark:text-slate-400">
-                {{ __('Each endpoint has a unique URL. POST a JSON payload to it and lodgely ingests the lead immediately.') }}
+                {{ __('Each endpoint has a unique URL. POST a JSON payload to it and beacon ingests the lead immediately.') }}
             </p>
         </div>
         <button type="button" wire:click="openCreate"

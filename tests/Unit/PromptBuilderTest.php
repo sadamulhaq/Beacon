@@ -26,7 +26,7 @@ class PromptBuilderTest extends TestCase
             ['view' => ['name' => 'Demo']],
         );
 
-        $this->assertStringContainsString('analyst inside lodgely', $req->system);
+        $this->assertStringContainsString('analyst inside beacon', $req->system);
         $this->assertStringContainsString('## Summary', $req->system);
         $this->assertStringContainsString('## Evaluation', $req->system);
         $this->assertStringContainsString('## Suggested follow-ups', $req->system);
@@ -79,7 +79,7 @@ class PromptBuilderTest extends TestCase
             ['lead_ref' => 'Lead #7'],
         );
 
-        $this->assertStringContainsString('analyst inside lodgely', $req->system);
+        $this->assertStringContainsString('analyst inside beacon', $req->system);
         $this->assertStringContainsString('rank ONE pseudonymized lead', $req->system);
         $this->assertStringContainsString('{"priority":"low|medium|high"', $req->system);
         $this->assertStringContainsString(PromptBuilder::RANKING_NO_PROFILE, $req->system);

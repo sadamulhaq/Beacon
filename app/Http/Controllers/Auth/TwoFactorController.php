@@ -45,7 +45,7 @@ class TwoFactorController extends Controller
             'two_factor_last_used_step'  => null,
         ])->save();
 
-        Log::info('lodgely.auth.two_factor_setup_started', ['user_id' => $user->id]);
+        Log::info('beacon.auth.two_factor_setup_started', ['user_id' => $user->id]);
 
         return $this->back();
     }
@@ -77,7 +77,7 @@ class TwoFactorController extends Controller
             'remember_token'            => Str::random(60),
         ])->save();
 
-        Log::info('lodgely.auth.two_factor_enabled', ['user_id' => $user->id]);
+        Log::info('beacon.auth.two_factor_enabled', ['user_id' => $user->id]);
 
         return $this->back(
             __('Two-factor authentication is on. Store these recovery codes somewhere safe.'),
@@ -110,7 +110,7 @@ class TwoFactorController extends Controller
         $codes = $twoFactor->generateRecoveryCodes();
         $user->forceFill(['two_factor_recovery_codes' => $codes])->save();
 
-        Log::info('lodgely.auth.two_factor_recovery_codes_regenerated', ['user_id' => $user->id]);
+        Log::info('beacon.auth.two_factor_recovery_codes_regenerated', ['user_id' => $user->id]);
 
         return $this->back(__('New recovery codes generated. The old ones no longer work.'), $codes);
     }
@@ -136,7 +136,7 @@ class TwoFactorController extends Controller
 
         $twoFactor->disable($user);
 
-        Log::warning('lodgely.auth.two_factor_disabled', ['user_id' => $user->id, 'by' => 'self']);
+        Log::warning('beacon.auth.two_factor_disabled', ['user_id' => $user->id, 'by' => 'self']);
 
         return $this->back(__('Two-factor authentication is off.'));
     }

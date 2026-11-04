@@ -70,7 +70,7 @@ class LeadExportController extends Controller
         );
 
         $timestamp = now()->format('Ymd-Hi');
-        $filename = "lodgely-leads-{$timestamp}.".($format === 'csv' ? 'csv' : 'ndjson');
+        $filename = "beacon-leads-{$timestamp}.".($format === 'csv' ? 'csv' : 'ndjson');
         $mime = $format === 'csv' ? 'text/csv; charset=UTF-8' : 'application/x-ndjson';
 
         $count = 0;

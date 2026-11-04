@@ -8,7 +8,7 @@ use Illuminate\Console\Command;
 
 class ImportAdMetrics extends Command
 {
-    protected $signature = 'lodgely:import:ad-metrics
+    protected $signature = 'beacon:import:ad-metrics
                             {--platform= : Only run sources for this platform (meta|google)}
                             {--date= : Specific date to import (Y-m-d). Defaults to yesterday.}
                             {--days=1 : Number of days to import, counting back from --date.}';

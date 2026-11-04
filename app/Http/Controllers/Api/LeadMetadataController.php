@@ -62,7 +62,7 @@ class LeadMetadataController extends Controller
         );
 
         // Who read how much — never what.
-        Log::info('lodgely.api.lead_metadata', [
+        Log::info('beacon.api.lead_metadata', [
             'api_token_id' => $token->id,
             'client'       => $clientKey,
             'rows'         => count($page['data']),

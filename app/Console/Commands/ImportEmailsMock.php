@@ -10,7 +10,7 @@ use Illuminate\Console\Command;
 
 class ImportEmailsMock extends Command
 {
-    protected $signature = 'lodgely:import:email-mock
+    protected $signature = 'beacon:import:email-mock
         {--count=3 : Number of mock emails to generate}
         {--client= : Default client name to attribute}';
 

@@ -49,7 +49,7 @@ class GenerateAiSummary implements ShouldQueue
         }
 
         // Re-check global kill-switch — settings could have been turned off between dispatch and pickup.
-        if (! config('lodgely.ai.enabled')) {
+        if (! config('beacon.ai.enabled')) {
             $this->markFailed($summary, $audit, 'AI is disabled at the application level.');
             return;
         }

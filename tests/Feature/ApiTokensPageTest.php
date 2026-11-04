@@ -18,7 +18,7 @@ class ApiTokensPageTest extends TestCase
     {
         parent::setUp();
         $this->withoutVite();
-        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'lodgely']);
+        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'beacon']);
     }
 
     private function user(string $role): User

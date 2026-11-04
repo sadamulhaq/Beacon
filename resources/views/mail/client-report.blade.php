@@ -35,7 +35,7 @@
                             <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
                                 <tr>
                                     <td style="font-size: 18px; font-weight: 600; color:#0f172a;">
-                                        {{ config('lodgely.brand.name', 'lodgely') }}
+                                        {{ config('beacon.brand.name', 'beacon') }}
                                     </td>
                                     <td align="right" style="font-size: 12px; color:#64748b;">
                                         {{ $data['period']['label'] ?? '' }}
@@ -102,7 +102,7 @@
                         <td class="email-pad" style="padding: 28px 28px 24px;">
                             <hr style="border:none; border-top: 1px solid #e2e8f0; margin: 0 0 16px;">
                             <p style="margin: 0; font-size: 12px; color:#94a3b8; line-height: 1.5;">
-                                {{ __('You are receiving this email because :brand sends scheduled report updates to your account.', ['brand' => config('lodgely.brand.name', 'lodgely')]) }}
+                                {{ __('You are receiving this email because :brand sends scheduled report updates to your account.', ['brand' => config('beacon.brand.name', 'beacon')]) }}
                             </p>
                         </td>
                     </tr>

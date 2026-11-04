@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ $title ?? config('lodgely.brand.name') }}</title>
+    <title>{{ $title ?? config('beacon.brand.name') }}</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <script>
         /* Apply dark class immediately to prevent flash of unstyled content.
@@ -37,14 +37,14 @@
 
         <footer class="border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
             <div class="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8 py-3 text-xs text-slate-500 flex flex-col sm:flex-row gap-1 sm:gap-3 sm:justify-between">
-                <span>{{ config('lodgely.brand.name') }} — {{ config('lodgely.brand.tagline') }}</span>
+                <span>{{ config('beacon.brand.name') }} — {{ config('beacon.brand.tagline') }}</span>
                 <span class="inline-flex items-center gap-2">
                     <span>{{ __('Open source · GPL-3.0') }}</span>
                     <span class="text-slate-300 dark:text-slate-700" aria-hidden="true">·</span>
-                    <span class="font-mono tabular-nums">v{{ config('lodgely.version') }}</span>
-                    @if(config('lodgely.brand.github_url'))
+                    <span class="font-mono tabular-nums">v{{ config('beacon.version') }}</span>
+                    @if(config('beacon.brand.github_url'))
                         <span class="text-slate-300 dark:text-slate-700" aria-hidden="true">·</span>
-                        <a href="{{ config('lodgely.brand.github_url') }}"
+                        <a href="{{ config('beacon.brand.github_url') }}"
                            target="_blank" rel="noopener noreferrer"
                            class="inline-flex items-center gap-1 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-colors"
                            aria-label="GitHub">

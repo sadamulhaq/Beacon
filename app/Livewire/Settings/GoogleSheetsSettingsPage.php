@@ -62,7 +62,7 @@ class GoogleSheetsSettingsPage extends Component
             // A new secret invalidates the existing refresh token because
             // the token was issued for the old credential pair.
             $row->setRefreshToken(null);
-            Cache::forget('lodgely.google_sheets.access_token.'.sha1($row->client_id.'|'));
+            Cache::forget('beacon.google_sheets.access_token.'.sha1($row->client_id.'|'));
         }
 
         $row->save();
@@ -78,7 +78,7 @@ class GoogleSheetsSettingsPage extends Component
         $row = GoogleSheetsSetting::forTenant(Tenant::DEFAULT_ID);
 
         Cache::forget(
-            'lodgely.google_sheets.access_token.'.sha1($row->client_id.'|'.($row->refreshToken() ?? ''))
+            'beacon.google_sheets.access_token.'.sha1($row->client_id.'|'.($row->refreshToken() ?? ''))
         );
 
         $row->setRefreshToken(null);
@@ -93,7 +93,7 @@ class GoogleSheetsSettingsPage extends Component
         $this->guardOperator();
 
         try {
-            $config = (array) config('lodgely.importers.google_sheets');
+            $config = (array) config('beacon.importers.google_sheets');
             $timeout = (int) ($config['http_timeout_sec'] ?? 30);
 
             $row = GoogleSheetsSetting::forTenant(Tenant::DEFAULT_ID);

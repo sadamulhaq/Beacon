@@ -42,7 +42,7 @@ class BackupController extends Controller
         try {
             $backup = $manager->create();
 
-            Log::info('lodgely.backup.created', [
+            Log::info('beacon.backup.created', [
                 'user_id' => $request->user()->id,
                 'filename' => $backup['filename'],
                 'size' => $backup['size'],
@@ -56,7 +56,7 @@ class BackupController extends Controller
                 ]),
             );
         } catch (Throwable $e) {
-            Log::error('lodgely.backup.create_failed', ['user_id' => $request->user()->id, 'error' => $e->getMessage()]);
+            Log::error('beacon.backup.create_failed', ['user_id' => $request->user()->id, 'error' => $e->getMessage()]);
 
             return redirect()->route('settings.backups')->with(
                 'backups.error',
@@ -80,7 +80,7 @@ class BackupController extends Controller
             );
         }
 
-        Log::info('lodgely.backup.deleted', ['user_id' => $request->user()->id, 'filename' => $filename]);
+        Log::info('beacon.backup.deleted', ['user_id' => $request->user()->id, 'filename' => $filename]);
 
         return redirect()->route('settings.backups')->with('backups.notice', __('Deleted :name.', ['name' => $filename]));
     }
@@ -116,14 +116,14 @@ class BackupController extends Controller
         $absolute = storage_path('app/private/'.$storedPath);
 
         try {
-            Log::warning('lodgely.backup.restore_started', [
+            Log::warning('beacon.backup.restore_started', [
                 'user_id' => $request->user()->id,
                 'original_name' => $upload->getClientOriginalName(),
             ]);
 
             $ignoredErrors = $manager->restore($absolute);
 
-            Log::warning('lodgely.backup.restore_finished', [
+            Log::warning('beacon.backup.restore_finished', [
                 'user_id' => $request->user()->id,
                 'ignored_errors' => $ignoredErrors,
             ]);
@@ -149,7 +149,7 @@ class BackupController extends Controller
 
             return redirect()->route('login');
         } catch (Throwable $e) {
-            Log::error('lodgely.backup.restore_failed', ['user_id' => $request->user()->id, 'error' => $e->getMessage()]);
+            Log::error('beacon.backup.restore_failed', ['user_id' => $request->user()->id, 'error' => $e->getMessage()]);
 
             return redirect()->route('settings.backups')->with(
                 'backups.error',

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $title ?? config('lodgely.brand.name') }}</title>
+    <title>{{ $title ?? config('beacon.brand.name') }}</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <script>
         if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
