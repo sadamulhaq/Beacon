@@ -18,7 +18,7 @@
                 <div class="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
                     {{ __('Add to .env') }}
                 </div>
-<pre class="overflow-auto rounded bg-slate-50 dark:bg-slate-950 p-3 text-xs font-mono text-slate-800 dark:text-slate-200">LODGELY_GOOGLE_SHEETS_REFRESH_TOKEN={{ $refreshToken }}</pre>
+<pre class="overflow-auto rounded bg-slate-50 dark:bg-slate-950 p-3 text-xs font-mono text-slate-800 dark:text-slate-200">BEACON_GOOGLE_SHEETS_REFRESH_TOKEN={{ $refreshToken }}</pre>
                 @if($scope !== '')
                     <p class="text-xs text-slate-500 dark:text-slate-400">
                         {{ __('Granted scopes:') }} <span class="font-mono">{{ $scope }}</span>

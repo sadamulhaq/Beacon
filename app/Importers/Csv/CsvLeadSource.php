@@ -45,7 +45,7 @@ class CsvLeadSource implements LeadSource
         $reader = Reader::from($path);
         $reader->setHeaderOffset(0);
 
-        $records = (new Statement())->limit(config('lodgely.importers.csv.max_rows'))->process($reader);
+        $records = (new Statement())->limit(config('beacon.importers.csv.max_rows'))->process($reader);
 
         $headerMap = $this->buildHeaderMap($reader->getHeader());
 

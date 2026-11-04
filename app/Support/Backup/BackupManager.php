@@ -22,7 +22,7 @@ use ZipArchive;
  * command deletes rows from the database, not from archives taken earlier).
  *
  * So the dump can optionally be encrypted with a passphrase — see
- * {@see ArchiveCipher}. This is opt-in via LODGELY_BACKUP_PASSPHRASE and
+ * {@see ArchiveCipher}. This is opt-in via BEACON_BACKUP_PASSPHRASE and
  * off by default, because turning it on silently would hand operators
  * archives they cannot restore without a setting they never chose. The
  * manifest records which shape an archive is, and restore() reads it, so
@@ -47,10 +47,10 @@ class BackupManager
         $this->ensureDirectory();
 
         $timestamp = now()->format('Ymd-His');
-        $filename = "lodgely-backup-{$timestamp}.zip";
+        $filename = "beacon-backup-{$timestamp}.zip";
         $zipPath = $this->absolutePath($filename);
 
-        $dumpPath = tempnam(sys_get_temp_dir(), 'lodgely-dump-');
+        $dumpPath = tempnam(sys_get_temp_dir(), 'beacon-dump-');
         if ($dumpPath === false) {
             throw new RuntimeException('Could not allocate a temporary file for the database dump.');
         }
@@ -63,8 +63,8 @@ class BackupManager
             }
 
             $manifest = [
-                'app' => 'lodgely',
-                'app_version' => (string) config('lodgely.version'),
+                'app' => 'beacon',
+                'app_version' => (string) config('beacon.version'),
                 'db_driver' => 'pgsql',
                 'created_at' => now()->toIso8601String(),
             ];
@@ -121,7 +121,7 @@ class BackupManager
      * Trim the archive directory to the $keep most recent files, returning the
      * filenames removed.
      *
-     * $keep defaults to `lodgely.backups.keep`, which is itself null — keep
+     * $keep defaults to `beacon.backups.keep`, which is itself null — keep
      * everything. Pruning is opt-in on purpose: an upgrade that silently
      * started deleting an operator's backups would be a far worse bug than a
      * full disk.
@@ -136,7 +136,7 @@ class BackupManager
      */
     public function prune(?int $keep = null, ?string $keepAlways = null): array
     {
-        $keep ??= config('lodgely.backups.keep');
+        $keep ??= config('beacon.backups.keep');
 
         if ($keep === null) {
             return [];
@@ -165,7 +165,7 @@ class BackupManager
     /** The configured backup passphrase, or null when encryption is switched off. */
     private function passphrase(): ?string
     {
-        $passphrase = (string) (config('lodgely.backups.passphrase') ?? '');
+        $passphrase = (string) (config('beacon.backups.passphrase') ?? '');
 
         return $passphrase !== '' ? $passphrase : null;
     }
@@ -240,7 +240,7 @@ class BackupManager
 
             if ($zip->locateName(self::MANIFEST_ENTRY) === false || $zip->locateName($dumpEntry) === false) {
                 $zip->close();
-                throw new RuntimeException('This file does not look like a lodgely backup archive (missing manifest or database dump).');
+                throw new RuntimeException('This file does not look like a beacon backup archive (missing manifest or database dump).');
             }
 
             $zip->extractTo($extractDir, [self::MANIFEST_ENTRY, $dumpEntry]);
@@ -249,8 +249,8 @@ class BackupManager
             $manifestJson = File::get($extractDir.DIRECTORY_SEPARATOR.self::MANIFEST_ENTRY);
             $manifest = json_decode($manifestJson, true);
 
-            if (! is_array($manifest) || ($manifest['app'] ?? null) !== 'lodgely') {
-                throw new RuntimeException('This archive does not carry a valid lodgely backup manifest.');
+            if (! is_array($manifest) || ($manifest['app'] ?? null) !== 'beacon') {
+                throw new RuntimeException('This archive does not carry a valid beacon backup manifest.');
             }
 
             $dumpPath = $extractDir.DIRECTORY_SEPARATOR.$dumpEntry;
@@ -260,7 +260,7 @@ class BackupManager
 
                 if ($passphrase === null) {
                     throw new RuntimeException(
-                        'This backup is encrypted, but no LODGELY_BACKUP_PASSPHRASE is configured on this server. '
+                        'This backup is encrypted, but no BEACON_BACKUP_PASSPHRASE is configured on this server. '
                         .'Set it to the passphrase used when the archive was created and try again.'
                     );
                 }

@@ -8,7 +8,7 @@ use Illuminate\Console\Command;
 
 class DispatchScheduledReportEmails extends Command
 {
-    protected $signature = 'lodgely:report-emails:dispatch
+    protected $signature = 'beacon:report-emails:dispatch
         {--dry-run : List schedules that would fire without queuing any sends}';
 
     protected $description = 'Find due report-email schedules, queue sends, and advance next_run_at.';

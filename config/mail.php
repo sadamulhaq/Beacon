@@ -27,7 +27,7 @@ return [
         ],
     ],
     'from' => [
-        'address' => env('MAIL_FROM_ADDRESS', 'no-reply@lodgely.local'),
-        'name' => env('MAIL_FROM_NAME', 'lodgely'),
+        'address' => env('MAIL_FROM_ADDRESS', 'no-reply@beacon.local'),
+        'name' => env('MAIL_FROM_NAME', 'beacon'),
     ],
 ];

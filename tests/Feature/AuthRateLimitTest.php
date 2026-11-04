@@ -12,7 +12,7 @@ use Tests\TestCase;
 /**
  * Regression cover for the auth throttles.
  *
- * The point of these tests is the spoofing case. lodgely trusts every proxy by
+ * The point of these tests is the spoofing case. beacon trusts every proxy by
  * default (TRUSTED_PROXIES='*', see bootstrap/app.php), so `$request->ip()` is
  * really "whatever the caller wrote in X-Forwarded-For". A throttle keyed only
  * on that value — which is what `throttle:5,1` gave us — is no throttle at all
@@ -41,7 +41,7 @@ class AuthRateLimitTest extends TestCase
 
     private function makeUser(array $overrides = []): User
     {
-        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'lodgely']);
+        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'beacon']);
 
         return User::create(array_merge([
             'name' => 'Victim',

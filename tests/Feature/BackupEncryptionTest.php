@@ -58,11 +58,11 @@ class BackupEncryptionTest extends TestCase
     /** Build an archive the way BackupManager would, with real dump contents. */
     private function makeArchive(string $dumpContents, ?string $passphrase): string
     {
-        $dir = sys_get_temp_dir().'/lodgely-enc-test-'.uniqid();
+        $dir = sys_get_temp_dir().'/beacon-enc-test-'.uniqid();
         mkdir($dir);
         $zipPath = $dir.'/backup.zip';
 
-        $manifest = ['app' => 'lodgely', 'db_driver' => 'pgsql'];
+        $manifest = ['app' => 'beacon', 'db_driver' => 'pgsql'];
 
         $zip = new ZipArchive();
         $zip->open($zipPath, ZipArchive::CREATE);
@@ -113,7 +113,7 @@ class BackupEncryptionTest extends TestCase
 
     public function test_archives_are_unencrypted_by_default(): void
     {
-        config(['lodgely.backups.passphrase' => null]);
+        config(['beacon.backups.passphrase' => null]);
         Process::fake();
 
         $backup = app(BackupManager::class)->create();
@@ -136,7 +136,7 @@ class BackupEncryptionTest extends TestCase
     {
         // The upgrade case: operator sets a passphrase, then needs to restore
         // an archive taken before they did.
-        config(['lodgely.backups.passphrase' => self::PASSPHRASE]);
+        config(['beacon.backups.passphrase' => self::PASSPHRASE]);
 
         $archive = $this->makeArchive('PGDMP-plain-payload', passphrase: null);
 
@@ -147,7 +147,7 @@ class BackupEncryptionTest extends TestCase
 
     public function test_encrypted_archive_hides_the_dump_and_round_trips(): void
     {
-        config(['lodgely.backups.passphrase' => self::PASSPHRASE]);
+        config(['beacon.backups.passphrase' => self::PASSPHRASE]);
 
         $secret = 'PGDMP lead: ada@example.com +49 30 1234567';
         $archive = $this->makeArchive($secret, self::PASSPHRASE);
@@ -171,11 +171,11 @@ class BackupEncryptionTest extends TestCase
     {
         $archive = $this->makeArchive('PGDMP-secret', self::PASSPHRASE);
 
-        config(['lodgely.backups.passphrase' => null]);
+        config(['beacon.backups.passphrase' => null]);
         Process::fake();
 
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessageMatches('/LODGELY_BACKUP_PASSPHRASE/');
+        $this->expectExceptionMessageMatches('/BEACON_BACKUP_PASSPHRASE/');
 
         app(BackupManager::class)->restore($archive);
     }
@@ -184,7 +184,7 @@ class BackupEncryptionTest extends TestCase
     {
         $archive = $this->makeArchive('PGDMP-secret', self::PASSPHRASE);
 
-        config(['lodgely.backups.passphrase' => 'not-the-right-one']);
+        config(['beacon.backups.passphrase' => 'not-the-right-one']);
         Process::fake();
 
         $this->expectException(RuntimeException::class);
@@ -200,7 +200,7 @@ class BackupEncryptionTest extends TestCase
         // counter are actually exercised rather than a single-frame happy path.
         $plaintext = random_bytes(2 * 1048576 + 4242);
 
-        $dir = sys_get_temp_dir().'/lodgely-cipher-'.uniqid();
+        $dir = sys_get_temp_dir().'/beacon-cipher-'.uniqid();
         mkdir($dir);
 
         file_put_contents($dir.'/plain', $plaintext);
@@ -217,7 +217,7 @@ class BackupEncryptionTest extends TestCase
 
     public function test_cipher_rejects_a_truncated_archive(): void
     {
-        $dir = sys_get_temp_dir().'/lodgely-cipher-'.uniqid();
+        $dir = sys_get_temp_dir().'/beacon-cipher-'.uniqid();
         mkdir($dir);
 
         file_put_contents($dir.'/plain', str_repeat('lead-data', 5000));
@@ -242,7 +242,7 @@ class BackupEncryptionTest extends TestCase
 
     public function test_pruning_is_off_by_default(): void
     {
-        config(['lodgely.backups.keep' => null]);
+        config(['beacon.backups.keep' => null]);
         Process::fake();
 
         $manager = app(BackupManager::class);
@@ -258,7 +258,7 @@ class BackupEncryptionTest extends TestCase
 
     public function test_pruning_keeps_only_the_configured_number_of_archives(): void
     {
-        config(['lodgely.backups.keep' => 2]);
+        config(['beacon.backups.keep' => 2]);
         Process::fake();
 
         $manager = app(BackupManager::class);
@@ -284,7 +284,7 @@ class BackupEncryptionTest extends TestCase
      */
     public function test_the_create_command_keep_option_never_prunes_the_backup_it_just_took(): void
     {
-        config(['lodgely.backups.keep' => null]);
+        config(['beacon.backups.keep' => null]);
         Process::fake();
 
         $manager = app(BackupManager::class);
@@ -295,7 +295,7 @@ class BackupEncryptionTest extends TestCase
         }
         $this->travelBack();
 
-        $this->artisan('lodgely:backup:create', ['--keep' => 1])->assertSuccessful();
+        $this->artisan('beacon:backup:create', ['--keep' => 1])->assertSuccessful();
 
         $remaining = $manager->list();
 

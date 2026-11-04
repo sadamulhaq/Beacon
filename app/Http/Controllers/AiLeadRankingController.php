@@ -21,7 +21,7 @@ class AiLeadRankingController extends Controller
 
         $result = $ranker->dispatchBatch(Tenant::DEFAULT_ID, requester: $request->user());
 
-        Log::info('lodgely.ai.rank_now', [
+        Log::info('beacon.ai.rank_now', [
             'user_id'    => $request->user()->id,
             'dispatched' => $result['dispatched'],
             'reason'     => $result['reason'],
@@ -29,7 +29,7 @@ class AiLeadRankingController extends Controller
 
         if ($result['reason'] === 'cap') {
             return redirect()->route('settings.ai')->with('status', __(
-                'Daily AI call cap reached — try again tomorrow or raise LODGELY_AI_MAX_CALLS_PER_DAY.'
+                'Daily AI call cap reached — try again tomorrow or raise BEACON_AI_MAX_CALLS_PER_DAY.'
             ));
         }
 

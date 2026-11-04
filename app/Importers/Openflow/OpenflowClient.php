@@ -22,7 +22,7 @@ class OpenflowClient
 {
     private function timeout(): int
     {
-        return (int) config('lodgely.importers.openflow.http_timeout_sec', 30);
+        return (int) config('beacon.importers.openflow.http_timeout_sec', 30);
     }
 
     /**

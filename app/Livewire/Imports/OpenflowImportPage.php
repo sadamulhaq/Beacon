@@ -14,7 +14,7 @@ use Livewire\Component;
 use Throwable;
 
 /**
- * Operator UI for pulling leads from an OpenFlow form into lodgely.
+ * Operator UI for pulling leads from an OpenFlow form into beacon.
  *
  * Mirrors the Google Sheets / Meta Lead Ads import pages: a list of configured
  * sources plus an add/edit form. "Load forms" validates the login and lists the

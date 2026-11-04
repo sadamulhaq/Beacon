@@ -22,7 +22,7 @@ class AdPlatformConnectorsTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'lodgely']);
+        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'beacon']);
     }
 
     private function operator(): User
@@ -36,9 +36,9 @@ class AdPlatformConnectorsTest extends TestCase
     public function test_client_connectors_do_not_inherit_the_env_ad_account(): void
     {
         config([
-            'lodgely.reporting.meta.ad_account_id'  => 'act_env_default',
-            'lodgely.reporting.meta.access_token'   => 'env-token',
-            'lodgely.reporting.google.customer_id'  => '1112223333',
+            'beacon.reporting.meta.ad_account_id'  => 'act_env_default',
+            'beacon.reporting.meta.access_token'   => 'env-token',
+            'beacon.reporting.google.customer_id'  => '1112223333',
         ]);
 
         $default = AdPlatformSetting::forTenant(Tenant::DEFAULT_ID);
@@ -184,7 +184,7 @@ class AdPlatformConnectorsTest extends TestCase
 
     public function test_importer_persists_client_name_on_ad_spend_reports(): void
     {
-        config()->set('lodgely.reporting.sources', []);
+        config()->set('beacon.reporting.sources', []);
 
         $acme = AdPlatformSetting::forClient(Tenant::DEFAULT_ID, 'Acme Roofing');
         $acme->meta_enabled = true;

@@ -16,7 +16,7 @@ class ReportingFetchTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'lodgely']);
+        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'beacon']);
     }
 
     private function user(string $role, string $email): User
@@ -33,10 +33,10 @@ class ReportingFetchTest extends TestCase
     public function test_operator_fetch_populates_ad_metrics_from_mock_source(): void
     {
         // Keep only the deterministic mock active — no live HTTP needed.
-        config()->set('lodgely.reporting.sources', ['meta_mock']);
+        config()->set('beacon.reporting.sources', ['meta_mock']);
         // Pin the backfill window so the row count is deterministic regardless
         // of the configurable default.
-        config()->set('lodgely.reporting.backfill_days', 7);
+        config()->set('beacon.reporting.backfill_days', 7);
 
         $op = $this->user('operator', 'ops@example.com');
 
@@ -55,7 +55,7 @@ class ReportingFetchTest extends TestCase
     {
         // A configured key that matches no registered adapter resolves to zero
         // sources (no live Meta/Google toggled on either).
-        config()->set('lodgely.reporting.sources', ['none']);
+        config()->set('beacon.reporting.sources', ['none']);
 
         $op = $this->user('operator', 'ops@example.com');
 
@@ -69,7 +69,7 @@ class ReportingFetchTest extends TestCase
 
     public function test_client_cannot_fetch_ad_metrics(): void
     {
-        config()->set('lodgely.reporting.sources', ['meta_mock']);
+        config()->set('beacon.reporting.sources', ['meta_mock']);
 
         $client = $this->user('client', 'c@example.com');
 

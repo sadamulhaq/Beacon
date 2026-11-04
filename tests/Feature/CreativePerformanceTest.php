@@ -22,7 +22,7 @@ class CreativePerformanceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'lodgely']);
+        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'beacon']);
     }
 
     private function user(string $role, string $email): User
@@ -38,7 +38,7 @@ class CreativePerformanceTest extends TestCase
 
     public function test_import_populates_creative_rows_from_mock_sources(): void
     {
-        config()->set('lodgely.reporting.sources', ['meta_mock', 'google_mock']);
+        config()->set('beacon.reporting.sources', ['meta_mock', 'google_mock']);
 
         app(AdMetricsImporter::class)->run(Tenant::DEFAULT_ID, new \DateTimeImmutable('today'), 1);
 
@@ -51,7 +51,7 @@ class CreativePerformanceTest extends TestCase
 
     public function test_import_is_idempotent_per_day(): void
     {
-        config()->set('lodgely.reporting.sources', ['meta_mock', 'google_mock']);
+        config()->set('beacon.reporting.sources', ['meta_mock', 'google_mock']);
 
         $importer = app(AdMetricsImporter::class);
         $importer->run(Tenant::DEFAULT_ID, new \DateTimeImmutable('today'), 1);
@@ -64,7 +64,7 @@ class CreativePerformanceTest extends TestCase
 
     public function test_reporting_page_shows_creative_performance_sections(): void
     {
-        config()->set('lodgely.reporting.sources', ['meta_mock', 'google_mock']);
+        config()->set('beacon.reporting.sources', ['meta_mock', 'google_mock']);
 
         // Anchor on yesterday: SQLite stores the date as 'Y-m-d 00:00:00', so a
         // today-dated row sorts above the page's 'Y-m-d' upper range bound.
@@ -86,7 +86,7 @@ class CreativePerformanceTest extends TestCase
 
     public function test_platform_filter_hides_other_platforms_sections(): void
     {
-        config()->set('lodgely.reporting.sources', ['meta_mock', 'google_mock']);
+        config()->set('beacon.reporting.sources', ['meta_mock', 'google_mock']);
 
         app(AdMetricsImporter::class)->run(Tenant::DEFAULT_ID, new \DateTimeImmutable('yesterday'), 1);
 
@@ -123,7 +123,7 @@ class CreativePerformanceTest extends TestCase
 
     public function test_purge_removes_creative_rows_too(): void
     {
-        config()->set('lodgely.reporting.sources', ['meta_mock', 'google_mock']);
+        config()->set('beacon.reporting.sources', ['meta_mock', 'google_mock']);
 
         app(AdMetricsImporter::class)->run(Tenant::DEFAULT_ID, new \DateTimeImmutable('today'), 1);
         $this->assertGreaterThan(0, AdCreativeReport::count());
@@ -138,7 +138,7 @@ class CreativePerformanceTest extends TestCase
 
     public function test_connecting_live_meta_drops_leftover_mock_creative_rows(): void
     {
-        config()->set('lodgely.reporting.sources', ['meta_mock', 'google_mock']);
+        config()->set('beacon.reporting.sources', ['meta_mock', 'google_mock']);
 
         $setting = AdPlatformSetting::forTenant(Tenant::DEFAULT_ID);
         $setting->meta_enabled = true;

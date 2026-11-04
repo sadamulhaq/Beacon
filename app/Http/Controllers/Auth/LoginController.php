@@ -36,7 +36,7 @@ class LoginController extends Controller
         // in until the second factor checks out. Both are timeboxed by the
         // guard, so a miss takes as long as a hit (no account-existence oracle).
         if (! Auth::validate([...$credentials, 'is_active' => true])) {
-            Log::warning('lodgely.auth.login_failed', [
+            Log::warning('beacon.auth.login_failed', [
                 'email' => (new Pseudonymizer())->maskEmail(mb_strtolower(trim($credentials['email']))),
                 'ip'    => $request->ip(),
             ]);
@@ -64,7 +64,7 @@ class LoginController extends Controller
 
         Auth::login($user, $remember);
 
-        Log::info('lodgely.auth.login', ['user_id' => $user->id, 'ip' => $request->ip(), 'two_factor' => false]);
+        Log::info('beacon.auth.login', ['user_id' => $user->id, 'ip' => $request->ip(), 'two_factor' => false]);
 
         return redirect()->intended(route('inbox'));
     }

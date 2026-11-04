@@ -7,12 +7,12 @@ use RuntimeException;
 /**
  * Passphrase encryption for the database dump inside a backup archive.
  *
- * A lodgely backup is a complete copy of every lead's name, email, phone and
+ * A beacon backup is a complete copy of every lead's name, email, phone and
  * message body in cleartext. That is fine while it sits in
  * storage/app/private/backups on a server the operator controls, and much less
  * fine the moment it is downloaded, synced to object storage, or mailed
  * around — which is the entire point of taking backups. Setting
- * LODGELY_BACKUP_PASSPHRASE makes the dump unreadable without the passphrase.
+ * BEACON_BACKUP_PASSPHRASE makes the dump unreadable without the passphrase.
  *
  * Construction: AES-256-GCM over the plaintext split into fixed-size frames,
  * with the key derived from the passphrase via PBKDF2-SHA256.
@@ -140,7 +140,7 @@ class ArchiveCipher
         $cipherName = (string) ($meta['cipher'] ?? '');
         if ($cipherName !== self::CIPHER) {
             throw new RuntimeException(
-                "This backup was encrypted with '{$cipherName}', which this version of lodgely cannot read."
+                "This backup was encrypted with '{$cipherName}', which this version of beacon cannot read."
             );
         }
 
@@ -189,7 +189,7 @@ class ArchiveCipher
                 // than a generic failure.
                 if ($plain === false) {
                     throw new RuntimeException(
-                        'Could not decrypt this backup. Check LODGELY_BACKUP_PASSPHRASE matches the one used '
+                        'Could not decrypt this backup. Check BEACON_BACKUP_PASSPHRASE matches the one used '
                         .'when the archive was created — a wrong passphrase and a corrupted archive look identical here.'
                     );
                 }
@@ -250,7 +250,7 @@ class ArchiveCipher
         if (! in_array(self::CIPHER, openssl_get_cipher_methods(), true)) {
             throw new RuntimeException(
                 'This PHP build has no '.self::CIPHER.' support, so encrypted backups are unavailable. '
-                .'Unset LODGELY_BACKUP_PASSPHRASE to write unencrypted archives.'
+                .'Unset BEACON_BACKUP_PASSPHRASE to write unencrypted archives.'
             );
         }
     }

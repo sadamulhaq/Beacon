@@ -9,7 +9,7 @@
     @if(!$this->isConfigured())
         <div class="rounded-xl border border-amber-200 dark:border-amber-800/50 bg-amber-50 dark:bg-amber-950/40 px-4 py-3 text-sm text-amber-900 dark:text-amber-300">
             <strong>{{ __('IMAP is not configured.') }}</strong>
-            {{ __('Set LODGELY_IMAP_HOST, LODGELY_IMAP_USERNAME, and LODGELY_IMAP_PASSWORD in your .env file, then restart the app.') }}
+            {{ __('Set BEACON_IMAP_HOST, BEACON_IMAP_USERNAME, and BEACON_IMAP_PASSWORD in your .env file, then restart the app.') }}
         </div>
     @else
         <div class="rounded-xl border border-slate-200 dark:border-slate-700/50 bg-white dark:bg-slate-900 px-4 py-3 text-xs text-slate-500 dark:text-slate-400 flex flex-wrap gap-4 shadow-sm">

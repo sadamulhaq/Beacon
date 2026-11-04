@@ -2,7 +2,7 @@
 
 AI-assisted summaries and automatic lead ranking on top of the Reporting and
 Leads domains. Inert by default — an operator enables AI and configures a
-provider at `/settings/ai`. `LODGELY_AI_ENABLED=false` is the opt-out hard
+provider at `/settings/ai`. `BEACON_AI_ENABLED=false` is the opt-out hard
 kill-switch that removes the AI routes and menu.
 
 ## Layout
@@ -32,7 +32,7 @@ kill-switch that removes the AI routes and menu.
 
 - AI operates **only** on the Reporting layer (aggregates) or on
   explicitly selected, pseudonymized leads — never on the full lead corpus.
-- A single config switch (`LODGELY_AI_ENABLED=false`) turns AI features off
+- A single config switch (`BEACON_AI_ENABLED=false`) turns AI features off
   entirely; the per-tenant `enabled` toggle is the everyday on/off.
 - Tenant admins additionally control runtime config in the `ai_settings`
   table (provider, API key, model, house style, per-kind toggles, and an

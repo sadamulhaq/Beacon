@@ -18,13 +18,13 @@ class MetaLeadsSourceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'lodgely']);
+        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'beacon']);
     }
 
     private function configureCredentials(string $token = 'test-token'): void
     {
-        config()->set('lodgely.reporting.meta.access_token', $token);
-        config()->set('lodgely.reporting.meta.api_version', 'v21.0');
+        config()->set('beacon.reporting.meta.access_token', $token);
+        config()->set('beacon.reporting.meta.api_version', 'v21.0');
     }
 
     private function makeSource(array $overrides = []): MetaLeadSource

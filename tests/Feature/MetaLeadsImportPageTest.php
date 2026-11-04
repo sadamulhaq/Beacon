@@ -20,7 +20,7 @@ class MetaLeadsImportPageTest extends TestCase
     {
         parent::setUp();
         $this->withoutVite();
-        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'lodgely']);
+        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'beacon']);
     }
 
     private function operator(): User
@@ -152,7 +152,7 @@ class MetaLeadsImportPageTest extends TestCase
 
     public function test_load_forms_lists_page_forms(): void
     {
-        config()->set('lodgely.reporting.meta.access_token', 'test-token');
+        config()->set('beacon.reporting.meta.access_token', 'test-token');
 
         Http::fake([
             'graph.facebook.com/*/leadgen_forms*' => Http::response([

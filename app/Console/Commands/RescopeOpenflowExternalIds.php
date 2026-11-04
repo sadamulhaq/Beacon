@@ -22,7 +22,7 @@ use Illuminate\Support\Facades\DB;
  */
 class RescopeOpenflowExternalIds extends Command
 {
-    protected $signature = 'lodgely:openflow:rescope-ids
+    protected $signature = 'beacon:openflow:rescope-ids
         {--dry-run : Show what would be updated without writing}';
 
     protected $description = 'Backfill source-scoped external_id on OpenFlow leads imported before multi-source dedup scoping existed.';

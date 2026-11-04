@@ -1,10 +1,10 @@
 <x-layouts.guest>
     <div class="w-full max-w-sm">
         <div class="mb-8 text-center">
-            <a href="{{ url('/') }}" aria-label="{{ config('lodgely.brand.name') }}" style="display: inline-block;">
+            <a href="{{ url('/') }}" aria-label="{{ config('beacon.brand.name') }}" style="display: inline-block;">
                 <x-brand-logo height="2.5rem" />
             </a>
-            <p class="mt-4 text-sm text-slate-500 dark:text-slate-400">{{ config('lodgely.brand.tagline') }}</p>
+            <p class="mt-4 text-sm text-slate-500 dark:text-slate-400">{{ config('beacon.brand.tagline') }}</p>
         </div>
 
         @if (session('status'))

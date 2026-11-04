@@ -7,7 +7,7 @@ use Illuminate\Console\Command;
 
 class CreateBackup extends Command
 {
-    protected $signature = 'lodgely:backup:create
+    protected $signature = 'beacon:backup:create
         {--keep= : Delete older backups beyond this count after a successful run}';
 
     protected $description = 'Dump the database to a downloadable backup archive under storage/app/private/backups.';
@@ -24,7 +24,7 @@ class CreateBackup extends Command
         // knows to exclude the archive we just wrote, which matters because
         // archive filenames are second-resolution and two backups taken in the
         // same second sort ambiguously. --keep overrides the configured
-        // LODGELY_BACKUP_KEEP for this run; create() has already applied the
+        // BEACON_BACKUP_KEEP for this run; create() has already applied the
         // configured value, and pruning twice is a no-op.
         $keep = $this->option('keep');
 

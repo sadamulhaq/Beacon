@@ -11,13 +11,13 @@ use Illuminate\Support\Facades\DB;
 class CampaignRollup
 {
     /**
-     * Aggregate ad metrics + lodgely lead counts, grouped by campaign.
+     * Aggregate ad metrics + beacon lead counts, grouped by campaign.
      *
      * When $client is given, ad metrics are scoped to the campaigns that the
      * client's leads carry (see campaignIdsForClient) and lead counts are scoped
      * to that client_name.
      *
-     * @return Collection<int, object{platform: string, campaign_id: string, campaign_name: ?string, impressions: int, clicks: int, spend_cents: int, currency: string, platform_leads: int, lodgely_leads: int}>
+     * @return Collection<int, object{platform: string, campaign_id: string, campaign_name: ?string, impressions: int, clicks: int, spend_cents: int, currency: string, platform_leads: int, beacon_leads: int}>
      */
     public function forTenant(int $tenantId, string $from, string $to, ?string $platform = null, ?string $client = null): Collection
     {
@@ -43,7 +43,7 @@ class CampaignRollup
 
         $adRows = $query->get();
 
-        // Fetch lead counts from lodgely's own data, grouped by campaign_id
+        // Fetch lead counts from beacon's own data, grouped by campaign_id
         $leadCounts = Lead::where('tenant_id', $tenantId)
             ->whereNotNull('campaign_id')
             ->whereBetween('created_at', [$from.' 00:00:00', $to.' 23:59:59'])
@@ -53,7 +53,7 @@ class CampaignRollup
             ->pluck('cnt', 'campaign_id');
 
         return $adRows->map(function ($row) use ($leadCounts) {
-            $row->lodgely_leads = (int) ($leadCounts[$row->campaign_id] ?? 0);
+            $row->beacon_leads = (int) ($leadCounts[$row->campaign_id] ?? 0);
 
             return $row;
         });
@@ -62,7 +62,7 @@ class CampaignRollup
     /**
      * KPI totals for the given period.
      *
-     * @return array{total_spend_cents: int, total_clicks: int, total_impressions: int, total_platform_leads: int, total_lodgely_leads: int, currency: string, has_data: bool}
+     * @return array{total_spend_cents: int, total_clicks: int, total_impressions: int, total_platform_leads: int, total_beacon_leads: int, currency: string, has_data: bool}
      */
     public function kpis(int $tenantId, string $from, string $to, ?string $platform = null, ?string $client = null): array
     {
@@ -81,7 +81,7 @@ class CampaignRollup
             COUNT(*) as row_count
         ')->first();
 
-        $lodgelyLeads = Lead::where('tenant_id', $tenantId)
+        $beaconLeads = Lead::where('tenant_id', $tenantId)
             ->whereBetween('created_at', [$from.' 00:00:00', $to.' 23:59:59'])
             ->when($client, fn ($q) => $q->forClientName($client))
             ->count();
@@ -91,7 +91,7 @@ class CampaignRollup
             'total_clicks' => (int) ($agg->total_clicks ?? 0),
             'total_impressions' => (int) ($agg->total_impressions ?? 0),
             'total_platform_leads' => (int) ($agg->total_platform_leads ?? 0),
-            'total_lodgely_leads' => $lodgelyLeads,
+            'total_beacon_leads' => $beaconLeads,
             'currency' => AdSpendReport::dominantCurrency($tenantId, $from, $to, $platform, $campaignIds, $client !== null && $client !== '' ? [$client] : null),
             'has_data' => ((int) ($agg->row_count ?? 0)) > 0,
         ];
@@ -100,9 +100,9 @@ class CampaignRollup
     /**
      * Daily time series for the trend charts. One row per calendar day in the
      * range (gaps filled with zeros so the line stays continuous), carrying ad
-     * metrics plus lodgely's own lead count for that day.
+     * metrics plus beacon's own lead count for that day.
      *
-     * @return Collection<int, object{date: string, spend_cents: int, clicks: int, impressions: int, platform_leads: int, lodgely_leads: int}>
+     * @return Collection<int, object{date: string, spend_cents: int, clicks: int, impressions: int, platform_leads: int, beacon_leads: int}>
      */
     public function dailySeries(int $tenantId, string $from, string $to, ?string $platform = null, ?string $client = null): Collection
     {
@@ -147,7 +147,7 @@ class CampaignRollup
                 'clicks' => (int) ($ad->clicks ?? 0),
                 'impressions' => (int) ($ad->impressions ?? 0),
                 'platform_leads' => (int) ($ad->platform_leads ?? 0),
-                'lodgely_leads' => (int) ($leadsByDay[$key] ?? 0),
+                'beacon_leads' => (int) ($leadsByDay[$key] ?? 0),
             ]);
 
             $cursor->addDay();
@@ -157,7 +157,7 @@ class CampaignRollup
     }
 
     /**
-     * Leads by source from lodgely's own data (not ad platform data).
+     * Leads by source from beacon's own data (not ad platform data).
      */
     public function bySource(int $tenantId, string $from, string $to, ?string $client = null): Collection
     {

@@ -11,14 +11,14 @@ use Illuminate\Support\Str;
 
 class CreateUser extends Command
 {
-    protected $signature = 'lodgely:user:create
+    protected $signature = 'beacon:user:create
         {--name=    : Display name}
         {--email=   : Login email}
         {--password= : Password (auto-generated if omitted)}
         {--role=operator : operator | client}
         {--client=*  : One or more client_name scopes (client role only)}';
 
-    protected $description = 'Create a lodgely user (operator or scoped client).';
+    protected $description = 'Create a beacon user (operator or scoped client).';
 
     public function handle(): int
     {
@@ -55,7 +55,7 @@ class CreateUser extends Command
         $this->info("Created {$role->value} user #{$user->id} <{$user->email}>.");
         if (! $this->option('password')) {
             $this->line("Generated password: <fg=yellow>{$password}</>");
-            $this->line('Store this somewhere safe — lodgely does not save it in cleartext.');
+            $this->line('Store this somewhere safe — beacon does not save it in cleartext.');
         }
 
         return self::SUCCESS;

@@ -14,7 +14,7 @@ class FetchGoogleSheets extends Command
 {
     use FetchesRecurringLeadSources;
 
-    protected $signature = 'lodgely:google-sheets:fetch
+    protected $signature = 'beacon:google-sheets:fetch
         {--source= : Only fetch a specific sheet source ID}
         {--force  : Fetch even if not yet due}';
 

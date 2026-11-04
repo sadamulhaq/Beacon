@@ -1,4 +1,4 @@
-# lodgely — local development & lightweight self-hosting stack.
+# beacon — local development & lightweight self-hosting stack.
 # A single command (`docker compose up -d`) brings up:
 #   - postgres 16     (data persisted in named volume)
 #   - php-fpm app     (composer + node build run on first boot)
@@ -6,20 +6,20 @@
 #   - scheduler       (runs due artisan schedule entries every minute)
 #   - caddy           (TLS-ready reverse proxy / static file server)
 
-name: lodgely
+name: beacon
 
 services:
   postgres:
     image: postgres:16-alpine
     restart: unless-stopped
     environment:
-      POSTGRES_DB: ${DB_DATABASE:-lodgely}
-      POSTGRES_USER: ${DB_USERNAME:-lodgely}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-lodgely}
+      POSTGRES_DB: ${DB_DATABASE:-beacon}
+      POSTGRES_USER: ${DB_USERNAME:-beacon}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-beacon}
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-lodgely} -d ${DB_DATABASE:-lodgely}"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-beacon} -d ${DB_DATABASE:-beacon}"]
       interval: 5s
       timeout: 3s
       retries: 10
@@ -89,8 +89,8 @@ services:
     depends_on:
       - app
     ports:
-      - "${LODGELY_HTTP_PORT:-8080}:80"
-      - "${LODGELY_HTTPS_PORT:-8443}:443"
+      - "${BEACON_HTTP_PORT:-8080}:80"
+      - "${BEACON_HTTPS_PORT:-8443}:443"
     volumes:
       - ./docker/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
       - .:/app:ro

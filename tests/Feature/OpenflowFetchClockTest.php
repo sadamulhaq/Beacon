@@ -29,7 +29,7 @@ class OpenflowFetchClockTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'lodgely']);
+        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'beacon']);
     }
 
     private function makeSource(): OpenflowSource
@@ -84,7 +84,7 @@ class OpenflowFetchClockTest extends TestCase
         $source = $this->makeSource();
 
         $this->app->instance(OpenflowClient::class, $this->failingClient());
-        $this->artisan('lodgely:openflow:fetch', ['--force' => true])->assertExitCode(0);
+        $this->artisan('beacon:openflow:fetch', ['--force' => true])->assertExitCode(0);
 
         $source->refresh();
 
@@ -102,7 +102,7 @@ class OpenflowFetchClockTest extends TestCase
         $source = $this->makeSource();
 
         $this->app->instance(OpenflowClient::class, $this->failingClient());
-        $this->artisan('lodgely:openflow:fetch', ['--force' => true])->assertExitCode(0);
+        $this->artisan('beacon:openflow:fetch', ['--force' => true])->assertExitCode(0);
         $this->assertSame(0, Lead::query()->count());
 
         // A day-old submission: with the cutoff wrongly advanced by the failed
@@ -111,7 +111,7 @@ class OpenflowFetchClockTest extends TestCase
         // drop the cached instance before swapping in the working one.
         $this->app->instance(OpenflowClient::class, $this->workingClient());
         $this->app->forgetInstance(OpenflowLeadSource::class);
-        $this->artisan('lodgely:openflow:fetch', ['--force' => true])->assertExitCode(0);
+        $this->artisan('beacon:openflow:fetch', ['--force' => true])->assertExitCode(0);
 
         $this->assertSame(1, Lead::query()->count());
         $this->assertSame('alice@example.com', Lead::query()->value('email'));
@@ -125,7 +125,7 @@ class OpenflowFetchClockTest extends TestCase
         $source = $this->makeSource();
 
         $this->app->instance(OpenflowClient::class, $this->workingClient());
-        $this->artisan('lodgely:openflow:fetch', ['--force' => true])->assertExitCode(0);
+        $this->artisan('beacon:openflow:fetch', ['--force' => true])->assertExitCode(0);
 
         $source->refresh();
         $this->assertNotNull($source->last_fetched_at);

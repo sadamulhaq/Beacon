@@ -21,7 +21,7 @@ class DemoDataPageTest extends TestCase
     {
         return Tenant::firstOrCreate(
             ['id' => Tenant::DEFAULT_ID],
-            ['slug' => 'default', 'name' => 'lodgely'],
+            ['slug' => 'default', 'name' => 'beacon'],
         );
     }
 

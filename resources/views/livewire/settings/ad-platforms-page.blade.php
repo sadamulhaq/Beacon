@@ -8,7 +8,7 @@
     <div>
         <h1 class="text-xl font-semibold text-slate-900 dark:text-slate-50">{{ __('Ad platforms') }}</h1>
         <p class="text-sm text-slate-500 dark:text-slate-400">
-            {{ __('Connect Meta Ads and Google Ads so lodgely can pull campaign KPIs into your reports. Credentials are stored encrypted — no .env editing needed.') }}
+            {{ __('Connect Meta Ads and Google Ads so beacon can pull campaign KPIs into your reports. Credentials are stored encrypted — no .env editing needed.') }}
         </p>
     </div>
 
@@ -199,7 +199,7 @@
                 <p class="text-xs text-slate-500 dark:text-slate-400">{{ __('Secrets are stored encrypted. Changing the client ID or secret clears the captured refresh token — reconnect afterwards.') }}</p>
 
                 @if($form['has_google_refresh'])
-                    <p class="text-xs text-emerald-700 dark:text-emerald-400">{{ __('✓ Refresh token captured. lodgely can fetch Google Ads metrics.') }}</p>
+                    <p class="text-xs text-emerald-700 dark:text-emerald-400">{{ __('✓ Refresh token captured. beacon can fetch Google Ads metrics.') }}</p>
                 @endif
 
                 @if($googleTestResult)
@@ -235,7 +235,7 @@
             <button type="submit" class="rounded-lg bg-slate-900 dark:bg-slate-100 px-4 py-2 text-sm font-medium text-white dark:text-slate-900 hover:opacity-90 transition-opacity">
                 {{ __('Save settings') }}
             </button>
-            <p class="text-xs text-slate-500 dark:text-slate-400">{{ __('Daily pull runs at 05:00. Use') }} <code class="font-mono text-xs">lodgely:import:ad-metrics --days=30</code> {{ __('to backfill.') }}</p>
+            <p class="text-xs text-slate-500 dark:text-slate-400">{{ __('Daily pull runs at 05:00. Use') }} <code class="font-mono text-xs">beacon:import:ad-metrics --days=30</code> {{ __('to backfill.') }}</p>
         </div>
     </form>
 

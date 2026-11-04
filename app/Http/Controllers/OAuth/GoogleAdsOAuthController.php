@@ -95,7 +95,7 @@ class GoogleAdsOAuthController extends Controller
 
         $clientId = trim($settings->effectiveGoogleClientId());
         $clientSecret = trim($settings->effectiveGoogleClientSecret());
-        $timeout = (int) config('lodgely.reporting.http_timeout_sec', 30);
+        $timeout = (int) config('beacon.reporting.http_timeout_sec', 30);
 
         try {
             $response = Http::timeout($timeout)
@@ -131,7 +131,7 @@ class GoogleAdsOAuthController extends Controller
 
         // Bust any cached access token so the new refresh token takes effect
         // immediately (matches the cache key GoogleAdsSource uses).
-        Cache::forget('lodgely.google_ads.access_token.'.sha1($clientId.'|'.$refreshToken));
+        Cache::forget('beacon.google_ads.access_token.'.sha1($clientId.'|'.$refreshToken));
 
         return redirect()->to($redirectRoute)
             ->with('oauth_success', __('Google Ads connected successfully.'));

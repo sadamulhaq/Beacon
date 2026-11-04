@@ -14,7 +14,7 @@ class LandingPageTest extends TestCase
 
     private function makeUser(): User
     {
-        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'lodgely']);
+        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'beacon']);
 
         return User::create([
             'name'      => 'Pat',
@@ -34,7 +34,7 @@ class LandingPageTest extends TestCase
             ->assertSee('Ad spend next to')
             ->assertSee('href="'.route('login').'"', false)
             ->assertSee('href="https://vidual.org"', false)
-            ->assertSee('LODGELY_LANDING_ENABLED=false', false);
+            ->assertSee('BEACON_LANDING_ENABLED=false', false);
     }
 
     public function test_landing_page_loads_no_third_party_assets(): void
@@ -61,7 +61,7 @@ class LandingPageTest extends TestCase
 
     public function test_disabling_the_landing_page_restores_the_inbox_redirect(): void
     {
-        config(['lodgely.landing.enabled' => false]);
+        config(['beacon.landing.enabled' => false]);
 
         $this->get('/')->assertRedirect(route('inbox'));
         $this->get(route('inbox'))->assertRedirect(route('login'));

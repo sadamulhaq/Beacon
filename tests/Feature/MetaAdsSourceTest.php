@@ -11,10 +11,10 @@ class MetaAdsSourceTest extends TestCase
 {
     private function configureCredentials(): void
     {
-        config()->set('lodgely.reporting.meta.access_token', 'test-token');
-        config()->set('lodgely.reporting.meta.ad_account_id', '1234567890');
-        config()->set('lodgely.reporting.meta.api_version', 'v21.0');
-        config()->set('lodgely.reporting.meta.currency', 'EUR');
+        config()->set('beacon.reporting.meta.access_token', 'test-token');
+        config()->set('beacon.reporting.meta.ad_account_id', '1234567890');
+        config()->set('beacon.reporting.meta.api_version', 'v21.0');
+        config()->set('beacon.reporting.meta.currency', 'EUR');
     }
 
     public function test_fetch_maps_insights_rows_to_snapshots(): void
@@ -98,11 +98,11 @@ class MetaAdsSourceTest extends TestCase
 
     public function test_fetch_throws_when_credentials_missing(): void
     {
-        config()->set('lodgely.reporting.meta.access_token', '');
-        config()->set('lodgely.reporting.meta.ad_account_id', '');
+        config()->set('beacon.reporting.meta.access_token', '');
+        config()->set('beacon.reporting.meta.ad_account_id', '');
 
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('LODGELY_META_ADS_ACCESS_TOKEN');
+        $this->expectExceptionMessage('BEACON_META_ADS_ACCESS_TOKEN');
 
         iterator_to_array((new MetaAdsSource)->fetch(1, new \DateTimeImmutable('2026-05-17')));
     }

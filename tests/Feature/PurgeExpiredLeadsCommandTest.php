@@ -14,7 +14,7 @@ class PurgeExpiredLeadsCommandTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'lodgely']);
+        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'beacon']);
     }
 
     /** Bulk-insert leads directly: the volume matters here, the field values don't. */
@@ -50,7 +50,7 @@ class PurgeExpiredLeadsCommandTest extends TestCase
         $this->seedLeads(1200, now()->subDay()->toDateTimeString());
         $this->seedLeads(5, now()->addYear()->toDateTimeString());
 
-        $this->artisan('lodgely:leads:purge')
+        $this->artisan('beacon:leads:purge')
             ->expectsOutputToContain('Soft-deleted 1200 expired lead(s).')
             ->assertExitCode(0);
 
@@ -63,7 +63,7 @@ class PurgeExpiredLeadsCommandTest extends TestCase
     {
         $this->seedLeads(3, now()->subDay()->toDateTimeString());
 
-        $this->artisan('lodgely:leads:purge', ['--dry-run' => true])
+        $this->artisan('beacon:leads:purge', ['--dry-run' => true])
             ->expectsOutputToContain('Would soft-delete 3 expired lead(s).')
             ->assertExitCode(0);
 
@@ -74,7 +74,7 @@ class PurgeExpiredLeadsCommandTest extends TestCase
     {
         $this->seedLeads(4, null);
 
-        $this->artisan('lodgely:leads:purge')->assertExitCode(0);
+        $this->artisan('beacon:leads:purge')->assertExitCode(0);
 
         $this->assertSame(4, Lead::query()->count());
     }

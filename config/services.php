@@ -1,6 +1,6 @@
 <?php
 
-// Third-party service credentials. Empty by default — lodgely MVP needs none.
+// Third-party service credentials. Empty by default — beacon MVP needs none.
 return [
     'postmark' => [
         'token' => env('POSTMARK_TOKEN'),

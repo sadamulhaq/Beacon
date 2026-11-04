@@ -23,7 +23,7 @@ use Illuminate\Support\Facades\DB;
  */
 class DedupeGoogleSheets extends Command
 {
-    protected $signature = 'lodgely:google-sheets:dedupe
+    protected $signature = 'beacon:google-sheets:dedupe
         {--dry-run : Show what would be backfilled / soft-deleted without writing}';
 
     protected $description = 'Backfill row fingerprints and soft-delete duplicate Google Sheets leads from past full re-fetches.';

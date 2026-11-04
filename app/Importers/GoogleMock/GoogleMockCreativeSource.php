@@ -14,8 +14,8 @@ use App\Models\AdCreativeReport;
 class GoogleMockCreativeSource implements CreativeMetricsSource
 {
     private const KEYWORDS = [
-        ['id' => '100~9001', 'text' => 'lodgely (exact)', 'campaign_id' => 'GOOG_C_001', 'campaign_name' => 'Search – Branded Keywords'],
-        ['id' => '100~9002', 'text' => 'lodgely reviews (phrase)', 'campaign_id' => 'GOOG_C_001', 'campaign_name' => 'Search – Branded Keywords'],
+        ['id' => '100~9001', 'text' => 'beacon (exact)', 'campaign_id' => 'GOOG_C_001', 'campaign_name' => 'Search – Branded Keywords'],
+        ['id' => '100~9002', 'text' => 'beacon reviews (phrase)', 'campaign_id' => 'GOOG_C_001', 'campaign_name' => 'Search – Branded Keywords'],
         ['id' => '200~9003', 'text' => 'lead intake software (phrase)', 'campaign_id' => 'GOOG_C_002', 'campaign_name' => 'Search – Competitor Keywords'],
         ['id' => '200~9004', 'text' => 'lead management for agencies (broad)', 'campaign_id' => 'GOOG_C_002', 'campaign_name' => 'Search – Competitor Keywords'],
         ['id' => '200~9005', 'text' => 'crm alternative small business (broad)', 'campaign_id' => 'GOOG_C_002', 'campaign_name' => 'Search – Competitor Keywords'],

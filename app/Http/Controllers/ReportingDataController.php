@@ -23,7 +23,7 @@ class ReportingDataController extends Controller
     /**
      * Pull the most recent ad metrics on demand, instead of waiting for the
      * daily scheduled run (which only fetches yesterday at 05:00). Backfills
-     * `lodgely.reporting.backfill_days` (default 30) through today so the
+     * `beacon.reporting.backfill_days` (default 30) through today so the
      * reporting page's 30-day view fills immediately after an operator connects
      * a platform — fetching only a week left the 30-/90-day ranges near-empty.
      */
@@ -35,11 +35,11 @@ class ReportingDataController extends Controller
         // synchronous request a little more headroom than the PHP default.
         @set_time_limit(120);
 
-        $days = max(1, (int) config('lodgely.reporting.backfill_days', 30));
+        $days = max(1, (int) config('beacon.reporting.backfill_days', 30));
 
         $result = $importer->run(Tenant::DEFAULT_ID, new \DateTimeImmutable('today'), days: $days);
 
-        Log::info('lodgely.reporting.ad_metrics_fetched', [
+        Log::info('beacon.reporting.ad_metrics_fetched', [
             'user_id' => $request->user()->id,
             'inserted' => $result['inserted'],
             'updated' => $result['updated'],
@@ -72,7 +72,7 @@ class ReportingDataController extends Controller
         $deleted = AdSpendReport::where('tenant_id', Tenant::DEFAULT_ID)->delete()
             + AdCreativeReport::where('tenant_id', Tenant::DEFAULT_ID)->delete();
 
-        Log::info('lodgely.reporting.ad_metrics_purged', [
+        Log::info('beacon.reporting.ad_metrics_purged', [
             'user_id' => $request->user()->id,
             'deleted' => $deleted,
         ]);

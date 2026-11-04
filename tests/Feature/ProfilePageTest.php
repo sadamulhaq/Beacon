@@ -16,7 +16,7 @@ class ProfilePageTest extends TestCase
 
     private function makeUser(string $role = 'operator', array $overrides = []): User
     {
-        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'lodgely']);
+        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'beacon']);
 
         return User::create(array_merge([
             'name'      => 'Sam',
@@ -156,7 +156,7 @@ class ProfilePageTest extends TestCase
 
     private function enableRanking(): void
     {
-        config()->set('lodgely.ai.enabled', true);
+        config()->set('beacon.ai.enabled', true);
         $row = \App\Models\AiSetting::forTenant(Tenant::DEFAULT_ID);
         $row->enabled = true;
         $row->provider = 'openai_compatible';

@@ -199,52 +199,52 @@ class AdPlatformSetting extends Model
 
     public function effectiveMetaAccessToken(): string
     {
-        return $this->metaAccessToken() ?: (string) config('lodgely.reporting.meta.access_token', '');
+        return $this->metaAccessToken() ?: (string) config('beacon.reporting.meta.access_token', '');
     }
 
     public function effectiveMetaAccountId(): string
     {
         return $this->effectiveAccountIdentity(
             $this->meta_ad_account_id,
-            'lodgely.reporting.meta.ad_account_id',
+            'beacon.reporting.meta.ad_account_id',
         );
     }
 
     public function effectiveMetaApiVersion(): string
     {
-        return (string) ($this->meta_api_version ?: config('lodgely.reporting.meta.api_version', 'v21.0'));
+        return (string) ($this->meta_api_version ?: config('beacon.reporting.meta.api_version', 'v21.0'));
     }
 
     public function effectiveMetaCurrency(): string
     {
-        return (string) ($this->meta_currency ?: config('lodgely.reporting.meta.currency', 'USD'));
+        return (string) ($this->meta_currency ?: config('beacon.reporting.meta.currency', 'USD'));
     }
 
     public function effectiveGoogleClientId(): string
     {
-        return (string) ($this->google_client_id ?: config('lodgely.reporting.google.client_id', ''));
+        return (string) ($this->google_client_id ?: config('beacon.reporting.google.client_id', ''));
     }
 
     public function effectiveGoogleClientSecret(): string
     {
-        return $this->googleClientSecret() ?: (string) config('lodgely.reporting.google.client_secret', '');
+        return $this->googleClientSecret() ?: (string) config('beacon.reporting.google.client_secret', '');
     }
 
     public function effectiveGoogleRefreshToken(): string
     {
-        return $this->googleRefreshToken() ?: (string) config('lodgely.reporting.google.refresh_token', '');
+        return $this->googleRefreshToken() ?: (string) config('beacon.reporting.google.refresh_token', '');
     }
 
     public function effectiveGoogleDeveloperToken(): string
     {
-        return $this->googleDeveloperToken() ?: (string) config('lodgely.reporting.google.developer_token', '');
+        return $this->googleDeveloperToken() ?: (string) config('beacon.reporting.google.developer_token', '');
     }
 
     public function effectiveGoogleCustomerId(): string
     {
         return $this->effectiveAccountIdentity(
             $this->google_customer_id,
-            'lodgely.reporting.google.customer_id',
+            'beacon.reporting.google.customer_id',
         );
     }
 
@@ -275,12 +275,12 @@ class AdPlatformSetting extends Model
 
     public function effectiveGoogleLoginCustomerId(): string
     {
-        return (string) ($this->google_login_customer_id ?: config('lodgely.reporting.google.login_customer_id', ''));
+        return (string) ($this->google_login_customer_id ?: config('beacon.reporting.google.login_customer_id', ''));
     }
 
     public function effectiveGoogleApiVersion(): string
     {
-        return (string) ($this->google_api_version ?: config('lodgely.reporting.google.api_version', 'v18'));
+        return (string) ($this->google_api_version ?: config('beacon.reporting.google.api_version', 'v18'));
     }
 
     // --- Connection state (UI badges) ---
@@ -322,7 +322,7 @@ class AdPlatformSetting extends Model
 
     /**
      * Which ad-metrics source keys should run for this tenant. The env list
-     * (LODGELY_AD_METRICS_SOURCES, default the mocks) is the base; the UI
+     * (BEACON_AD_METRICS_SOURCES, default the mocks) is the base; the UI
      * toggles switch on the live `meta` / `google` adapters, so an operator can
      * go live without touching .env, and env-only installs keep working.
      *
@@ -337,7 +337,7 @@ class AdPlatformSetting extends Model
     {
         $keys = array_values(array_filter(array_map(
             'trim',
-            (array) config('lodgely.reporting.sources', []),
+            (array) config('beacon.reporting.sources', []),
         )));
 
         try {

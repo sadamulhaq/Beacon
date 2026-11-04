@@ -18,7 +18,7 @@ class GoogleAdsSourceTest extends TestCase
 
     private function configureCredentials(): void
     {
-        config()->set('lodgely.reporting.google', [
+        config()->set('beacon.reporting.google', [
             'client_id' => 'cid',
             'client_secret' => 'csec',
             'refresh_token' => 'rtok',
@@ -110,7 +110,7 @@ class GoogleAdsSourceTest extends TestCase
 
     public function test_fetch_throws_when_credentials_missing(): void
     {
-        config()->set('lodgely.reporting.google', []);
+        config()->set('beacon.reporting.google', []);
 
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('customer id and developer token must both be set');

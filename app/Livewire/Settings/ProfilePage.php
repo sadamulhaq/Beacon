@@ -99,7 +99,7 @@ class ProfilePage extends Component
             ClientAiProfile::put(Tenant::DEFAULT_ID, trim((string) $row['client_name']), $row['profile'] ?? null, $user->id);
         }
 
-        Log::info('lodgely.profile.ranking_profile_updated', [
+        Log::info('beacon.profile.ranking_profile_updated', [
             'id'      => $user->id,
             'clients' => array_column($this->rankingProfiles, 'client_name'),
         ]);
@@ -147,7 +147,7 @@ class ProfilePage extends Component
         app()->setLocale($data['locale']);
         session(['locale' => $data['locale']]);
 
-        Log::info('lodgely.profile.updated', [
+        Log::info('beacon.profile.updated', [
             'id'     => $user->id,
             'before' => $before,
             'after'  => ['name' => $user->name, 'email' => $user->email, 'locale' => $user->locale, 'ui_theme' => $user->ui_theme],
@@ -177,7 +177,7 @@ class ProfilePage extends Component
 
         $this->password = ['current' => '', 'new' => '', 'confirmation' => ''];
 
-        Log::info('lodgely.profile.password_changed', ['id' => $user->id]);
+        Log::info('beacon.profile.password_changed', ['id' => $user->id]);
 
         $this->dispatch('toast', message: __('Password updated.'));
     }

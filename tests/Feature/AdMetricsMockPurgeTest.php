@@ -22,7 +22,7 @@ class AdMetricsMockPurgeTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'lodgely']);
+        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'beacon']);
     }
 
     private function seedRow(string $platform, string $campaignId, ?array $rawPayload): void
@@ -46,7 +46,7 @@ class AdMetricsMockPurgeTest extends TestCase
     public function test_connecting_live_meta_drops_leftover_meta_mock_rows(): void
     {
         // Live Meta connected; Google stays on the demo mock.
-        config()->set('lodgely.reporting.sources', ['meta_mock', 'google_mock']);
+        config()->set('beacon.reporting.sources', ['meta_mock', 'google_mock']);
 
         $setting = AdPlatformSetting::forTenant(Tenant::DEFAULT_ID);
         $setting->meta_enabled = true;
@@ -73,7 +73,7 @@ class AdMetricsMockPurgeTest extends TestCase
     public function test_mock_only_install_keeps_its_mock_rows(): void
     {
         // Nothing connected live → mocks remain the source of truth.
-        config()->set('lodgely.reporting.sources', ['meta_mock']);
+        config()->set('beacon.reporting.sources', ['meta_mock']);
 
         $seededDate = now()->subDay()->toDateString();
         $this->seedRow('meta', 'META_C_001', ['mock' => true]);

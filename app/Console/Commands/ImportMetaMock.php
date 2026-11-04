@@ -7,7 +7,7 @@ use Illuminate\Console\Command;
 
 class ImportMetaMock extends Command
 {
-    protected $signature = 'lodgely:import:meta-mock
+    protected $signature = 'beacon:import:meta-mock
         {--count=6 : Number of Meta lead rows to generate per client}
         {--client=* : One or more client_name values to attribute the leads to}';
 

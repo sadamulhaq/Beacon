@@ -13,7 +13,7 @@ class LeadSearchEscapingTest extends TestCase
 
     private function makeLead(array $overrides = []): Lead
     {
-        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'lodgely']);
+        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'beacon']);
 
         return Lead::create(array_merge([
             'tenant_id' => Tenant::DEFAULT_ID,

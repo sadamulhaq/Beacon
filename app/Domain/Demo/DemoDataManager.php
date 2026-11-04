@@ -104,7 +104,7 @@ class DemoDataManager
         return DB::transaction(function (): array {
             Tenant::firstOrCreate(
                 ['id' => Tenant::DEFAULT_ID],
-                ['slug' => 'default', 'name' => config('lodgely.brand.name')],
+                ['slug' => 'default', 'name' => config('beacon.brand.name')],
             );
 
             $createdUsers = 0;

@@ -259,12 +259,12 @@ class AiSettingsPage extends Component
             ),
             'kindOptions' => AiSummaryKind::options(),
             'defaultUrls' => [
-                'openai_compatible' => config('lodgely.ai.defaults.openai_compatible.base_url'),
-                'ollama'            => config('lodgely.ai.defaults.ollama.base_url'),
+                'openai_compatible' => config('beacon.ai.defaults.openai_compatible.base_url'),
+                'ollama'            => config('beacon.ai.defaults.ollama.base_url'),
             ],
             'defaultModels' => [
-                'openai_compatible' => config('lodgely.ai.defaults.openai_compatible.model'),
-                'ollama'            => config('lodgely.ai.defaults.ollama.model'),
+                'openai_compatible' => config('beacon.ai.defaults.openai_compatible.model'),
+                'ollama'            => config('beacon.ai.defaults.ollama.model'),
             ],
         ]);
     }

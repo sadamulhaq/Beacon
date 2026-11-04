@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Schema;
 
 /**
  * Per-tenant outbound mail (SMTP) configuration. One row per tenant; lets an
- * operator point lodgely at their mail server from the UI instead of editing
+ * operator point beacon at their mail server from the UI instead of editing
  * .env, so reporting emails and password resets actually leave the box.
  *
  * `password_encrypted` is the ciphertext produced by Crypt::encryptString();

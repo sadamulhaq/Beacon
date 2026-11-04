@@ -20,8 +20,8 @@ class DraftsPageTest extends TestCase
 
     private function operator(): User
     {
-        config()->set('lodgely.ai.enabled', true);
-        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'lodgely']);
+        config()->set('beacon.ai.enabled', true);
+        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'beacon']);
 
         return User::create([
             'name' => 'Op', 'email' => 'op@example.com', 'password' => Hash::make('p'),
@@ -44,7 +44,7 @@ class DraftsPageTest extends TestCase
     public function test_drafts_route_404s_when_ai_disabled(): void
     {
         $op = $this->operator();
-        config()->set('lodgely.ai.enabled', false);
+        config()->set('beacon.ai.enabled', false);
 
         $this->actingAs($op)->get('/ai/drafts')->assertNotFound();
     }

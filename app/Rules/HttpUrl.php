@@ -19,7 +19,7 @@ use Illuminate\Contracts\Validation\ValidationRule;
  * login email and password in cleartext on every hourly scheduler pull.
  *
  * Plain http is *not* rejected — LAN self-hosting over http is a legitimate
- * lodgely deployment and blocking it would break working installs. Use
+ * beacon deployment and blocking it would break working installs. Use
  * {@see self::isCleartextToRemoteHost()} to warn in the UI instead.
  */
 class HttpUrl implements ValidationRule

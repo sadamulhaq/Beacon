@@ -1,7 +1,7 @@
 @php
     $isOperator = auth()->check() && auth()->user()->isOperator();
-    $aiEnabled  = (bool) config('lodgely.ai.enabled');
-    $imapEnabled = (bool) config('lodgely.importers.email.imap.host');
+    $aiEnabled  = (bool) config('beacon.ai.enabled');
+    $imapEnabled = (bool) config('beacon.importers.email.imap.host');
 
     // Meta Lead Ads (API) import only makes sense once Meta is connected; the
     // nav entry stays hidden until then (resolveSafe never writes / never throws).
@@ -32,7 +32,7 @@
         x-data="{ mobileOpen: false }">
     <div class="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         <div class="flex items-center gap-6 min-w-0">
-            <a href="{{ route('inbox') }}" class="flex items-center group shrink-0" aria-label="{{ config('lodgely.brand.name') }}">
+            <a href="{{ route('inbox') }}" class="flex items-center group shrink-0" aria-label="{{ config('beacon.brand.name') }}">
                 <x-brand-logo height="1.75rem" class="transition-opacity group-hover:opacity-80" />
             </a>
 

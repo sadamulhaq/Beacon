@@ -14,7 +14,7 @@ class FetchMetaLeads extends Command
 {
     use FetchesRecurringLeadSources;
 
-    protected $signature = 'lodgely:meta-leads:fetch
+    protected $signature = 'beacon:meta-leads:fetch
         {--source= : Only fetch a specific Meta Lead Ads source ID}
         {--force  : Fetch even if not yet due}';
 

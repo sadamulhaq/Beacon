@@ -26,7 +26,7 @@ class ImportFailureVisibilityTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'lodgely']);
+        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'beacon']);
     }
 
     private function makeSheetSource(array $overrides = []): GoogleSheetSource
@@ -79,7 +79,7 @@ class ImportFailureVisibilityTest extends TestCase
         $client->shouldReceive('fetchValues')
             ->andThrow(new RuntimeException('Google Sheets values fetch failed (403): permission denied'));
 
-        $this->artisan('lodgely:google-sheets:fetch')->assertSuccessful();
+        $this->artisan('beacon:google-sheets:fetch')->assertSuccessful();
 
         // The failure is recorded on the import — no silent 0/0/0/0 row.
         $import = Import::where('source', 'google_sheets')->latest('id')->firstOrFail();

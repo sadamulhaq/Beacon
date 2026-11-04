@@ -14,10 +14,10 @@ use App\Models\AdCreativeReport;
 class MetaMockCreativeSource implements CreativeMetricsSource
 {
     private const ADS = [
-        ['id' => 'META_AD_001', 'name' => 'Lakeside cabin – carousel', 'campaign_id' => 'META_C_002', 'campaign_name' => 'Lodgely – Lead Gen Form – Properties'],
-        ['id' => 'META_AD_002', 'name' => 'Mountain lodge – video tour', 'campaign_id' => 'META_C_002', 'campaign_name' => 'Lodgely – Lead Gen Form – Properties'],
-        ['id' => 'META_AD_003', 'name' => 'Spring offer – static image', 'campaign_id' => 'META_C_001', 'campaign_name' => 'Lodgely – Brand Awareness Q2'],
-        ['id' => 'META_AD_004', 'name' => 'Come back & book – retargeting', 'campaign_id' => 'META_C_003', 'campaign_name' => 'Lodgely – Retargeting – Website Visitors'],
+        ['id' => 'META_AD_001', 'name' => 'Lakeside cabin – carousel', 'campaign_id' => 'META_C_002', 'campaign_name' => 'Beacon – Lead Gen Form – Properties'],
+        ['id' => 'META_AD_002', 'name' => 'Mountain lodge – video tour', 'campaign_id' => 'META_C_002', 'campaign_name' => 'Beacon – Lead Gen Form – Properties'],
+        ['id' => 'META_AD_003', 'name' => 'Spring offer – static image', 'campaign_id' => 'META_C_001', 'campaign_name' => 'Beacon – Brand Awareness Q2'],
+        ['id' => 'META_AD_004', 'name' => 'Come back & book – retargeting', 'campaign_id' => 'META_C_003', 'campaign_name' => 'Beacon – Retargeting – Website Visitors'],
     ];
 
     private const SEGMENTS = [

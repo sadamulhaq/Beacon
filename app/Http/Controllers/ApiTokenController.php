@@ -34,7 +34,7 @@ class ApiTokenController extends Controller
             $request->user()->id,
         );
 
-        Log::info('lodgely.api_token.created', ['api_token_id' => $token->id, 'user_id' => $request->user()->id]);
+        Log::info('beacon.api_token.created', ['api_token_id' => $token->id, 'user_id' => $request->user()->id]);
 
         return redirect()->route('settings.api-tokens')->with('api-tokens.created', $plaintext);
     }
@@ -47,12 +47,12 @@ class ApiTokenController extends Controller
 
         if (! $apiToken->isRevoked()) {
             $apiToken->update(['revoked_at' => now()]);
-            Log::info('lodgely.api_token.revoked', ['api_token_id' => $apiToken->id, 'user_id' => $request->user()->id]);
+            Log::info('beacon.api_token.revoked', ['api_token_id' => $apiToken->id, 'user_id' => $request->user()->id]);
         }
 
         return redirect()->route('settings.api-tokens')->with(
             'api-tokens.notice',
-            __('Token ":name" revoked. Tools using it can no longer read from lodgely.', ['name' => $apiToken->name]),
+            __('Token ":name" revoked. Tools using it can no longer read from beacon.', ['name' => $apiToken->name]),
         );
     }
 }

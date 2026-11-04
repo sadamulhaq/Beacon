@@ -132,7 +132,7 @@
     <div class="rounded-xl border border-slate-200 dark:border-slate-700/50 bg-white dark:bg-slate-900 p-5 shadow-sm space-y-2 text-sm">
         <h2 class="text-sm font-semibold text-slate-800 dark:text-slate-200">{{ __('Prefer the command line?') }}</h2>
         <p class="text-slate-600 dark:text-slate-400">{{ __('The same operations are available as artisan commands — handy for cron jobs or scripted migrations:') }}</p>
-        <pre class="rounded-lg bg-slate-50 dark:bg-slate-800/60 px-3 py-2 text-xs font-mono text-slate-700 dark:text-slate-300 overflow-x-auto">docker compose exec app php artisan lodgely:backup:create --keep=7
-docker compose exec app php artisan lodgely:backup:restore /app/storage/app/private/backups/lodgely-backup-20260101-120000.zip</pre>
+        <pre class="rounded-lg bg-slate-50 dark:bg-slate-800/60 px-3 py-2 text-xs font-mono text-slate-700 dark:text-slate-300 overflow-x-auto">docker compose exec app php artisan beacon:backup:create --keep=7
+docker compose exec app php artisan beacon:backup:restore /app/storage/app/private/backups/beacon-backup-20260101-120000.zip</pre>
     </div>
 </div>

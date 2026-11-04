@@ -7,9 +7,9 @@ surface and the hard-won gotchas worth not repeating.
 
 ## Product north star
 
-lodgely is a **lead intake hub**, not a CRM. If a feature request feels like
+beacon is a **lead intake hub**, not a CRM. If a feature request feels like
 it belongs in HubSpot, Pipedrive or Salesforce, it almost certainly does
-*not* belong in lodgely. Push back, or land it in a downstream tool.
+*not* belong in beacon. Push back, or land it in a downstream tool.
 
 The two real personas:
 
@@ -58,7 +58,7 @@ Beyond the lead inbox, these are all live — don't treat them as greenfield:
   no offset and are UTC — always parse them with
   `OpenflowLeadSource::parseOpenflowTimestamp()`, never a bare
   `Carbon::parse()` (APP_TIMEZONE would skew the pull cutoff). The shared
-  cross-repo contract and what's next are in `ROADMAP.md`. Recurring via `lodgely:openflow:fetch` (hourly
+  cross-repo contract and what's next are in `ROADMAP.md`. Recurring via `beacon:openflow:fetch` (hourly
   scheduler) + a "Fetch" button.
 - **Reporting** (`app/Domain/Reporting/`, operator `/reporting` + client
   `/my-reports`) — ad-spend ingestion from Meta Marketing API + Google Ads
@@ -78,19 +78,19 @@ Beyond the lead inbox, these are all live — don't treat them as greenfield:
 - **AI** (`app/Domain/Ai/`) — report-view summaries and pseudonymized lead
   qualification via OpenAI-compatible or Ollama providers, behind an operator
   approve-then-share workflow; plus **automatic lead ranking** (`LeadRanker`,
-  hourly `lodgely:ai:rank-leads` + "Rank now" button) that writes priority,
+  hourly `beacon:ai:rank-leads` + "Rank now" button) that writes priority,
   reason and tags straight onto the lead — a human change always wins
   (`priority_source`), the ranker never revisits a human-prioritised lead, and
   the master prompt is steered by an operator-wide and a per-client
-  (`client_ai_profiles`) "ideal customer" text. `LODGELY_AI_ENABLED` is an
+  (`client_ai_profiles`) "ideal customer" text. `BEACON_AI_ENABLED` is an
   opt-out kill-switch (default on); the everyday gate is
   `AiSetting::isActive()` — use that, not the config key, for AI buttons.
 - **Public landing page** (`/`, `LandingController`, `resources/views/landing/`)
   — guests see a dark product page with a discreet "Sign in" link; signed-in
-  users and installs with `LODGELY_LANDING_ENABLED=false` go straight to the
+  users and installs with `BEACON_LANDING_ENABLED=false` go straight to the
   inbox. Its CSS/JS are inline on purpose (no Vite/Tailwind dependency, no
   third-party assets — see the Tailwind-bundle gotcha below), and it links to
-  vidual via `config('lodgely.brand.vidual_url')`.
+  vidual via `config('beacon.brand.vidual_url')`.
 - **Auth hardening** — optional TOTP 2FA for operators
   (`app/Support/TwoFactor/`, `TwoFactorController` for the profile card,
   `TwoFactorChallengeController` for the login step). `LoginController` only
@@ -109,10 +109,10 @@ Beyond the lead inbox, these are all live — don't treat them as greenfield:
   plaintext flashed once). The feed relies on every lead write bumping
   `updated_at` and on deletions staying soft: a future hard delete (LG-11)
   must leave a tombstone, or vigilo never learns the lead is gone. The
-  contract lives in vigilo's `docs/LODGELY-CONTRACT.md`; the shared roadmap
+  contract lives in vigilo's `docs/BEACON-CONTRACT.md`; the shared roadmap
   section is "Shared with vigilo" in `ROADMAP.md`.
 - **Ops** — DB backups (`/settings/backups`; the dump inside the archive is
-  cleartext unless `LODGELY_BACKUP_PASSPHRASE` is set — the *columns* are
+  cleartext unless `BEACON_BACKUP_PASSPHRASE` is set — the *columns* are
   encrypted, the dump is not, so treat an archive as a full PII copy),
   demo data load/unload
   (`/settings/demo-data`), webhook endpoints (`/webhooks`), users (`/users`),
@@ -154,7 +154,7 @@ Beyond the lead inbox, these are all live — don't treat them as greenfield:
 - **`lead_events` is the audit trail.** Use `AuditLogger`, not direct
   inserts.
 - **No telemetry, no third-party calls** without a config switch and a
-  README mention. lodgely is self-hosted-friendly first.
+  README mention. beacon is self-hosted-friendly first.
 
 ## Reserved seams (don't fill in prematurely)
 
@@ -334,7 +334,7 @@ Before committing any change, always update these three files:
    - Major reserved for breaking changes to the data schema or public API.
 
    The **footer version badge** (`v0.x.y` in the app footer) reads from
-   `config('lodgely.version')` which pulls directly from `composer.json`
+   `config('beacon.version')` which pulls directly from `composer.json`
    at boot. The **README badge** (`shields.io` version badge at the top)
    is a static string — update it in the same commit so both stay in sync.
 
@@ -350,25 +350,25 @@ The production install runs in **Docker**. Always prefix artisan commands with
 ```bash
 docker compose exec app php artisan migrate
 docker compose exec app php artisan migrate --seed
-docker compose exec app php artisan lodgely:user:create --role=client
+docker compose exec app php artisan beacon:user:create --role=client
 ```
 
 ## Commands worth knowing
 
 ```bash
 docker compose exec app php artisan migrate --seed                     # bootstrap a demo install
-docker compose exec app php artisan lodgely:user:create --role=client  # add a scoped client
-docker compose exec app php artisan lodgely:import:email-mock --count=5
-docker compose exec app php artisan lodgely:import:meta-mock --count=6 # Meta Lead Ads demo data
-docker compose exec app php artisan lodgely:leads:purge --dry-run      # GDPR cleanup, preview only
-docker compose exec app php artisan lodgely:user:2fa-reset user@example.com # lost authenticator + recovery codes
+docker compose exec app php artisan beacon:user:create --role=client  # add a scoped client
+docker compose exec app php artisan beacon:import:email-mock --count=5
+docker compose exec app php artisan beacon:import:meta-mock --count=6 # Meta Lead Ads demo data
+docker compose exec app php artisan beacon:leads:purge --dry-run      # GDPR cleanup, preview only
+docker compose exec app php artisan beacon:user:2fa-reset user@example.com # lost authenticator + recovery codes
 
 # Recurring source / reporting pulls (also wired into the scheduler in routes/console.php)
-docker compose exec app php artisan lodgely:google-sheets:fetch        # pull due Google Sheet sources
-docker compose exec app php artisan lodgely:meta-leads:fetch           # pull due Meta Lead Ads connections
-docker compose exec app php artisan lodgely:openflow:fetch             # pull due OpenFlow sources
-docker compose exec app php artisan lodgely:import:ad-metrics --days=7 # backfill ad spend/metrics
-docker compose exec app php artisan lodgely:ai:rank-leads --dry-run     # list leads the AI ranker would pick up
+docker compose exec app php artisan beacon:google-sheets:fetch        # pull due Google Sheet sources
+docker compose exec app php artisan beacon:meta-leads:fetch           # pull due Meta Lead Ads connections
+docker compose exec app php artisan beacon:openflow:fetch             # pull due OpenFlow sources
+docker compose exec app php artisan beacon:import:ad-metrics --days=7 # backfill ad spend/metrics
+docker compose exec app php artisan beacon:ai:rank-leads --dry-run     # list leads the AI ranker would pick up
 ```
 
 > The scheduler (`php artisan schedule:work` / cron) drives the recurring jobs —

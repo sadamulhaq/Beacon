@@ -17,7 +17,7 @@ class RescopeOpenflowExternalIdsTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'lodgely']);
+        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'beacon']);
     }
 
     private function makeSource(array $overrides = []): OpenflowSource
@@ -59,7 +59,7 @@ class RescopeOpenflowExternalIdsTest extends TestCase
         $source = $this->makeSource();
         $lead = $this->makeLead($source, 'sub-1', 'sub-1');
 
-        $this->artisan('lodgely:openflow:rescope-ids')->assertExitCode(0);
+        $this->artisan('beacon:openflow:rescope-ids')->assertExitCode(0);
 
         $this->assertSame(
             OpenflowLeadSource::scopedExternalId($source, 'sub-1'),
@@ -72,10 +72,10 @@ class RescopeOpenflowExternalIdsTest extends TestCase
         $source = $this->makeSource();
         $lead = $this->makeLead($source, 'sub-1', 'sub-1');
 
-        $this->artisan('lodgely:openflow:rescope-ids')->assertExitCode(0);
+        $this->artisan('beacon:openflow:rescope-ids')->assertExitCode(0);
         $firstPass = $lead->fresh()->external_id;
 
-        $this->artisan('lodgely:openflow:rescope-ids')->assertExitCode(0);
+        $this->artisan('beacon:openflow:rescope-ids')->assertExitCode(0);
         $this->assertSame($firstPass, $lead->fresh()->external_id);
     }
 
@@ -84,7 +84,7 @@ class RescopeOpenflowExternalIdsTest extends TestCase
         $source = $this->makeSource();
         $lead = $this->makeLead($source, 'sub-1', 'sub-1');
 
-        $this->artisan('lodgely:openflow:rescope-ids', ['--dry-run' => true])->assertExitCode(0);
+        $this->artisan('beacon:openflow:rescope-ids', ['--dry-run' => true])->assertExitCode(0);
 
         $this->assertSame('sub-1', $lead->fresh()->external_id);
     }
@@ -95,7 +95,7 @@ class RescopeOpenflowExternalIdsTest extends TestCase
         $lead = $this->makeLead($source, 'sub-1', 'sub-1');
         $source->delete();
 
-        $this->artisan('lodgely:openflow:rescope-ids')->assertExitCode(0);
+        $this->artisan('beacon:openflow:rescope-ids')->assertExitCode(0);
 
         $this->assertSame('sub-1', $lead->fresh()->external_id);
     }
@@ -107,7 +107,7 @@ class RescopeOpenflowExternalIdsTest extends TestCase
         $leadA = $this->makeLead($formA, '1', '1');
         $leadB = $this->makeLead($formB, '1', '1');
 
-        $this->artisan('lodgely:openflow:rescope-ids')->assertExitCode(0);
+        $this->artisan('beacon:openflow:rescope-ids')->assertExitCode(0);
 
         $this->assertNotSame($leadA->fresh()->external_id, $leadB->fresh()->external_id);
     }

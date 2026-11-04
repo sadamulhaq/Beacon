@@ -20,9 +20,9 @@ class GenerateAiSummaryJobTest extends TestCase
 
     private function bootstrap(): User
     {
-        config()->set('lodgely.ai.enabled', true);
+        config()->set('beacon.ai.enabled', true);
 
-        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'lodgely']);
+        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'beacon']);
 
         $row = AiSetting::forTenant(Tenant::DEFAULT_ID);
         $row->enabled = true;
@@ -99,7 +99,7 @@ class GenerateAiSummaryJobTest extends TestCase
     public function test_job_no_ops_when_global_kill_switch_off(): void
     {
         $user = $this->bootstrap();
-        config()->set('lodgely.ai.enabled', false);
+        config()->set('beacon.ai.enabled', false);
 
         $summary = $this->makeSummary($user->id);
 

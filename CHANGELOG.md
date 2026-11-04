@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to lodgely are documented here. The format loosely follows
+All notable changes to beacon are documented here. The format loosely follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses
 semantic-ish versioning once a 1.0 is tagged.
 
@@ -25,11 +25,11 @@ semantic-ish versioning once a 1.0 is tagged.
 - **Product tour video in the README.** A 44-second animated tour (lead
   intake, duplicate detection, AI ranking, reporting, client portals,
   self-hosting) now sits right below the logo as a clickable poster that opens
-  the MP4 (`.github/media/lodgely-tour.mp4`, 4:5, also usable as a LinkedIn
+  the MP4 (`.github/media/beacon-tour.mp4`, 4:5, also usable as a LinkedIn
   post).
 - **Automatic AI lead ranking.** Once an operator switches on the new
   *Automatic lead ranking* task on `/settings/ai` (plus the data-sharing
-  consent), an hourly sweep (`lodgely:ai:rank-leads`, also behind a **"Rank
+  consent), an hourly sweep (`beacon:ai:rank-leads`, also behind a **"Rank
   unranked leads now"** button) sends each new lead — pseudonymized, as before —
   to the configured model and writes the answer straight onto the lead: the
   **priority**, a one-sentence **reason** and up to five short **tags**. Ranked
@@ -51,7 +51,7 @@ semantic-ish versioning once a 1.0 is tagged.
 ### Changed
 
 - **The AI settings page and AI menu are visible by default.**
-  `LODGELY_AI_ENABLED` now defaults to `true` and is an opt-out hard
+  `BEACON_AI_ENABLED` now defaults to `true` and is an opt-out hard
   kill-switch; the everyday on/off is the *Enable AI for this tenant* toggle on
   `/settings/ai`. Nothing is sent to a model until that toggle is on and a
   provider is configured — the AI buttons on leads and reports now check the
@@ -71,12 +71,12 @@ semantic-ish versioning once a 1.0 is tagged.
   recovery codes are stored encrypted. The QR code is drawn on the server, so
   the secret never leaves the install. Codes can't be replayed, and the
   challenge is rate-limited per account (5/min, 30/hour). An operator who loses both phone and recovery
-  codes is reset from the server with `lodgely:user:2fa-reset <email>`; there
+  codes is reset from the server with `beacon:user:2fa-reset <email>`; there
   is deliberately no web button for it. New packages: `pragmarx/google2fa` and
   `bacon/bacon-qr-code`. Needs `php artisan migrate`.
-- **Failed and successful sign-ins are logged** (`lodgely.auth.login_failed`
-  with a masked email and IP, `lodgely.auth.login`,
-  `lodgely.auth.two_factor_failed`), so an attack on the login shows up in
+- **Failed and successful sign-ins are logged** (`beacon.auth.login_failed`
+  with a masked email and IP, `beacon.auth.login`,
+  `beacon.auth.two_factor_failed`), so an attack on the login shows up in
   `docker compose logs app`.
 
 - **Public landing page at `/`.** A dark, self-contained product page for
@@ -85,10 +85,10 @@ semantic-ish versioning once a 1.0 is tagged.
   status steps, outreach toggles and opt-in AI qualification — ad-spend
   reporting, client portals, GDPR & self-hosting), code examples (webhook,
   adapter, `.env`), a short Docker deploy walkthrough, and a
-  "Get the most out of lodgely" section linking to vidual (vidual.org). It loads
+  "Get the most out of beacon" section linking to vidual (vidual.org). It loads
   no third-party assets and doesn't depend on the Vite build. Guests reach the
   login through a discreet "Sign in" link; signed-in users still go straight
-  to the inbox. On by default; set `LODGELY_LANDING_ENABLED=false` to restore
+  to the inbox. On by default; set `BEACON_LANDING_ENABLED=false` to restore
   the old `/` → inbox/login redirect.
 
 ### Changed
@@ -96,7 +96,7 @@ semantic-ish versioning once a 1.0 is tagged.
 - **Landing page: the code example now shows the real OpenFlow adapter.** The
   "extend it" code window used a made-up `TypeformSource.php`, which made it
   look as if Typeform was a built-in source. It now shows a simplified
-  `OpenflowLeadSource.php`, the form source lodgely actually ships, and the
+  `OpenflowLeadSource.php`, the form source beacon actually ships, and the
   matching `'openflow' => OpenflowLeadSource::class` line from
   `AppServiceProvider::IMPORTERS`. On phones the code window's tab bar is
   tighter, so all three tabs fit at 375px.
@@ -109,7 +109,7 @@ semantic-ish versioning once a 1.0 is tagged.
   `APP_URL` while `APP_ENV` is still `local`. There is also a new warning when
   `APP_URL` points at localhost.
 - **Docker image: production-safe PHP defaults.** `expose_php` and
-  `display_errors` are off (`docker/php/conf.d/zz-lodgely-security.ini`). Run
+  `display_errors` are off (`docker/php/conf.d/zz-beacon-security.ini`). Run
   `docker compose build` to pick this up.
 - **Caddy no longer logs secrets.** Webhook tokens and password-reset tokens
   (plus the email in the reset link) are redacted from access-log URIs and
@@ -118,7 +118,7 @@ semantic-ish versioning once a 1.0 is tagged.
   users still see it in the app footer.
 
 - **New logo across the app and on GitHub.** The dotted-staircase icon and a
-  plain "lodgely" wordmark (as on the landing page) replace the old gradient
+  plain "beacon" wordmark (as on the landing page) replace the old gradient
   wordmark artwork. The app top bar and the login / password pages now draw it
   inline via a `<x-brand-logo>` component whose wordmark follows the light/dark
   theme; the wordmark is Inter SemiBold converted to outlines, so it renders
@@ -128,8 +128,8 @@ semantic-ish versioning once a 1.0 is tagged.
   theme, and the favicon is the icon alone, without the dark tile.
 
 - **`ROADMAP.md`: the shared section's decisions D1–D5 are confirmed** (no
-  lodgely → session feedback loop, push + pull, opt-in partials only, one
-  install per agency with clients scoped by the Client model, lodgely owns
+  beacon → session feedback loop, push + pull, opt-in partials only, one
+  install per agency with clients scoped by the Client model, beacon owns
   qualified-lead conversions). The same change lands in OpenFlow's roadmap in
   its 0.46.0 release, which ships OF-1 (stable field keys — what LG-2 will map
   on).
@@ -138,7 +138,7 @@ semantic-ish versioning once a 1.0 is tagged.
 
 - **`ROADMAP.md` at the repo root.** A phased forward roadmap with
   acceptance criteria, plus a shared section (duplicated in OpenFlow's
-  `ROADMAP.md`) covering the OpenFlow ↔ lodgely interface contract, who owns
+  `ROADMAP.md`) covering the OpenFlow ↔ beacon interface contract, who owns
   what, and cross-repo dependencies. `docs/ROADMAP.md` keeps the history of
   what shipped.
 
@@ -181,13 +181,13 @@ semantic-ish versioning once a 1.0 is tagged.
   guessed token got its own 60/min allowance. Unknown tokens now share one
   per-IP bucket of 10/min. Real endpoints keep their own allowance.
 
-- **Login page no longer shows the `php artisan lodgely:user:create` hint.**
+- **Login page no longer shows the `php artisan beacon:user:create` hint.**
   The "New deployment? Create the first operator via …" line confused
   regular client users; first-operator setup stays documented in the README.
 
 - **The OpenFlow pull could permanently skip new leads on installs not
   running in UTC.**
-  - OpenFlow's `created_at` is UTC but carries no offset. lodgely parsed it
+  - OpenFlow's `created_at` is UTC but carries no offset. beacon parsed it
     in `APP_TIMEZONE`, so on `Europe/Berlin` every submission looked one or
     two hours older than it was.
   - Submissions made within about an hour *after* the previous fetch were
@@ -330,7 +330,7 @@ semantic-ish versioning once a 1.0 is tagged.
 ### Security
 
 - **Login and password-reset throttling can no longer be bypassed with a
-  forged `X-Forwarded-For` header.** lodgely trusts every proxy by default, so
+  forged `X-Forwarded-For` header.** beacon trusts every proxy by default, so
   the "client IP" was whatever the caller sent — and the old `throttle:5,1`
   keyed on exactly that, meaning anyone willing to increment a header got
   unlimited password guesses against a real account. The routes now use named
@@ -346,19 +346,19 @@ semantic-ish versioning once a 1.0 is tagged.
 - **Optional encryption for database backup archives.** A backup contains every
   lead's name, email, phone and message body in cleartext, and outlives the
   `retention_until` window, which matters as soon as an archive leaves the
-  server. Setting `LODGELY_BACKUP_PASSPHRASE` encrypts the dump inside new
+  server. Setting `BEACON_BACKUP_PASSPHRASE` encrypts the dump inside new
   archives with AES-256-GCM (PBKDF2-SHA256 key derivation, framed so memory use
   stays flat on large databases, with truncation detected on restore).
   **Off by default and fully backwards compatible**: the archive manifest
   records which shape it is, so archives created before this change still
   restore, including on a server that now has a passphrase configured.
-- **Optional backup retention** via `LODGELY_BACKUP_KEEP`. Archives previously
+- **Optional backup retention** via `BEACON_BACKUP_KEEP`. Archives previously
   accumulated forever. Off by default so an upgrade never deletes an operator's
   backups; the archive just created is never a pruning candidate.
 
 ### Fixed
 
-- **`lodgely:backup:create --keep=N` could delete the backup it had just
+- **`beacon:backup:create --keep=N` could delete the backup it had just
   taken.** The command walked the archive list itself and trimmed by position,
   but archive filenames are second-resolution, so two backups created in the
   same second sorted ambiguously and the fresh one could land in the pruned
@@ -528,7 +528,7 @@ semantic-ish versioning once a 1.0 is tagged.
   equivalent.
 
 - **Internal: recurring lead-source fetching shares one implementation.** The
-  three `lodgely:*:fetch` commands (Google Sheets, Meta Lead Ads, OpenFlow)
+  three `beacon:*:fetch` commands (Google Sheets, Meta Lead Ads, OpenFlow)
   were structural copies of each other differing only in model, Import key and
   a noun; they now share a `FetchesRecurringLeadSources` concern. The
   byte-identical `isDue()` / `forTenant()` on the three source models likewise
@@ -599,7 +599,7 @@ semantic-ish versioning once a 1.0 is tagged.
   existing installs don't re-walk their backlog).
 
 - **GDPR purge no longer skips most of the leads it reports deleting.**
-  `lodgely:leads:purge` walked expired leads with offset-based chunking while
+  `beacon:leads:purge` walked expired leads with offset-based chunking while
   soft-deleting them, so every delete shifted the remaining rows up a page and
   the command silently jumped over roughly every second chunk. On a backlog of
   1200 expired leads it deleted 1000 and left 200 on disk past their retention
@@ -696,14 +696,14 @@ semantic-ish versioning once a 1.0 is tagged.
   elsewhere.
 - **Added a `Strict-Transport-Security` header** on HTTPS responses (existing
   `SecurityHeaders` middleware), so browsers still get HSTS even when the
-  reverse proxy in front of lodgely doesn't set it itself.
+  reverse proxy in front of beacon doesn't set it itself.
 
 ### Fixed
 
 - **OpenFlow external_id scoped per source, for safe multi-form imports.**
   You could already add multiple OpenFlow sources for one client
   (`/imports/openflow` → "Add OpenFlow source") — the connector was built
-  list/CRUD from the start, and the hourly `lodgely:openflow:fetch` scheduler
+  list/CRUD from the start, and the hourly `beacon:openflow:fetch` scheduler
   already pulls every active source. What wasn't safe: OpenFlow submission ids
   are only unique within a single form's own sequence (often small integers),
   so two sources — a second form on the same install, or the same form_id on a
@@ -711,7 +711,7 @@ semantic-ish versioning once a 1.0 is tagged.
   source's leads silently dropped as "already imported" duplicates of the
   first. `external_id` is now scoped to the source's install + form
   (`OpenflowLeadSource::scopedExternalId()`), so dedup is correctly
-  partitioned per source. A new `lodgely:openflow:rescope-ids` command
+  partitioned per source. A new `beacon:openflow:rescope-ids` command
   backfills existing OpenFlow leads to the new scoped format (idempotent,
   supports `--dry-run`) — run it once after upgrading if you already have
   OpenFlow leads imported, to avoid a burst of duplicates on the next
@@ -722,7 +722,7 @@ semantic-ish versioning once a 1.0 is tagged.
 - **Per-client filter on the operator reporting page.** `/reporting` now carries a
   pill toggle row — `(All clients) (Client A) (Client B) …` — next to the Platform
   and Range filters, letting an operator with several clients view one client's
-  numbers in isolation. Lead figures (Lodgely Leads KPI, leads-by-source, the lead
+  numbers in isolation. Lead figures (Beacon Leads KPI, leads-by-source, the lead
   trend line) scope by `client_name`; ad-spend figures (spend, clicks, impressions,
   platform leads, charts and the "By campaign" table) scope to the campaigns that
   the selected client's leads carry, so spend and leads stay consistent. The
@@ -734,7 +734,7 @@ semantic-ish versioning once a 1.0 is tagged.
 - **OpenFlow API-token authentication.** An OpenFlow source can now authenticate
   with a **read-only API token** (created in OpenFlow under Settings → API
   Tokens) instead of storing a login password — the recommended path. The token
-  is encrypted at rest and sent as a Bearer token, so lodgely never holds an
+  is encrypted at rest and sent as a Bearer token, so beacon never holds an
   OpenFlow password and the token can be revoked independently. Email/password
   login remains as a fallback, and existing password-based sources keep working
   unchanged. The connect form now offers an "API token (recommended)" field with
@@ -742,7 +742,7 @@ semantic-ish versioning once a 1.0 is tagged.
 
 - **OpenFlow recurring lead source.** A new connector at `/imports/openflow`
   pulls submissions from a self-hosted [OpenFlow](https://github.com/vidual-labs/openflow)
-  form straight into a lodgely client. Each source stores the OpenFlow base URL,
+  form straight into a beacon client. Each source stores the OpenFlow base URL,
   a login email and an encrypted password (OpenFlow exposes no API token, so the
   connector signs in to mint a JWT), the form to pull, and an operator-defined
   field mapping (OpenFlow field → lead field; unmapped fields are kept as
@@ -750,7 +750,7 @@ semantic-ish versioning once a 1.0 is tagged.
   **Client** name, so a client only ever sees their own. Pulls are idempotent on
   the OpenFlow submission id and run hourly via the scheduler (each source
   decides if it is due), with a **Fetch** button for an immediate run. New
-  artisan command `lodgely:openflow:fetch`. The adapter follows the existing
+  artisan command `beacon:openflow:fetch`. The adapter follows the existing
   `LeadSource` rail — no new tables in the lead path, everything flows through
   `LeadIngestor`.
 
@@ -758,7 +758,7 @@ semantic-ish versioning once a 1.0 is tagged.
 
 - **An unrecognized Status/Priority value from a source no longer breaks the
   whole import.** If a mapped sheet/CSV column fed a value that isn't one of
-  lodgely's statuses (`new/reviewed/incomplete/duplicate/forwarded`) or
+  beacon's statuses (`new/reviewed/incomplete/duplicate/forwarded`) or
   priorities (`low/medium/high`) — e.g. a "Status" column holding `CREATED` —
   the enum cast threw `"CREATED" is not a valid backing value for enum
   LeadStatus` on save and the entire fetch failed. `LeadIngestor` now coerces
@@ -797,8 +797,8 @@ semantic-ish versioning once a 1.0 is tagged.
 - **Stopped fake demo leads appearing every day at 06:00.** The scheduled mock
   email pull (which generates synthetic leads like `alex.bennett@sample.org`)
   ran unconditionally on every install. It is now opt-in via the new
-  `LODGELY_EMAIL_MOCK_SCHEDULE` flag (default `false`), matching how the IMAP
-  pull is already gated. The manual `lodgely:import:email-mock` command and the
+  `BEACON_EMAIL_MOCK_SCHEDULE` flag (default `false`), matching how the IMAP
+  pull is already gated. The manual `beacon:import:email-mock` command and the
   in-app "pull now" button are unaffected.
 - **Fixed a 500 on the operator reporting page whenever ad-spend data
   existed.** The trend-chart loop referenced the `$kpis` array inside a
@@ -822,11 +822,11 @@ semantic-ish versioning once a 1.0 is tagged.
 - **"Fetch data now" backfills 30 days instead of 7.** The on-demand fetch only
   pulled the last week, so the reporting page's 30-day and 90-day ranges stayed
   near-empty after connecting a platform. It now backfills 30 days by default
-  (configurable via `LODGELY_AD_METRICS_BACKFILL_DAYS`).
+  (configurable via `BEACON_AD_METRICS_BACKFILL_DAYS`).
 - **Reporting no longer mixes demo mock data into live reports.** The demo
   `meta_mock` / `google_mock` ad-metrics adapters were running *additively*
   alongside the real ones, so once an operator connected Meta their reporting
-  showed three fabricated "Lodgely – …" Meta campaigns plus two fabricated
+  showed three fabricated "Beacon – …" Meta campaigns plus two fabricated
   "Search – …" Google campaigns next to the genuine data — even though Google was
   never connected. The mock adapters are now suppressed the moment any real ad
   platform is connected through Settings → Ad platforms, so reporting reflects
@@ -857,7 +857,7 @@ semantic-ish versioning once a 1.0 is tagged.
   columns (name, email, phone) and every other answer is preserved as a
   custom answer; the Meta lead id is the stable `external_id`, so re-fetching the
   same window is idempotent. Each connection refreshes on its own interval
-  (hourly scheduler sweep, `lodgely:meta-leads:fetch`), or fetch on demand from
+  (hourly scheduler sweep, `beacon:meta-leads:fetch`), or fetch on demand from
   the page. Reuses the existing Meta access token — it must carry the
   `leads_retrieval` permission plus access to the page that owns the forms. The
   nav entry only appears once Meta is connected.
@@ -872,7 +872,7 @@ semantic-ish versioning once a 1.0 is tagged.
   the whole run (per-source/day errors are collected and surfaced).
 - **Modern trend charts on the Reporting dashboard.** The operator `/reporting`
   page now renders a row of TradingView-style daily charts (total spend, clicks,
-  impressions, platform leads, lodgely leads) above the campaign table: a smooth
+  impressions, platform leads, beacon leads) above the campaign table: a smooth
   area/line with a gradient fill and an interactive hover crosshair + tooltip.
   They are dependency-free inline SVG with a sprinkle of Alpine for the hover —
   no chart library, no build step. The client `/my-reports` per-metric charts
@@ -900,7 +900,7 @@ semantic-ish versioning once a 1.0 is tagged.
   styles in clients that strip `<style>`.
 
 - **Outbound email (SMTP) is now configurable in the UI under Settings →
-  Email.** Operators can point lodgely at their mail server — host, port,
+  Email.** Operators can point beacon at their mail server — host, port,
   encryption (STARTTLS / SSL / none), username, password, and the From
   address/name — without editing `.env`. The password is stored encrypted at
   rest and the saved settings override the `MAIL_*` env config at runtime, for
@@ -977,7 +977,7 @@ semantic-ish versioning once a 1.0 is tagged.
   `/imports/google-sheets` now show a **Skipped** count alongside Imported /
   Duplicate / Invalid.
 
-- **`lodgely:google-sheets:dedupe` cleanup command.** Backfills the row
+- **`beacon:google-sheets:dedupe` cleanup command.** Backfills the row
   fingerprint on Google Sheets leads imported before idempotency existed, then
   soft-deletes the duplicate copies left behind by past full re-fetches, keeping
   the earliest of each. Supports `--dry-run` to preview.
@@ -1033,12 +1033,12 @@ semantic-ish versioning once a 1.0 is tagged.
   from a previously downloaded archive — all from the UI, with a typed
   ("RESTORE") confirmation since restoring overwrites every table and signs
   the operator out. The same operations are available as artisan commands
-  (`lodgely:backup:create [--keep=N]`, `lodgely:backup:restore <path>`) for
+  (`beacon:backup:create [--keep=N]`, `beacon:backup:restore <path>`) for
   cron jobs or scripted server migrations. New `App\Support\Backup\BackupManager`
   service centralizes the `pg_dump`/`pg_restore` handling; archives live under
   `storage/app/private/backups/`.
 
-- **Favicon.** Added a square SVG favicon (`public/favicon.svg`) derived from the lodgely dot-staircase icon. Linked in both the app and guest layouts.
+- **Favicon.** Added a square SVG favicon (`public/favicon.svg`) derived from the beacon dot-staircase icon. Linked in both the app and guest layouts.
 
 - **Ad platform connection UI (`/settings/ad-platforms`).** Operators can now
   connect Meta Ads and Google Ads entirely from the admin UI — no `.env`
@@ -1049,7 +1049,7 @@ semantic-ish versioning once a 1.0 is tagged.
   captures the refresh token automatically (mirrors the Google Sheets
   handshake), plus a copy-paste redirect URI and step-by-step setup guides.
   Per-platform **Enable** toggles switch the live adapters on/off for the
-  daily pull. Existing `LODGELY_*` env vars still work as a fallback.
+  daily pull. Existing `BEACON_*` env vars still work as a fallback.
 
 - **More ad KPIs in reporting views.** Custom reporting views can now
   include **CPC** (cost per click), **CPM** (cost per thousand
@@ -1086,7 +1086,7 @@ semantic-ish versioning once a 1.0 is tagged.
   It is now a native `<form>` POST to a controller, matching the pattern used for
   the inbox filter-card actions.
 
-- **`lodgely:google-sheets:dedupe` no longer skips leads it can't trace to a
+- **`beacon:google-sheets:dedupe` no longer skips leads it can't trace to a
   sheet.** It previously ignored any lead whose spreadsheet couldn't be resolved
   (e.g. the sheet source was deleted/recreated), leaving the backlog in place.
   Deduplication now groups on the lead's stored row content, so every lead is
@@ -1097,7 +1097,7 @@ semantic-ish versioning once a 1.0 is tagged.
   re-reads the whole sheet on every scheduled run; previously each run re-created
   every existing row as a fresh `duplicate`-status lead, so the inbox filled with
   dozens of copies. Re-fetches are now idempotent (see Added) — already-seen rows
-  are skipped. Run `lodgely:google-sheets:dedupe` once to clear the existing
+  are skipped. Run `beacon:google-sheets:dedupe` once to clear the existing
   backlog.
 
 - **Pagination styling.** Fixed three issues with the desktop pagination
@@ -1345,7 +1345,7 @@ semantic-ish versioning once a 1.0 is tagged.
   calc(100vw - 2rem))`. Added `max-h-[70vh] overflow-y-auto` so a long
   custom-question list scrolls instead of overflowing the viewport.
 - **Topbar logo nudged down to baseline-align with nav.** The transparent
-  PNG has uneven vertical whitespace around the "lodgely" wordmark, so
+  PNG has uneven vertical whitespace around the "beacon" wordmark, so
   centring the image in the header bar left the text sitting visibly above
   "Inbox / Imports / …". Added `margin-top: 0.5rem` to the `<img>` so the
   text inside the mark lines up with the nav row.
@@ -1387,7 +1387,7 @@ semantic-ish versioning once a 1.0 is tagged.
   from surfacing in the Columns dropdown's custom-question list on dev DBs
   that were seeded before the pool was removed. Re-run `php artisan db:seed`
   (no need to `migrate:fresh`) to clean up. Updated stale comments and the
-  `lodgely:import:meta-mock` command description accordingly.
+  `beacon:import:meta-mock` command description accordingly.
 
 ### Changed
 
@@ -1514,7 +1514,7 @@ semantic-ish versioning once a 1.0 is tagged.
   - **`GoogleSheetsLeadSource`** importer registered in `AppServiceProvider`
     under key `google_sheets`; passes `IncomingLead` DTOs to `LeadIngestor`
     via the existing `ImportRunner` contract.
-  - **`lodgely:google-sheets:fetch` artisan command** with `--source=<id>`
+  - **`beacon:google-sheets:fetch` artisan command** with `--source=<id>`
     and `--force` flags; scheduled to run hourly via `routes/console.php`.
   - **`google_sheet_sources` migration** with indexes on
     `(tenant_id, is_active)`.
@@ -1551,11 +1551,11 @@ semantic-ish versioning once a 1.0 is tagged.
   touching `.env`. Credentials are stored encrypted in a new
   `google_sheets_settings` DB table via a `GoogleSheetsSetting` model.
   The `GoogleSheetsClient` service reads from the DB first (falling back to
-  the legacy `LODGELY_GOOGLE_SHEETS_*` env vars for existing installs).
+  the legacy `BEACON_GOOGLE_SHEETS_*` env vars for existing installs).
   The OAuth callback saves the refresh token to the DB automatically
   and redirects back to the settings page with a flash confirmation.
 - **`phpunit.xml` self-contained.** Added `APP_KEY` and
-  `LODGELY_DEFAULT_RETENTION_DAYS` so the test suite runs without a local
+  `BEACON_DEFAULT_RETENTION_DAYS` so the test suite runs without a local
   `.env` file.
 - **Per-user inbox column picker.** A "Columns" button in the filter
   bar lets each user toggle which columns the inbox table renders. Pickable
@@ -1568,7 +1568,7 @@ semantic-ish versioning once a 1.0 is tagged.
   detail panel renders *Ad source*, *Custom questions*, and *Outreach* sections
   when applicable. Outreach pills (Qualified / Called / Mailed) are settable
   by clients and write `lead.outreach_toggled` audit events. New
-  `lodgely:import:meta-mock` artisan command seeds Meta demo data without
+  `beacon:import:meta-mock` artisan command seeds Meta demo data without
   re-running the full seeder.
 
 ### Changed
@@ -1576,7 +1576,7 @@ semantic-ish versioning once a 1.0 is tagged.
 - **Roomier inputs and selects.** Text inputs, selects and textareas now
   use explicit `0.5rem` block / `0.75rem` inline padding via global CSS.
 - **Footer GitHub link hardcoded** to the upstream repo as part of GPL-3.0
-  attribution; removed the `LODGELY_GITHUB_URL` env toggle.
+  attribution; removed the `BEACON_GITHUB_URL` env toggle.
 
 ### Fixed
 
@@ -1587,10 +1587,10 @@ semantic-ish versioning once a 1.0 is tagged.
 - Swapped the topbar and auth-screen logo from `img/logo.svg` to `img/logo.png`. The SVG used Inter and did not match the brand wordmark; the PNG is the authoritative artwork.
 - Bumped Docker base image from `php:8.3-fpm-alpine` to `php:8.4-fpm-alpine` to match the PHP 8.4 requirement of the locked Symfony 8.x dependencies; composer install now succeeds without errors.
 - Added `package-lock.json` so `npm ci` works in clean Docker/CI environments.
-- Removed `imap`, `imap-dev`, `krb5-dev` and the `docker-php-ext-configure imap` step from the Dockerfile; PHP 8.4 dropped the `imap` extension from its bundled set, causing `docker build` to fail. The IMAP email driver is optional (default `LODGELY_EMAIL_IMPORT_DRIVER=mock`) — see the config reference for how to enable it with a custom image.
+- Removed `imap`, `imap-dev`, `krb5-dev` and the `docker-php-ext-configure imap` step from the Dockerfile; PHP 8.4 dropped the `imap` extension from its bundled set, causing `docker build` to fail. The IMAP email driver is optional (default `BEACON_EMAIL_IMPORT_DRIVER=mock`) — see the config reference for how to enable it with a custom image.
 - Added `trustProxies(at: '*')` in `bootstrap/app.php` so Laravel correctly reads forwarded HTTPS headers from reverse proxies (Cloudflare, nginx, etc.), fixing 419 CSRF errors and broken secure-cookie sessions behind a proxy.
 - Improved Quick start (Docker) docs: added required `.env` keys table, storage permissions step, and a "Behind a reverse proxy / Cloudflare" section explaining `APP_URL`, `SESSION_SECURE_COOKIE`, and proxy trust.
-- Updated `.env.example` with clearer inline comments, safer defaults (`SESSION_DRIVER=file`, `SESSION_SECURE_COOKIE=false`), and explicit `LODGELY_HTTP_PORT` / `LODGELY_HTTPS_PORT` entries so port conflicts are easier to resolve.
+- Updated `.env.example` with clearer inline comments, safer defaults (`SESSION_DRIVER=file`, `SESSION_SECURE_COOKIE=false`), and explicit `BEACON_HTTP_PORT` / `BEACON_HTTPS_PORT` entries so port conflicts are easier to resolve.
 
 ### Added
 
@@ -1609,20 +1609,20 @@ semantic-ish versioning once a 1.0 is tagged.
   with the access token cached for 55 minutes). Both adapters implement
   the existing `AdMetricsSource` contract and feed `MetricsIngestor`
   unchanged — aggregate metrics only, no PII leaves either platform.
-  Activate by setting `LODGELY_AD_METRICS_SOURCES=meta,google` and
-  providing the relevant credentials (`LODGELY_META_ADS_ACCESS_TOKEN`,
-  `LODGELY_META_ADS_ACCOUNT_ID`, `LODGELY_GOOGLE_ADS_CLIENT_ID`,
-  `LODGELY_GOOGLE_ADS_CLIENT_SECRET`, `LODGELY_GOOGLE_ADS_REFRESH_TOKEN`,
-  `LODGELY_GOOGLE_ADS_DEVELOPER_TOKEN`, `LODGELY_GOOGLE_ADS_CUSTOMER_ID`,
-  optional `LODGELY_GOOGLE_ADS_LOGIN_CUSTOMER_ID`). Mocks remain the
+  Activate by setting `BEACON_AD_METRICS_SOURCES=meta,google` and
+  providing the relevant credentials (`BEACON_META_ADS_ACCESS_TOKEN`,
+  `BEACON_META_ADS_ACCOUNT_ID`, `BEACON_GOOGLE_ADS_CLIENT_ID`,
+  `BEACON_GOOGLE_ADS_CLIENT_SECRET`, `BEACON_GOOGLE_ADS_REFRESH_TOKEN`,
+  `BEACON_GOOGLE_ADS_DEVELOPER_TOKEN`, `BEACON_GOOGLE_ADS_CUSTOMER_ID`,
+  optional `BEACON_GOOGLE_ADS_LOGIN_CUSTOMER_ID`). Mocks remain the
   default for demo installs.
 
 ### Changed
 
-- **`lodgely:import:ad-metrics` now honours `LODGELY_AD_METRICS_SOURCES`.**
+- **`beacon:import:ad-metrics` now honours `BEACON_AD_METRICS_SOURCES`.**
   The command previously fanned out across every registered adapter; it
   now filters to the comma-separated list of source keys in
-  `config('lodgely.reporting.sources')`. This is what the env var was
+  `config('beacon.reporting.sources')`. This is what the env var was
   always advertised to do, but the wiring was missing.
 
 ### Fixed
@@ -1664,15 +1664,15 @@ semantic-ish versioning once a 1.0 is tagged.
 
 - **Ethical use statement.** Added a non-binding preamble to `LICENSE`
   and a matching `## Ethical use` section in `README.md` asking that
-  lodgely not be used to run lead intake for clients in the weapons,
+  beacon not be used to run lead intake for clients in the weapons,
   fossil-fuel energy, or internal-combustion vehicle industries. Framed
   as an ethical request because GPL-3.0 §10 prohibits further
   restrictions on the software itself.
 - **Footer version badge + GitHub link.** The app footer now shows the
   current package version (read from `composer.json` via the new
-  `lodgely.version` config value, so it stays in sync with the
+  `beacon.version` config value, so it stays in sync with the
   every-commit version bump) and an icon-labelled link to the source
-  repository. The link target is configurable via `LODGELY_GITHUB_URL`
+  repository. The link target is configurable via `BEACON_GITHUB_URL`
   and disappears when the env var is left blank, so self-hosted
   deployments that don't want to advertise a public repo can hide it.
 
@@ -1751,7 +1751,7 @@ semantic-ish versioning once a 1.0 is tagged.
   the recipient. Every dispatch writes a `client_report_email_sends`
   audit row (period covered, recipient ids, AI summary id, status,
   error) which renders as a "Recent sends" history on the page.
-  New artisan command `lodgely:report-emails:dispatch` (with
+  New artisan command `beacon:report-emails:dispatch` (with
   `--dry-run`) runs hourly via the scheduler. New tables:
   `client_report_emails`, `client_report_email_recipients`,
   `client_report_email_schedules`, `client_report_email_sends`.
@@ -1766,7 +1766,7 @@ semantic-ish versioning once a 1.0 is tagged.
   page no longer carries raw aggregate SQL or a `DB` facade import. Added
   `tests/Feature/LeadKpisTest.php` covering zero/aggregate/scope cases.
 - Replaced the placeholder "L" gradient square in the topbar and login screen
-  with the actual lodgely logo graphic (wordmark + dot mark). The logo is
+  with the actual beacon logo graphic (wordmark + dot mark). The logo is
   served from `public/img/logo.png`, copied from the existing
   `.github/logo.png` artwork already referenced by the README.
 - Decoupled `WithLeadFilters` from `WithBulkLeadActions`. `clearFilters()`
@@ -1830,9 +1830,9 @@ semantic-ish versioning once a 1.0 is tagged.
   - `GenerateAiSummary` queued job — calls the configured provider,
     writes back `response` + `model` + `token_usage`, leaves the row at
     `pending` for operator review. Enforces a per-tenant daily call cap
-    (`LODGELY_AI_MAX_CALLS_PER_DAY`, default 100).
+    (`BEACON_AI_MAX_CALLS_PER_DAY`, default 100).
   - `EnsureAiEnabled` middleware — `/settings/ai` and `/ai/drafts` 404 when
-    `LODGELY_AI_ENABLED=false` (master kill-switch). All trigger buttons
+    `BEACON_AI_ENABLED=false` (master kill-switch). All trigger buttons
     are also hidden in that state.
   - New Livewire pages: `AiSettingsPage` at `/settings/ai` (provider
     config, write-only API key, "Test connection" button) and `DraftsPage`
@@ -1842,7 +1842,7 @@ semantic-ish versioning once a 1.0 is tagged.
     report-view summaries render as a card above the table in
     `/my-reports`; approved lead-qualification summaries render in the
     operator's lead panel.
-  - Off by default — `LODGELY_AI_ENABLED=false` ships in `.env.example`.
+  - Off by default — `BEACON_AI_ENABLED=false` ships in `.env.example`.
 - **Custom client reporting views** — operators can now define named reporting views (choosing any combination of metrics from: Leads, New Leads, Reviewed Leads, Clicks, Impressions, Ad Spend, Reach, CTR, Cost per Lead, Platform Leads) and assign each view to specific client users. Clients see a "My reports" page with a tab per assigned view and a monthly time-series table showing only the selected columns. Different clients can see entirely different views. Operators see all views at `/my-reports` for preview. New nav links: "Report views" for operators, "My reports" for clients.
   - `client_reporting_views` table — stores view name and JSON column list per tenant.
   - `client_reporting_view_user` pivot table — maps views to client users with cascade-delete.
@@ -1852,19 +1852,19 @@ semantic-ish versioning once a 1.0 is tagged.
   - `ReportingViewsPage` Livewire component at `/reporting/views` (operators only) — full CRUD with column checkbox grid and client assignment.
   - `MyReportsPage` Livewire component at `/my-reports` — tab-based view selector, 3/6/12-month range filter, KPI summary strip, monthly table.
 
-- **README header** — added lodgely logo, shields.io badges (license, PHP, Laravel, Livewire, version, GitHub stars), and a table of contents.
+- **README header** — added beacon logo, shields.io badges (license, PHP, Laravel, Livewire, version, GitHub stars), and a table of contents.
 
 - **Reporting module** (`app/Domain/Reporting/`) — light ad spend ingestion and campaign rollup dashboard for operators:
   - New `ad_spend_reports` table stores daily aggregate metrics per campaign (platform, campaign ID/name, impressions, clicks, spend in cents, currency, reach, platform-reported lead count). No PII stored. Unique constraint on `(tenant_id, platform, date, campaign_id)` makes re-ingestion idempotent.
   - `AdMetricsSource` contract (adapter interface): `platform()`, `label()`, `fetch(tenantId, date): iterable<AdMetricsSnapshot>`. Drop a class implementing this, register it in `AppServiceProvider::AD_METRICS_SOURCES`, and it runs on schedule.
   - `AdMetricsSnapshot` readonly DTO carries one day's aggregate metrics from an ad platform into `MetricsIngestor`.
   - `MetricsIngestor` service upserts snapshots into `ad_spend_reports` (insert or update by unique key).
-  - `CampaignRollup` service aggregates spend/click/impression totals across the date range and joins with lodgely's own lead counts via `leads.campaign_id`.
+  - `CampaignRollup` service aggregates spend/click/impression totals across the date range and joins with beacon's own lead counts via `leads.campaign_id`.
   - Mock adapters: `MetaMockAdMetricsSource` (3 campaigns, deterministic seed) and `GoogleMockAdMetricsSource` (2 campaigns) for demos and dev.
-  - `lodgely:import:ad-metrics` artisan command — `--days=N`, `--date=YYYY-MM-DD`, `--platform=meta|google` options. Scheduled daily at 05:00.
-  - `/reporting` Livewire page (operators only): platform pill filter (All / Meta / Google), date range pill (7 / 30 / 90 days), KPI cards (total spend, clicks, impressions, platform leads, lodgely leads), cost-per-lead callout, per-campaign breakdown table, and leads-by-source table from lodgely's own data.
+  - `beacon:import:ad-metrics` artisan command — `--days=N`, `--date=YYYY-MM-DD`, `--platform=meta|google` options. Scheduled daily at 05:00.
+  - `/reporting` Livewire page (operators only): platform pill filter (All / Meta / Google), date range pill (7 / 30 / 90 days), KPI cards (total spend, clicks, impressions, platform leads, beacon leads), cost-per-lead callout, per-campaign breakdown table, and leads-by-source table from beacon's own data.
   - `Reporting` link added to operator nav in the topbar.
-  - `LODGELY_AD_METRICS_SOURCES` env var (comma-separated) controls which sources run; defaults to `meta_mock,google_mock`.
+  - `BEACON_AD_METRICS_SOURCES` env var (comma-separated) controls which sources run; defaults to `meta_mock,google_mock`.
 - **Meta Lead Ads fields on `leads` table** — ten new nullable columns cover the structural fields present on every Meta lead: `meta_lead_id` (Meta's own ID, for idempotent webhook ingestion), `ad_id` / `ad_name`, `adset_id` / `adset_name`, `campaign_id`, `form_id` / `form_name`, `platform` (`facebook` | `instagram`), and `is_organic`. Indexes added on `(tenant_id, meta_lead_id)`, `(tenant_id, ad_id)`, and `(tenant_id, form_id)`. Dynamic per-form custom question answers continue to flow through `raw_payload`.
 - `IncomingLead` DTO extended with the same ten optional Meta fields so the future Meta Lead Ads importer adapter can pass them through to the ingestor without any further changes.
 
@@ -1919,20 +1919,20 @@ semantic-ish versioning once a 1.0 is tagged.
   - `Generate` button produces a strong random password and surfaces a
     one-time hint to the operator.
   - Sensitive changes are written to the standard Laravel log
-    (`lodgely.user.*`) — promoted to a dedicated audit table later.
+    (`beacon.user.*`) — promoted to a dedicated audit table later.
 - **Webhook importer** — signed token URL per endpoint (`/webhooks`):
   - Operators create endpoints from the UI; each gets a unique 48-char token.
   - `POST /api/webhooks/{token}` accepts JSON leads and runs them through
     the full ingest pipeline (normalization, duplicate detection, audit).
   - Rate-limited to 60 req/min. Returns `201 {status, lead_id, duplicate}`.
   - Endpoints can be enabled/disabled and deleted from the UI.
-- **Real IMAP email backend** (`LODGELY_EMAIL_IMPORT_DRIVER=imap`):
+- **Real IMAP email backend** (`BEACON_EMAIL_IMPORT_DRIVER=imap`):
   - `ImapLeadSource` connects to any IMAP server, fetches unseen messages,
     and marks them read after processing.
   - `MailBodyParser` extracts name / phone / message from structured
     contact-form bodies; falls back to full-body message for plain prose.
     HTML bodies are stripped before parsing.
-  - `lodgely:import:email-imap` artisan command; scheduled every 15 minutes
+  - `beacon:import:email-imap` artisan command; scheduled every 15 minutes
     when a host is configured.
   - `/imports/email-imap` Livewire page with connection status, optional
     overrides, and import history. Nav link shown only when host is set.
@@ -1941,15 +1941,15 @@ semantic-ish versioning once a 1.0 is tagged.
 ### Changed
 
 - Topbar gains `Users` and `Webhooks` links for operators.
-- `Email (IMAP)` nav link appears when `LODGELY_IMAP_HOST` is configured.
-- `config/lodgely.php` gains a full `importers.email.imap` block.
+- `Email (IMAP)` nav link appears when `BEACON_IMAP_HOST` is configured.
+- `config/beacon.php` gains a full `importers.email.imap` block.
 
 ### Notes
 
-- `php artisan lodgely:user:create` stays available for bootstrap /
+- `php artisan beacon:user:create` stays available for bootstrap /
   scripted deployments; the UI is for day-to-day work.
 - Mock email driver (`email_mock`) remains available for demos; it is still
-  the default until `LODGELY_EMAIL_IMPORT_DRIVER=imap` is set.
+  the default until `BEACON_EMAIL_IMPORT_DRIVER=imap` is set.
 
 ## [0.1.0] · MVP
 
@@ -1964,6 +1964,6 @@ semantic-ish versioning once a 1.0 is tagged.
   - Duplicate detection on normalized email & phone, with reconciliation
   - Two-role auth: `operator` (full access) and `client` (scoped by `client_name`)
   - Audit logging via `lead_events`
-  - Retention support via `retention_until` + `lodgely:leads:purge` command
+  - Retention support via `retention_until` + `beacon:leads:purge` command
   - Docker Compose stack with Postgres 16, PHP-FPM, queue worker, Caddy
   - Seed data: one operator, two scoped client users, ~60 neutral demo leads
