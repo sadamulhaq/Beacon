@@ -14,7 +14,7 @@ use RuntimeException;
  * Credentials are resolved in priority order:
  *   1. Database row via GoogleSheetsSetting::forTenant() (set through the
  *      /settings/google-sheets page — preferred).
- *   2. Env/config fallback via config('lodgely.importers.google_sheets')
+ *   2. Env/config fallback via config('beacon.importers.google_sheets')
  *      for installs that still use the legacy .env approach.
  *
  * Access tokens are cached for just under the 1 h Google validity window,
@@ -82,7 +82,7 @@ class GoogleSheetsClient
 
         if ($clientId === '') {
             throw new RuntimeException(
-                'Google Sheets: LODGELY_GOOGLE_SHEETS_CLIENT_ID must be set before authorizing.'
+                'Google Sheets: BEACON_GOOGLE_SHEETS_CLIENT_ID must be set before authorizing.'
             );
         }
 
@@ -168,7 +168,7 @@ class GoogleSheetsClient
             );
         }
 
-        $cacheKey = 'lodgely.google_sheets.access_token.'.sha1($clientId.'|'.$refreshToken);
+        $cacheKey = 'beacon.google_sheets.access_token.'.sha1($clientId.'|'.$refreshToken);
 
         return Cache::remember($cacheKey, 3300, function () use ($clientId, $clientSecret, $refreshToken, $timeout) {
             $response = Http::timeout($timeout)
@@ -208,7 +208,7 @@ class GoogleSheetsClient
      */
     private function config(): array
     {
-        $base = (array) config('lodgely.importers.google_sheets');
+        $base = (array) config('beacon.importers.google_sheets');
 
         try {
             $row = GoogleSheetsSetting::forTenant(Tenant::DEFAULT_ID);

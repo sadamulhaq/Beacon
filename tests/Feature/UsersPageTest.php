@@ -18,7 +18,7 @@ class UsersPageTest extends TestCase
 
     private function operator(): User
     {
-        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'lodgely']);
+        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'beacon']);
 
         return User::create([
             'name'      => 'Test Operator',
@@ -35,7 +35,7 @@ class UsersPageTest extends TestCase
             'name' => 'Client', 'email' => 'c@example.com', 'password' => Hash::make('p'),
             'role' => 'client', 'is_active' => true,
         ]);
-        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'lodgely']);
+        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'beacon']);
 
         $this->actingAs($client)
             ->get('/users')

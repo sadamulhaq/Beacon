@@ -16,9 +16,9 @@ use RuntimeException;
  * the reporting compliance intent: aggregate metrics only, no PII, no
  * audience-level data.
  *
- * Requires `LODGELY_META_ADS_ACCESS_TOKEN` and `LODGELY_META_ADS_ACCOUNT_ID`
+ * Requires `BEACON_META_ADS_ACCESS_TOKEN` and `BEACON_META_ADS_ACCOUNT_ID`
  * to be set, and the source key `meta` to be listed in
- * `LODGELY_AD_METRICS_SOURCES`.
+ * `BEACON_AD_METRICS_SOURCES`.
  */
 class MetaAdsSource implements AdMetricsSource
 {
@@ -95,11 +95,11 @@ class MetaAdsSource implements AdMetricsSource
         $token = trim($settings->effectiveMetaAccessToken());
         $apiVer = trim($settings->effectiveMetaApiVersion());
         $currency = $settings->effectiveMetaCurrency();
-        $timeout = (int) config('lodgely.reporting.http_timeout_sec', 30);
+        $timeout = (int) config('beacon.reporting.http_timeout_sec', 30);
 
         if ($accountId === '' || $token === '') {
             throw new RuntimeException(
-                'Meta Ads source: LODGELY_META_ADS_ACCESS_TOKEN and LODGELY_META_ADS_ACCOUNT_ID must both be set.'
+                'Meta Ads source: BEACON_META_ADS_ACCESS_TOKEN and BEACON_META_ADS_ACCOUNT_ID must both be set.'
             );
         }
 

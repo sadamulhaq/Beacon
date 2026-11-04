@@ -20,7 +20,7 @@ class GoogleSheetsIdempotencyTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'lodgely']);
+        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'beacon']);
     }
 
     private function makeSheetSource(array $overrides = []): GoogleSheetSource
@@ -145,10 +145,10 @@ class GoogleSheetsIdempotencyTest extends TestCase
         $this->assertSame(3, Lead::where('source', 'google_sheets')->count());
 
         // Dry-run reports but writes nothing.
-        $this->artisan('lodgely:google-sheets:dedupe --dry-run')->assertSuccessful();
+        $this->artisan('beacon:google-sheets:dedupe --dry-run')->assertSuccessful();
         $this->assertSame(3, Lead::where('source', 'google_sheets')->count());
 
-        $this->artisan('lodgely:google-sheets:dedupe')->assertSuccessful();
+        $this->artisan('beacon:google-sheets:dedupe')->assertSuccessful();
 
         $remaining = Lead::where('source', 'google_sheets')->get();
         $this->assertCount(1, $remaining, 'Only the earliest copy survives.');
@@ -179,7 +179,7 @@ class GoogleSheetsIdempotencyTest extends TestCase
             ]);
         }
 
-        $this->artisan('lodgely:google-sheets:dedupe')->assertSuccessful();
+        $this->artisan('beacon:google-sheets:dedupe')->assertSuccessful();
 
         $this->assertSame(1, Lead::where('import_id', $import->id)->count());
         $this->assertSame(2, Lead::onlyTrashed()->where('import_id', $import->id)->count());
@@ -207,7 +207,7 @@ class GoogleSheetsIdempotencyTest extends TestCase
         // Delete the sheet source — the import->source resolution chain now breaks.
         $sheet->delete();
 
-        $this->artisan('lodgely:google-sheets:dedupe')->assertSuccessful();
+        $this->artisan('beacon:google-sheets:dedupe')->assertSuccessful();
 
         $this->assertSame(1, Lead::where('source', 'google_sheets')->count());
         $this->assertSame(3, Lead::onlyTrashed()->where('source', 'google_sheets')->count());

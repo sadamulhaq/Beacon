@@ -39,7 +39,7 @@ class AuthorizationMatrixTest extends TestCase
 
     private function tenant(): void
     {
-        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'lodgely']);
+        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'beacon']);
     }
 
     private function client(string $scope = 'Acme'): User
@@ -143,7 +143,7 @@ class AuthorizationMatrixTest extends TestCase
         // correct answer even for a name that does not exist — the client must
         // not be able to probe which archives are on disk.
         $this->actingAs($this->client())
-            ->get('/settings/backups/lodgely-backup-20260101-000000.zip/download')
+            ->get('/settings/backups/beacon-backup-20260101-000000.zip/download')
             ->assertForbidden();
     }
 

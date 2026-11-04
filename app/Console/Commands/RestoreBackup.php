@@ -7,8 +7,8 @@ use Illuminate\Console\Command;
 
 class RestoreBackup extends Command
 {
-    protected $signature = 'lodgely:backup:restore
-        {path : Absolute path to a lodgely backup .zip archive}
+    protected $signature = 'beacon:backup:restore
+        {path : Absolute path to a beacon backup .zip archive}
         {--force : Skip the confirmation prompt}';
 
     protected $description = 'Restore the database from a backup archive. Destructive — replaces all current data.';

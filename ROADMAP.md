@@ -1,6 +1,6 @@
-# lodgely Roadmap
+# beacon Roadmap
 
-lodgely's job in the lead pipeline is **lead evaluation**: intake from every
+beacon's job in the lead pipeline is **lead evaluation**: intake from every
 source, qualification, labels, assignment to clients and owners, outreach
 state and reporting. It is a lead intake hub, not a CRM (see CLAUDE.md →
 *Product north star*).
@@ -19,7 +19,7 @@ Phases are ordered by value for lead-gen conversion and data quality. The
 interface contract comes first because most later items depend on it.
 Effort: **S** ≈ days, **M** ≈ 1–2 weeks, **L** ≈ several weeks.
 
-| Phase | Theme | lodgely items | OpenFlow items (see its ROADMAP.md) |
+| Phase | Theme | beacon items | OpenFlow items (see its ROADMAP.md) |
 |---|---|---|---|
 | 0 | Shipped: correctness & privacy batch | done in 0.55.0 | done in 0.41.0 |
 | 1 | Contract & speed-to-lead | LG-1, LG-2, LG-3 | OF-1, OF-2, OF-3, OF-4, OF-13 |
@@ -56,7 +56,7 @@ shipped in 0.59.0) has its own shared section at the end of this file:
 ## Phase 1 — Contract & speed-to-lead
 
 ### LG-1 · OpenFlow push endpoint
-**Repo:** lodgely · **Status:** missing (the generic webhook intake is token-in-URL only, with no HMAC and no idempotency, and it rejects OpenFlow's body with a 422) · **Effort:** M · **Depends on:** X-1, OF-3
+**Repo:** beacon · **Status:** missing (the generic webhook intake is token-in-URL only, with no HMAC and no idempotency, and it rejects OpenFlow's body with a 422) · **Effort:** M · **Depends on:** X-1, OF-3
 **Why:** speed-to-lead. Today a lead waits up to an hour (and until 0.55.0
 up to 24 h) before anyone can see it. A push delivers it in seconds (D2).
 
@@ -73,7 +73,7 @@ up to 24 h) before anyone can see it. A push delivers it in seconds (D2).
   of the same submission yields one lead.
 
 ### LG-2 · Consume contract v1 in the pull
-**Repo:** lodgely · **Status:** partial (pull works on the legacy API: newest-first offset paging, time cutoff with 60-min overlap, id-keyed mapping, no metadata) · **Effort:** M · **Depends on:** X-1, OF-1, OF-2
+**Repo:** beacon · **Status:** partial (pull works on the legacy API: newest-first offset paging, time cutoff with 60-min overlap, id-keyed mapping, no metadata) · **Effort:** M · **Depends on:** X-1, OF-1, OF-2
 **Why:** the pull is the safety net. It must be gap-free and must survive
 form edits instead of silently dropping or misfiling leads.
 
@@ -92,9 +92,9 @@ form edits instead of silently dropping or misfiling leads.
   lands in `raw_payload`.
 
 ### LG-3 · Store the submission time
-**Repo:** lodgely · **Status:** missing (`created_at` is the ingest time; OpenFlow's `created_at` is only in `raw_payload`) · **Effort:** S · **Depends on:** — (uses `submitted_at` from X-1 when available)
+**Repo:** beacon · **Status:** missing (`created_at` is the ingest time; OpenFlow's `created_at` is only in `raw_payload`) · **Effort:** S · **Depends on:** — (uses `submitted_at` from X-1 when available)
 **Why:** reporting, SLAs ("answered within 1 h") and retention should run
-on when the person enquired, not on when lodgely happened to fetch.
+on when the person enquired, not on when beacon happened to fetch.
 
 **Acceptance criteria**
 - A new nullable `leads.submitted_at` is set by every importer that knows
@@ -111,7 +111,7 @@ on when the person enquired, not on when lodgely happened to fetch.
 ## Phase 2 — Conversion & data at the source
 
 ### LG-6 · Per-lead attribution
-**Repo:** lodgely · **Status:** partial (Meta Lead Ads fill `campaign_id/ad_id/…`; Sheets UTMs land in custom answers; OpenFlow click ids stay in `raw_payload`; per-campaign reporting only counts Meta leads) · **Effort:** M · **Depends on:** X-1, OF-6
+**Repo:** beacon · **Status:** partial (Meta Lead Ads fill `campaign_id/ad_id/…`; Sheets UTMs land in custom answers; OpenFlow click ids stay in `raw_payload`; per-campaign reporting only counts Meta leads) · **Effort:** M · **Depends on:** X-1, OF-6
 **Why:** operators and clients need to see which campaign produced a lead
 for every source, not just Meta forms. That is the basis for CPL per campaign
 and for LG-7.
@@ -130,7 +130,7 @@ and for LG-7.
   the stored attribution, never sending a click id.
 
 ### LG-8 · Partial leads
-**Repo:** lodgely · **Status:** missing (`incomplete` status exists but is only ever set by hand) · **Effort:** S · **Depends on:** OF-8, LG-1 or LG-2
+**Repo:** beacon · **Status:** missing (`incomplete` status exists but is only ever set by hand) · **Effort:** S · **Depends on:** OF-8, LG-1 or LG-2
 **Why:** opted-in partials are worth a call, but they must not inflate lead
 counts, CPL or trigger quality conversions (D3).
 
@@ -148,7 +148,7 @@ counts, CPL or trigger quality conversions (D3).
 ## Phase 3 — Lead evaluation
 
 ### LG-4 · Client model
-**Repo:** lodgely · **Status:** partial (`client_name` free text on leads, users scoped by string via `user_lead_scopes`) · **Effort:** M · **Depends on:** —
+**Repo:** beacon · **Status:** partial (`client_name` free text on leads, users scoped by string via `user_lead_scopes`) · **Effort:** M · **Depends on:** —
 **Why:** qualification rules, owners, reporting connectors and client type
 all hang off "the client". A typo in a free-text name today silently hides
 leads from that client.
@@ -167,7 +167,7 @@ leads from that client.
   key; optionally `GET /api/v1/clients` lists the keys a token can read.
 
 ### LG-5 · Rule-based qualification
-**Repo:** lodgely · **Status:** missing (manual *Qualified* toggle; advisory AI; OpenFlow fields mappable onto status/priority) · **Effort:** L · **Depends on:** LG-4, OF-1 (stable keys), LG-2
+**Repo:** beacon · **Status:** missing (manual *Qualified* toggle; advisory AI; OpenFlow fields mappable onto status/priority) · **Effort:** L · **Depends on:** LG-4, OF-1 (stable keys), LG-2
 **Why:** consistent, explainable qualification is the core of a lead intake
 hub. It must live in exactly one place.
 
@@ -187,7 +187,7 @@ hub. It must live in exactly one place.
 - Clients see the state and breakdown on their leads but cannot edit rules.
 
 ### LG-10 · New-lead notifications
-**Repo:** lodgely · **Status:** missing · **Effort:** S · **Depends on:** LG-1 (to be fast), LG-5 (to filter)
+**Repo:** beacon · **Status:** missing · **Effort:** S · **Depends on:** LG-1 (to be fast), LG-5 (to filter)
 **Why:** a fast first call converts. Pushing a lead into the inbox is only
 half of it if nobody looks.
 
@@ -199,7 +199,7 @@ half of it if nobody looks.
 - Sends are audited, and a failed send is retried by the queue worker.
 
 ### LG-7 · Quality conversions to ad platforms
-**Repo:** lodgely · **Status:** missing (ad platforms only receive "every lead" from OpenFlow's own integrations) · **Effort:** L · **Depends on:** LG-5, LG-6, existing Google Ads / Meta connections
+**Repo:** beacon · **Status:** missing (ad platforms only receive "every lead" from OpenFlow's own integrations) · **Effort:** L · **Depends on:** LG-5, LG-6, existing Google Ads / Meta connections
 **Why:** optimising ad spend on *qualified* leads instead of all leads is
 the biggest data-quality lever for paid campaigns (D5).
 
@@ -215,7 +215,7 @@ the biggest data-quality lever for paid campaigns (D5).
   compliance rail).
 
 ### LG-9 · Owner assignment
-**Repo:** lodgely · **Status:** missing (routing only by client) · **Effort:** M · **Depends on:** LG-4
+**Repo:** beacon · **Status:** missing (routing only by client) · **Effort:** M · **Depends on:** LG-4
 **Why:** in client teams, "who calls this lead" is the next question after
 "is it qualified". Staying inside intake scope means assignment, not a
 pipeline.
@@ -232,7 +232,7 @@ pipeline.
 ## Phase 4 — GDPR data lifecycle
 
 ### LG-11 · Real erasure after retention
-**Repo:** lodgely · **Status:** partial (`retention_until` + daily purge, but purge only soft-deletes; PII, notes, events, AI summaries stay) · **Effort:** M · **Depends on:** —
+**Repo:** beacon · **Status:** partial (`retention_until` + daily purge, but purge only soft-deletes; PII, notes, events, AI summaries stay) · **Effort:** M · **Depends on:** —
 **Why:** a "purged" lead that still holds name, email and payload is not
 deleted in the GDPR sense. This is independent of the contract and can be
 pulled forward.
@@ -253,7 +253,7 @@ pulled forward.
   in the vigilo feed (LG-15), so vigilo drops its copy too.
 
 ### LG-12 · Data-subject export & erasure
-**Repo:** lodgely · **Status:** missing · **Effort:** M · **Depends on:** LG-11, X-2, OF-10
+**Repo:** beacon · **Status:** missing · **Effort:** M · **Depends on:** LG-11, X-2, OF-10
 **Why:** DACH clients get Art. 15/17 requests. One action should cover both
 systems.
 
@@ -269,7 +269,7 @@ systems.
   left for manual cancellation.
 
 ### LG-13 · Consent & lawful basis on leads
-**Repo:** lodgely · **Status:** missing (no consent capture; `PRIVACY.md` lists it as not done) · **Effort:** S · **Depends on:** OF-9 (for OpenFlow leads)
+**Repo:** beacon · **Status:** missing (no consent capture; `PRIVACY.md` lists it as not done) · **Effort:** S · **Depends on:** OF-9 (for OpenFlow leads)
 **Why:** the operator must be able to show why they may contact a lead.
 
 **Acceptance criteria**
@@ -284,7 +284,7 @@ systems.
 ## Phase 5 — Operator scale
 
 ### LG-14 · Full multi-tenancy — deferred
-**Repo:** lodgely · **Status:** partial (`tenant_id` everywhere, hard-coded `Tenant::DEFAULT_ID` in about 120 places, no resolver) · **Effort:** L · **Depends on:** LG-4
+**Repo:** beacon · **Status:** partial (`tenant_id` everywhere, hard-coded `Tenant::DEFAULT_ID` in about 120 places, no resolver) · **Effort:** L · **Depends on:** LG-4
 **Why deferred:** under D4 (one install per agency, clients scoped by
 LG-4), per-client isolation is already covered by `visibleTo()` + the Client
 model. Full tenancy only pays off for hosting several agencies on one
@@ -312,50 +312,50 @@ install.
 ## Shared: cross-repo interfaces & dependencies
 
 > This section is **duplicated verbatim** in `vidual-labs/openflow/ROADMAP.md`
-> and `vidual-labs/lodgely/ROADMAP.md`. Change it in both, in the same
+> and `sadamulhaq/Beacon/ROADMAP.md`. Change it in both, in the same
 > release pair.
 
 ### Who owns what
 
 | Concern | Owner | Never in |
 |---|---|---|
-| Everything the visitor sees before or at submit: steps, validation, routing on individual answers (jump logic, conditional end screens, conditional redirects), consent capture, spam checks, calon booking at submit | **OpenFlow** | lodgely |
-| Lead evaluation: scoring, qualification rules, labels, assignment to clients/owners, outreach state, reporting, ad-platform *quality* signals | **lodgely** | OpenFlow |
+| Everything the visitor sees before or at submit: steps, validation, routing on individual answers (jump logic, conditional end screens, conditional redirects), consent capture, spam checks, calon booking at submit | **OpenFlow** | beacon |
+| Lead evaluation: scoring, qualification rules, labels, assignment to clients/owners, outreach state, reporting, ad-platform *quality* signals | **beacon** | OpenFlow |
 | Calendar availability + bookings | **calon** (external; known only through the interfaces below) | — |
 
 **Rule of thumb.** A *single answer* deciding what the visitor sees next
 (e.g. "budget < 5k → 'not a fit' end screen, no booking step") is **routing**
 and lives in OpenFlow. A *combination of answers* producing a verdict about the
-lead is **qualification** and lives only in lodgely. Qualification rules exist
+lead is **qualification** and lives only in beacon. Qualification rules exist
 in exactly one place.
 
 **Current violations** (fixed by the items referenced):
-- lodgely lets an OpenFlow field be mapped straight onto `status` / `priority`,
+- beacon lets an OpenFlow field be mapped straight onto `status` / `priority`,
   so a form answer can set the evaluation → removed by **LG-5**.
-- lodgely has two "qualified" notions (manual *Qualified* toggle, advisory AI
+- beacon has two "qualified" notions (manual *Qualified* toggle, advisory AI
   qualification) → one qualification state owned by the rule engine in
   **LG-5**; AI may rank (set `priority`, overridable) but never qualifies.
-- The OpenFlow → lodgely interface is implicit and unversioned (no API
+- The OpenFlow → beacon interface is implicit and unversioned (no API
   version, offset-less timestamps, offset paging, webhook without submission
   id) → **X-1**.
 
 ### Decisions this roadmap builds on (confirmed 2026-10-06)
 
-All five were confirmed on 2026-10-06 (OpenFlow 0.46.0 / lodgely 0.55.2).
+All five were confirmed on 2026-10-06 (OpenFlow 0.46.0 / beacon 0.55.2).
 Changing one is a roadmap change in both repos.
 
 | # | Decision | Consequence |
 |---|---|---|
-| D1 | **No automatic feedback loop from lodgely into the session.** lodgely pulls/receives asynchronously, so its verdict can only drive *post-submit* actions (ad-platform conversions, notifications, operator actions). In-session gating (e.g. no booking for an obvious non-fit) is OpenFlow routing on single answers. | No lodgely → calon cancellation automation; cancelling a booking stays an operator action in calon. |
-| D2 | **Push + pull.** A signed OpenFlow webhook delivers each submission to lodgely within seconds; the pull stays as hourly reconciliation (catches anything a push missed). | Webhook contract (X-1) and lodgely endpoint (LG-1) come first. |
-| D3 | **Partial submissions only with explicit opt-in** at the contact step, short retention, imported by lodgely as `incomplete` and excluded from KPIs. | OF-8 depends on OF-9 (consent record). |
-| D4 | **One OpenFlow + one lodgely per agency, many clients.** Clients log into lodgely only; OpenFlow stays operator-only. | OpenFlow needs team visibility (OF-12), not per-client tenancy; lodgely needs a real Client model (LG-4); full `tenant_id` multi-tenancy stays deferred. |
-| D5 | **lodgely owns "qualified lead" conversions** to Google Ads / Meta. OpenFlow's own Google Ads / Meta CAPI integrations remain an optional "every lead" signal. | LG-7 depends on attribution travelling through the contract. |
+| D1 | **No automatic feedback loop from beacon into the session.** beacon pulls/receives asynchronously, so its verdict can only drive *post-submit* actions (ad-platform conversions, notifications, operator actions). In-session gating (e.g. no booking for an obvious non-fit) is OpenFlow routing on single answers. | No beacon → calon cancellation automation; cancelling a booking stays an operator action in calon. |
+| D2 | **Push + pull.** A signed OpenFlow webhook delivers each submission to beacon within seconds; the pull stays as hourly reconciliation (catches anything a push missed). | Webhook contract (X-1) and beacon endpoint (LG-1) come first. |
+| D3 | **Partial submissions only with explicit opt-in** at the contact step, short retention, imported by beacon as `incomplete` and excluded from KPIs. | OF-8 depends on OF-9 (consent record). |
+| D4 | **One OpenFlow + one beacon per agency, many clients.** Clients log into beacon only; OpenFlow stays operator-only. | OpenFlow needs team visibility (OF-12), not per-client tenancy; beacon needs a real Client model (LG-4); full `tenant_id` multi-tenancy stays deferred. |
+| D5 | **beacon owns "qualified lead" conversions** to Google Ads / Meta. OpenFlow's own Google Ads / Meta CAPI integrations remain an optional "every lead" signal. | LG-7 depends on attribution travelling through the contract. |
 
 ### X-1 · OpenFlow submission contract v1
 
 The one interface both repos build against. OpenFlow **produces** it (pull API
-and webhook body are the same document); lodgely **consumes** it.
+and webhook body are the same document); beacon **consumes** it.
 
 ```jsonc
 {
@@ -382,9 +382,9 @@ and webhook body are the same document); lodgely **consumes** it.
 - **IDs.** `submission_id` (UUID v4) is the only idempotency key.
   `form.id` never changes. Field **keys** are stable, human-readable and
   unique within a form (OF-1); the opaque field `id` is kept for back-compat
-  only. lodgely maps by key and falls back to id.
+  only. beacon maps by key and falls back to id.
 - **Time.** Every timestamp is ISO 8601 UTC with `Z`. (Today OpenFlow emits
-  offset-less SQLite strings. lodgely 0.55.0 parses them as UTC, which is the
+  offset-less SQLite strings. beacon 0.55.0 parses them as UTC, which is the
   interim fix.)
 - **Minimisation.** No IP, no user agent, no file contents in the contract.
   Files are listed as metadata only. IP/user agent stay in OpenFlow for the
@@ -394,7 +394,7 @@ and webhook body are the same document); lodgely **consumes** it.
   `(submitted_at, submission_id)`. The cursor makes the walk resumable and
   gap-free (replaces today's newest-first offset paging with a 1-second tie
   problem).
-- **Push.** `POST <lodgely endpoint>` with the same document.
+- **Push.** `POST <beacon endpoint>` with the same document.
   - Headers: `X-OpenFlow-Event`, `X-OpenFlow-Delivery` (uuid) and
     `X-OpenFlow-Signature: t=<unix>,v1=<hex HMAC-SHA256 of "<t>.<raw body>">`.
   - Receivers reject signatures older than 5 minutes.
@@ -406,9 +406,9 @@ and webhook body are the same document); lodgely **consumes** it.
   - A breaking change ships as v2, and v1 keeps being served for at least two
     OpenFlow minor releases.
   - `GET /api/v1/meta` returns `{ api_versions: [1], app_version }`, so
-    lodgely can refuse an incompatible install with a clear message.
+    beacon can refuse an incompatible install with a clear message.
   - The legacy unversioned `/api/forms` and `/api/submissions` stay until
-    lodgely no longer uses them.
+    beacon no longer uses them.
 - **Timing.**
   - Push: under 1 minute after submit (retries: 1/5/30/120 min).
   - Pull: hourly reconciliation.
@@ -418,8 +418,8 @@ and webhook body are the same document); lodgely **consumes** it.
 
 ### X-2 · Cross-system erasure & export (GDPR)
 
-- A data-subject request is started **in lodgely** (the system the operator
-  works in). lodgely finds every lead matching the person (normalized email /
+- A data-subject request is started **in beacon** (the system the operator
+  works in). beacon finds every lead matching the person (normalized email /
   phone). It then:
   - exports or erases them locally;
   - calls OpenFlow `POST /api/v1/erasure` with a token scoped `erase` (by
@@ -431,7 +431,7 @@ and webhook body are the same document); lodgely **consumes** it.
   - cannot delete a calon booking. The erasure report lists `booking_id`s
     for the operator to cancel in calon.
 - Retention runs independently in each system. OpenFlow can be set to delete
-  a submission N days after lodgely has acknowledged it (OF-10), so the form
+  a submission N days after beacon has acknowledged it (OF-10), so the form
   builder isn't a second long-term lead store.
 
 ### Dependency map
@@ -455,27 +455,27 @@ X-2 erasure ──> OF-10 retention/erasure API + LG-12 DSAR
 | OF-6 hidden fields & UTM | OpenFlow | LG-6, LG-7 |
 | OF-8 partial submissions | OpenFlow | LG-8 |
 | OF-10 retention & erasure API | OpenFlow | LG-12 |
-| LG-4 Client model | lodgely | LG-5, LG-9 |
-| LG-5 qualification rules | lodgely | LG-7, LG-10 |
+| LG-4 Client model | beacon | LG-5, LG-9 |
+| LG-5 qualification rules | beacon | LG-7, LG-10 |
 
 ---
 
 ## Shared with vigilo: lead-metadata interface
 
-> This section is **duplicated verbatim** in `vidual-labs/lodgely/ROADMAP.md`
+> This section is **duplicated verbatim** in `sadamulhaq/Beacon/ROADMAP.md`
 > and `vidual-labs/vigilo/ROADMAP.md`. Change it in both, in the same
-> release pair. It is separate from the OpenFlow ↔ lodgely section on
+> release pair. It is separate from the OpenFlow ↔ beacon section on
 > purpose: OpenFlow is not part of this interface.
 
 ### Who owns what
 
 | Concern | Owner | Never in |
 |---|---|---|
-| Lead intake, lead content (PII), evaluation, outreach state, attribution (LG-6), reporting charts, client reports, quality conversions sent to ad platforms (LG-7) | **lodgely** | vigilo |
-| Daily ad-account checks, findings ("broken", later "wasting money"), digests and alerts, suggestions without charts | **vigilo** | lodgely |
-| Ad-platform credentials | each tool keeps its own copy (lodgely: *Settings → Ad platforms* or `LODGELY_*`; vigilo: `VIGILO_*`) | the API |
+| Lead intake, lead content (PII), evaluation, outreach state, attribution (LG-6), reporting charts, client reports, quality conversions sent to ad platforms (LG-7) | **beacon** | vigilo |
+| Daily ad-account checks, findings ("broken", later "wasting money"), digests and alerts, suggestions without charts | **vigilo** | beacon |
+| Ad-platform credentials | each tool keeps its own copy (beacon: *Settings → Ad platforms* or `BEACON_*`; vigilo: `VIGILO_*`) | the API |
 
-vigilo reads lead **metadata** from lodgely and nothing else. It never
+vigilo reads lead **metadata** from beacon and nothing else. It never
 receives or stores a name, contact detail, message, answer, raw payload,
 note, AI output or click id.
 
@@ -483,13 +483,13 @@ note, AI output or click id.
 
 | # | Decision | Consequence |
 |---|---|---|
-| V1 | **Own section, mirrored in both roadmaps** (vigilo OPEN-ITEMS Q-1 b). | The OpenFlow ↔ lodgely section stays untouched. |
-| V2 | **Client key = slug of lodgely's `client_name`** until LG-4 ships (Q-2 a). | Renaming a client breaks the key; vigilo raises a *connection health* finding until the key is updated there. |
+| V1 | **Own section, mirrored in both roadmaps** (vigilo OPEN-ITEMS Q-1 b). | The OpenFlow ↔ beacon section stays untouched. |
+| V2 | **Client key = slug of beacon's `client_name`** until LG-4 ships (Q-2 a). | Renaming a client breaks the key; vigilo raises a *connection health* finding until the key is updated there. |
 | V3 | **`has_gclid` is `false` until LG-6** stores click ids per lead (Q-3 b). | vigilo's Google CPL falls back to platform conversions until then. |
 | V4 | **No click ids, ever.** The feed carries `has_gclid` only (decided with vigilo 0.1.0). | Keyword-level lead quality needs Q-4 (below). |
 
 ### X-V1 · Lead-metadata contract v1
-**Repo:** both (spec in vigilo `docs/LODGELY-CONTRACT.md`) · **Status:** done
+**Repo:** both (spec in vigilo `docs/BEACON-CONTRACT.md`) · **Status:** done
 `GET /api/v1/lead-metadata?client=&cursor=&updated_since=&limit=`: a change
 feed per client ordered by `(updated_at, id)`, opaque cursor, `has_more`,
 `deleted: true` tombstones, bearer token with scope `lead-metadata:read`.
@@ -497,7 +497,7 @@ New optional fields may be added at any time; removing or changing one is a
 new contract version.
 
 ### LG-15 · Lead-metadata read API for vigilo
-**Repo:** lodgely · **Status:** done in lodgely 0.59.0 · **Effort:** M · **Depends on:** X-V1
+**Repo:** beacon · **Status:** done in beacon 0.59.0 · **Effort:** M · **Depends on:** X-V1
 - Operators create and revoke read-only tokens under *Settings → API
   tokens*; tokens are stored as SHA-256 hashes and shown once.
 - The feed is built from an explicit column allow-list
@@ -514,23 +514,23 @@ new contract version.
 
 | Item | Repo | What changes for vigilo |
 |---|---|---|
-| LG-3 submission time | lodgely | `submitted_at` switches from `created_at` to the real submission time. No contract change. |
-| LG-4 Client model | lodgely | `client` accepts the Client's stable slug; optional `GET /api/v1/clients` for a dropdown in vigilo's `ClientEdit` (T-L3). |
-| LG-6 per-lead attribution | lodgely | `has_gclid` and `utm_*` are filled from stored attribution. No contract change. |
-| LG-11 real erasure | lodgely | A hard-deleted lead must still go out once as a tombstone (e.g. an id-only tombstone row), or vigilo keeps it. |
-| LG-12 data-subject erasure | lodgely | Erased leads reach vigilo as tombstones; vigilo already deletes on them. Nothing to call. |
-| VG-7 live lead feed | vigilo | Switch `VIGILO_LODGELY_ENABLED` on by default once a lodgely release with LG-15 is deployed (T-L6); end-to-end test with both stacks (T-L4). |
+| LG-3 submission time | beacon | `submitted_at` switches from `created_at` to the real submission time. No contract change. |
+| LG-4 Client model | beacon | `client` accepts the Client's stable slug; optional `GET /api/v1/clients` for a dropdown in vigilo's `ClientEdit` (T-L3). |
+| LG-6 per-lead attribution | beacon | `has_gclid` and `utm_*` are filled from stored attribution. No contract change. |
+| LG-11 real erasure | beacon | A hard-deleted lead must still go out once as a tombstone (e.g. an id-only tombstone row), or vigilo keeps it. |
+| LG-12 data-subject erasure | beacon | Erased leads reach vigilo as tombstones; vigilo already deletes on them. Nothing to call. |
+| VG-7 live lead feed | vigilo | Switch `VIGILO_BEACON_ENABLED` on by default once a beacon release with LG-15 is deployed (T-L6); end-to-end test with both stacks (T-L4). |
 
 ### Open questions
 
 - **Q-4 · gclid → keyword for vigilo's keyword-quality miner (VG-9).**
-  Recommended: lodgely resolves it via Google Ads `click_view` (read-only,
+  Recommended: beacon resolves it via Google Ads `click_view` (read-only,
   90-day window) as part of LG-6/LG-7 and adds `google_keyword` /
   `google_ad_group_id` to the feed. Not decided.
-- **Q-5 · Boundary between vigilo's miner and lodgely's reporting.**
-  Proposed: lodgely *reports* (charts, client reports) and *sends* quality
+- **Q-5 · Boundary between vigilo's miner and beacon's reporting.**
+  Proposed: beacon *reports* (charts, client reports) and *sends* quality
   conversions; vigilo *alerts* (findings) and *suggests* (e.g. negative
   keywords), without charts. Not confirmed.
-- **Q-6 · Spend from lodgely?** Recommended: no. vigilo keeps fetching its
+- **Q-6 · Spend from beacon?** Recommended: no. vigilo keeps fetching its
   own ad data (it needs review status, final URLs, token expiry and fetch
-  health that lodgely does not keep). Not confirmed.
+  health that beacon does not keep). Not confirmed.

@@ -48,9 +48,9 @@ class LeadRankingFlowTest extends TestCase
 
     private function bootstrap(bool $rankingOn = true, bool $consent = true): User
     {
-        config()->set('lodgely.ai.enabled', true);
+        config()->set('beacon.ai.enabled', true);
 
-        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'lodgely']);
+        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'beacon']);
 
         $row = AiSetting::forTenant(Tenant::DEFAULT_ID);
         $row->enabled = true;
@@ -172,7 +172,7 @@ class LeadRankingFlowTest extends TestCase
             'status'       => AiSummaryStatus::Pending->value,
         ]);
 
-        config()->set('lodgely.ai.enabled', false);
+        config()->set('beacon.ai.enabled', false);
         app(LeadRanker::class)->execute($summary);
 
         $this->assertSame(AiSummaryStatus::Failed, $summary->fresh()->status);

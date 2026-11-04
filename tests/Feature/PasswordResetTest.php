@@ -17,7 +17,7 @@ class PasswordResetTest extends TestCase
 
     private function makeUser(array $overrides = []): User
     {
-        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'lodgely']);
+        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'beacon']);
 
         return User::create(array_merge([
             'name'      => 'Pat',
@@ -139,7 +139,7 @@ class PasswordResetTest extends TestCase
         // Host-header poisoning: with TRUSTED_PROXIES='*' an attacker controls
         // X-Forwarded-Host, and the reset mail used to build its link from it
         // — delivering the victim's token to the attacker's domain.
-        config(['app.url' => 'https://lodgely.example.com']);
+        config(['app.url' => 'https://beacon.example.com']);
         Notification::fake();
         $user = $this->makeUser();
 
@@ -150,7 +150,7 @@ class PasswordResetTest extends TestCase
         Notification::assertSentTo($user, ResetPassword::class, function (ResetPassword $n) use ($user) {
             $url = $n->toMail($user)->actionUrl;
 
-            return str_starts_with($url, 'https://lodgely.example.com/reset-password/')
+            return str_starts_with($url, 'https://beacon.example.com/reset-password/')
                 && ! str_contains($url, 'evil.example');
         });
     }

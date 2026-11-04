@@ -48,9 +48,9 @@ class ReportViewSummaryFlowTest extends TestCase
 
     private function bootstrap(): array
     {
-        config()->set('lodgely.ai.enabled', true);
+        config()->set('beacon.ai.enabled', true);
 
-        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'lodgely']);
+        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'beacon']);
 
         $op = User::create([
             'name' => 'Op', 'email' => 'op@example.com', 'password' => Hash::make('p'),

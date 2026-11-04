@@ -80,7 +80,7 @@ class LeadIngestor
 
         $existingMatchId = $this->duplicates->findMatch($tenantId, $emailNormalized, $phoneNormalized);
 
-        $retentionDays = config('lodgely.compliance.default_retention_days');
+        $retentionDays = config('beacon.compliance.default_retention_days');
         $retentionUntil = $retentionDays ? now()->addDays((int) $retentionDays) : null;
 
         // Status / priority can arrive as arbitrary strings from external

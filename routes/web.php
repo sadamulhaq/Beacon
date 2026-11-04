@@ -47,7 +47,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 // Public landing page; falls back to the old "/" → inbox redirect when
-// LODGELY_LANDING_ENABLED=false, and always for signed-in users.
+// BEACON_LANDING_ENABLED=false, and always for signed-in users.
 Route::get('/', LandingController::class)->name('landing');
 
 Route::post('/locale', function (Request $request) {

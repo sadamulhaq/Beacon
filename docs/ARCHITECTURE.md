@@ -11,7 +11,7 @@ app/
 │                            ad-metrics pull, report-emails dispatch,
 │                            sheets fetch/dedupe, backup create/restore)
 │   └── Concerns/            FetchesRecurringLeadSources — the shared body of
-│                            the lodgely:*:fetch recurring-source commands
+│                            the beacon:*:fetch recurring-source commands
 ├── Domain/
 │   ├── Leads/               core domain: enums, services, events
 │   │   ├── Enums/           LeadStatus, LeadPriority, UserRole
@@ -108,7 +108,7 @@ No changes to migrations, models or the inbox are needed.
 ## How AI summaries work
 
 AI is **inert by default**: the settings page and the AI menu exist, but no
-model is called until an operator turns it on. (`LODGELY_AI_ENABLED=false`
+model is called until an operator turns it on. (`BEACON_AI_ENABLED=false`
 in `.env` is the opt-out hard kill-switch that removes the AI routes and
 menu entirely.)
 
@@ -118,7 +118,7 @@ menu entirely.)
    - Paste your API key (stored encrypted at rest via Laravel's `Crypt`
      facade; the form never re-displays it).
    - Optionally override the base URL and model name; otherwise the
-     provider defaults from `config/lodgely.php` are used.
+     provider defaults from `config/beacon.php` are used.
    - Write a free-text **house style** — "what is important, where to
      look" — the AI reads it on every call.
    - Toggle which **kinds** to enable: report-view summaries,
@@ -144,7 +144,7 @@ Flow per generation:
 5. Every transition is written to `ai_events` (sibling of `lead_events`);
    API keys and bearer tokens are redacted from every payload.
 
-A daily per-tenant call cap (`LODGELY_AI_MAX_CALLS_PER_DAY`, default 100)
+A daily per-tenant call cap (`BEACON_AI_MAX_CALLS_PER_DAY`, default 100)
 is enforced inside the job so a runaway loop cannot blow past it. The cap
 is shared with automatic lead ranking (below).
 
@@ -158,7 +158,7 @@ Gates, checked at dispatch *and* again inside the job: the config
 kill-switch, the tenant's *Enable AI* toggle + provider, the ranking task,
 the consent, and what is left of the daily cap.
 
-Flow per sweep (`lodgely:ai:rank-leads`, hourly via the scheduler, or the
+Flow per sweep (`beacon:ai:rank-leads`, hourly via the scheduler, or the
 **"Rank unranked leads now"** button on `/settings/ai`):
 
 1. `LeadRanker::dispatchBatch()` selects the oldest *candidates*

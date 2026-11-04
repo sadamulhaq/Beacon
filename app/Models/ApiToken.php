@@ -16,7 +16,7 @@ use Illuminate\Support\Str;
  */
 class ApiToken extends Model
 {
-    /** Marks the string as a lodgely token in logs and secret scanners. */
+    /** Marks the string as a beacon token in logs and secret scanners. */
     public const PREFIX = 'lgy_';
 
     protected $fillable = [

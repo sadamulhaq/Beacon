@@ -48,7 +48,7 @@ class PasswordResetController extends Controller
             $user = User::where('email', $email)->first();
             if ($user && ! $user->is_active) {
                 // Don't issue tokens for disabled accounts.
-                Log::info('lodgely.password.reset_request.skipped_inactive', ['email' => $maskedEmail]);
+                Log::info('beacon.password.reset_request.skipped_inactive', ['email' => $maskedEmail]);
 
                 return;
             }
@@ -62,7 +62,7 @@ class PasswordResetController extends Controller
                 return;
             }
 
-            Log::info('lodgely.password.reset_request', [
+            Log::info('beacon.password.reset_request', [
                 'email'  => $maskedEmail,
                 'status' => $status,
             ]);
@@ -103,7 +103,7 @@ class PasswordResetController extends Controller
 
                 event(new PasswordReset($user));
 
-                Log::info('lodgely.password.reset', ['id' => $user->id]);
+                Log::info('beacon.password.reset', ['id' => $user->id]);
             }
         );
 

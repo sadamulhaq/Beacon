@@ -23,7 +23,7 @@
                     <span x-show="copied" x-cloak>{{ __('Copied') }}</span>
                 </button>
             </div>
-            <p class="text-xs">{{ __('In vigilo, set it as VIGILO_LODGELY_API_TOKEN and this server URL as VIGILO_LODGELY_URL.') }}</p>
+            <p class="text-xs">{{ __('In vigilo, set it as VIGILO_BEACON_API_TOKEN and this server URL as VIGILO_BEACON_URL.') }}</p>
         </div>
     @endif
 

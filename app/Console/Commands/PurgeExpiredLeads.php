@@ -7,7 +7,7 @@ use Illuminate\Console\Command;
 
 class PurgeExpiredLeads extends Command
 {
-    protected $signature = 'lodgely:leads:purge
+    protected $signature = 'beacon:leads:purge
         {--dry-run : Show what would be deleted without writing}';
 
     protected $description = 'GDPR-friendly cleanup pass: soft-deletes leads past their retention_until.';

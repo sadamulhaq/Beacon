@@ -179,7 +179,7 @@ class AdPlatformConnectorController extends Controller
 
         $token = trim($connector->effectiveMetaAccessToken());
         $apiVer = trim($connector->effectiveMetaApiVersion());
-        $timeout = (int) config('lodgely.reporting.http_timeout_sec', 30);
+        $timeout = (int) config('beacon.reporting.http_timeout_sec', 30);
 
         if ($token === '') {
             return redirect()->route('settings.ad-platforms.connectors.edit', $connector)
@@ -226,7 +226,7 @@ class AdPlatformConnectorController extends Controller
                 ->with('connectorNotice', __('Google brand filter cleared — this connector now covers the whole ad account.'));
         }
 
-        $timeout = (int) config('lodgely.reporting.http_timeout_sec', 30);
+        $timeout = (int) config('beacon.reporting.http_timeout_sec', 30);
 
         if (trim($connector->effectiveGoogleDeveloperToken()) === '' || trim($connector->effectiveGoogleRefreshToken()) === '') {
             return redirect()->route('settings.ad-platforms.connectors.edit', $connector)

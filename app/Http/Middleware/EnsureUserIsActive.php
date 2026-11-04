@@ -25,7 +25,7 @@ class EnsureUserIsActive
         $user = $request->user();
 
         if ($user !== null && ! $user->is_active) {
-            Log::info('lodgely.auth.inactive_session_terminated', ['user_id' => $user->id]);
+            Log::info('beacon.auth.inactive_session_terminated', ['user_id' => $user->id]);
 
             Auth::logout();
             $request->session()->invalidate();

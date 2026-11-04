@@ -12,10 +12,10 @@ class MetaCreativeSourceTest extends TestCase
 {
     private function configureCredentials(): void
     {
-        config()->set('lodgely.reporting.meta.access_token', 'test-token');
-        config()->set('lodgely.reporting.meta.ad_account_id', '1234567890');
-        config()->set('lodgely.reporting.meta.api_version', 'v21.0');
-        config()->set('lodgely.reporting.meta.currency', 'EUR');
+        config()->set('beacon.reporting.meta.access_token', 'test-token');
+        config()->set('beacon.reporting.meta.ad_account_id', '1234567890');
+        config()->set('beacon.reporting.meta.api_version', 'v21.0');
+        config()->set('beacon.reporting.meta.currency', 'EUR');
     }
 
     public function test_fetch_maps_ad_and_segment_rows_to_snapshots(): void
@@ -90,7 +90,7 @@ class MetaCreativeSourceTest extends TestCase
 
     public function test_fetch_throws_when_credentials_missing(): void
     {
-        config()->set('lodgely.reporting.meta', []);
+        config()->set('beacon.reporting.meta', []);
 
         $this->expectException(RuntimeException::class);
 

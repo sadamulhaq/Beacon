@@ -45,7 +45,7 @@ trait WithBulkLeadActions
         // the operator is looking at.
         $base = Lead::query()->visibleTo(auth()->user());
         $pageIds = $this->applySort($this->applyFilters($base))
-            ->paginate(config('lodgely.pagination.per_page'))
+            ->paginate(config('beacon.pagination.per_page'))
             ->pluck('id')
             ->map(fn ($id) => (string) $id)
             ->all();

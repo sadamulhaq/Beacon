@@ -12,7 +12,7 @@ use RuntimeException;
  * IncomingLead. Emails are marked as read after successful processing so the
  * same message is never imported twice.
  *
- * Connection is driven entirely by config('lodgely.importers.email.imap').
+ * Connection is driven entirely by config('beacon.importers.email.imap').
  * The per-import meta can override default_client_name, default_campaign_name,
  * and max_messages for one-off pulls.
  */
@@ -30,10 +30,10 @@ class ImapLeadSource implements LeadSource
 
     public function pull(Import $import): iterable
     {
-        $cfg = config('lodgely.importers.email.imap');
+        $cfg = config('beacon.importers.email.imap');
 
         if (empty($cfg['host'])) {
-            throw new RuntimeException('IMAP host is not configured. Set LODGELY_IMAP_HOST.');
+            throw new RuntimeException('IMAP host is not configured. Set BEACON_IMAP_HOST.');
         }
 
         $conn = $this->openConnection($cfg);

@@ -105,7 +105,7 @@ class OpenAiCompatibleProvider implements LlmProvider
 
     private function client(AiSetting $settings)
     {
-        $http = Http::timeout((int) config('lodgely.ai.request_timeout_sec', 60))
+        $http = Http::timeout((int) config('beacon.ai.request_timeout_sec', 60))
             ->acceptJson()
             ->asJson();
 

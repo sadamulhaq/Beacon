@@ -25,7 +25,7 @@
             <span class="eyebrow reveal"><span class="n">01</span> Automation</span>
             <h2 class="reveal" style="--d: 80ms">Leads that sort<br>themselves.</h2>
             <p class="lead-text reveal" style="--d: 160ms">
-                lodgely takes the clicks nobody wants to make: opening a lead marks it Reviewed,
+                beacon takes the clicks nobody wants to make: opening a lead marks it Reviewed,
                 the first call or email moves it to Pending. Click a phone number and the Called
                 toggle lights up as a reminder to confirm. Switch on AI qualification and each lead
                 gets a priority recommendation — built from a pseudonymized copy, delivered as a
@@ -252,7 +252,7 @@
                     <b class="mono">{{ now()->addYear()->toDateString() }}</b>
                 </div>
                 <span class="ret-track"><span class="ret-fill"></span></span>
-                <small class="mono">then removed by <span style="color: var(--text)">lodgely:leads:purge</span></small>
+                <small class="mono">then removed by <span style="color: var(--text)">beacon:leads:purge</span></small>
             </div>
 
             <div class="vz-card audit">

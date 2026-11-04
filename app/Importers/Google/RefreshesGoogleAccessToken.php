@@ -28,7 +28,7 @@ trait RefreshesGoogleAccessToken
             );
         }
 
-        $cacheKey = 'lodgely.google_ads.access_token.'.sha1($clientId.'|'.$refreshToken);
+        $cacheKey = 'beacon.google_ads.access_token.'.sha1($clientId.'|'.$refreshToken);
 
         return Cache::remember($cacheKey, 3300, function () use ($clientId, $clientSecret, $refreshToken, $timeout) {
             $response = Http::timeout($timeout)

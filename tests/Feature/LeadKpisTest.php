@@ -15,7 +15,7 @@ class LeadKpisTest extends TestCase
 
     private function seedTenant(): void
     {
-        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'lodgely']);
+        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'beacon']);
     }
 
     public function test_compute_returns_zero_counts_when_no_leads_match(): void

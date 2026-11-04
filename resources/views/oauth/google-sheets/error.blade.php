@@ -13,7 +13,7 @@
         <div class="text-sm text-slate-600 dark:text-slate-400 space-y-2">
             <p>{{ __('Common causes:') }}</p>
             <ul class="list-disc list-inside space-y-1">
-                <li>{{ __('LODGELY_GOOGLE_SHEETS_CLIENT_ID or LODGELY_GOOGLE_SHEETS_CLIENT_SECRET is missing from .env.') }}</li>
+                <li>{{ __('BEACON_GOOGLE_SHEETS_CLIENT_ID or BEACON_GOOGLE_SHEETS_CLIENT_SECRET is missing from .env.') }}</li>
                 <li>{{ __('The redirect URI on the Google OAuth client does not match this app\'s callback URL.') }}</li>
                 <li>{{ __('You did not grant the requested scopes on the consent screen.') }}</li>
             </ul>

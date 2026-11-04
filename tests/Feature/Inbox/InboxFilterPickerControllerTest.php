@@ -22,7 +22,7 @@ class InboxFilterPickerControllerTest extends TestCase
 
     private function user(string $role = 'operator'): User
     {
-        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'lodgely']);
+        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'beacon']);
 
         return User::create([
             'name' => 'U', 'email' => 'u@example.com', 'password' => Hash::make('p'),

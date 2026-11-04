@@ -20,7 +20,7 @@ class MailSettingsPageTest extends TestCase
 
     private function operator(): User
     {
-        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'lodgely']);
+        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'beacon']);
 
         return User::create([
             'name'      => 'Op',
@@ -33,7 +33,7 @@ class MailSettingsPageTest extends TestCase
 
     public function test_client_cannot_open_mail_settings(): void
     {
-        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'lodgely']);
+        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'beacon']);
 
         $client = User::create([
             'name' => 'C', 'email' => 'c@example.com', 'password' => Hash::make('p'),

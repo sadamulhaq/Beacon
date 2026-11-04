@@ -47,11 +47,11 @@ class MetaCreativeSource implements CreativeMetricsSource
         $token = trim($settings->effectiveMetaAccessToken());
         $apiVer = trim($settings->effectiveMetaApiVersion());
         $currency = $settings->effectiveMetaCurrency();
-        $timeout = (int) config('lodgely.reporting.http_timeout_sec', 30);
+        $timeout = (int) config('beacon.reporting.http_timeout_sec', 30);
 
         if ($accountId === '' || $token === '') {
             throw new RuntimeException(
-                'Meta Ads source: LODGELY_META_ADS_ACCESS_TOKEN and LODGELY_META_ADS_ACCOUNT_ID must both be set.'
+                'Meta Ads source: BEACON_META_ADS_ACCESS_TOKEN and BEACON_META_ADS_ACCOUNT_ID must both be set.'
             );
         }
 

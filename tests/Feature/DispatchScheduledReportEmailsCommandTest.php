@@ -21,7 +21,7 @@ class DispatchScheduledReportEmailsCommandTest extends TestCase
 
     private function setup_due_schedule(string $cadence = 'weekly'): ClientReportEmailSchedule
     {
-        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'lodgely']);
+        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'beacon']);
 
         $op = User::create([
             'name' => 'Op', 'email' => 'op@example.com', 'password' => Hash::make('p'),
@@ -63,7 +63,7 @@ class DispatchScheduledReportEmailsCommandTest extends TestCase
         $schedule = $this->setup_due_schedule('weekly');
         $originalRun = $schedule->next_run_at?->copy();
 
-        $this->artisan('lodgely:report-emails:dispatch')
+        $this->artisan('beacon:report-emails:dispatch')
             ->expectsOutputToContain('Dispatched 1')
             ->assertSuccessful();
 
@@ -81,7 +81,7 @@ class DispatchScheduledReportEmailsCommandTest extends TestCase
         Bus::fake();
         $schedule = $this->setup_due_schedule('one_off');
 
-        $this->artisan('lodgely:report-emails:dispatch')->assertSuccessful();
+        $this->artisan('beacon:report-emails:dispatch')->assertSuccessful();
 
         $schedule->refresh();
         $this->assertFalse($schedule->is_active);
@@ -93,7 +93,7 @@ class DispatchScheduledReportEmailsCommandTest extends TestCase
         Bus::fake();
         $this->setup_due_schedule('weekly');
 
-        $this->artisan('lodgely:report-emails:dispatch', ['--dry-run' => true])
+        $this->artisan('beacon:report-emails:dispatch', ['--dry-run' => true])
             ->expectsOutputToContain('Would dispatch')
             ->assertSuccessful();
 
@@ -109,7 +109,7 @@ class DispatchScheduledReportEmailsCommandTest extends TestCase
         // Operator deactivated the template after creating the schedule.
         $schedule->email->forceFill(['is_active' => false])->save();
 
-        $this->artisan('lodgely:report-emails:dispatch')->assertSuccessful();
+        $this->artisan('beacon:report-emails:dispatch')->assertSuccessful();
 
         $this->assertSame(0, ClientReportEmailSend::count());
         Bus::assertNotDispatched(SendClientReportEmail::class);

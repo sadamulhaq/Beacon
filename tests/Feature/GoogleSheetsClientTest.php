@@ -18,7 +18,7 @@ class GoogleSheetsClientTest extends TestCase
 
     private function configureCredentials(): void
     {
-        config()->set('lodgely.importers.google_sheets', [
+        config()->set('beacon.importers.google_sheets', [
             'client_id' => 'cid',
             'client_secret' => 'csec',
             'refresh_token' => 'rtok',
@@ -84,7 +84,7 @@ class GoogleSheetsClientTest extends TestCase
 
     public function test_fetch_throws_when_refresh_token_missing(): void
     {
-        config()->set('lodgely.importers.google_sheets', [
+        config()->set('beacon.importers.google_sheets', [
             'client_id' => 'cid',
             'client_secret' => 'csec',
             'refresh_token' => '',
@@ -133,10 +133,10 @@ class GoogleSheetsClientTest extends TestCase
 
     public function test_build_authorization_url_throws_when_client_id_missing(): void
     {
-        config()->set('lodgely.importers.google_sheets.client_id', '');
+        config()->set('beacon.importers.google_sheets.client_id', '');
 
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('LODGELY_GOOGLE_SHEETS_CLIENT_ID');
+        $this->expectExceptionMessage('BEACON_GOOGLE_SHEETS_CLIENT_ID');
 
         (new GoogleSheetsClient)->buildAuthorizationUrl('https://app.test/cb', 'STATE');
     }

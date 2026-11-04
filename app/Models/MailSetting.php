@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Crypt;
  * `password_encrypted` holds Laravel-encrypted ciphertext; it is decrypted
  * only when building the live mail config and never re-displayed in the UI.
  *
- * When `enabled` is false the row is inert and lodgely uses the .env / config
+ * When `enabled` is false the row is inert and beacon uses the .env / config
  * mail settings unchanged — so installs that configure SMTP in .env keep
  * working without touching the settings page.
  */

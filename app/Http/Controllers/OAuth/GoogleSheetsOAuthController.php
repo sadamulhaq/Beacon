@@ -83,7 +83,7 @@ class GoogleSheetsOAuthController extends Controller
 
         // Bust the cached access token so the new refresh token takes effect
         // on the next API call without waiting for the 55-minute window.
-        $cacheKey = 'lodgely.google_sheets.access_token.'.sha1($row->client_id.'|'.$refreshToken);
+        $cacheKey = 'beacon.google_sheets.access_token.'.sha1($row->client_id.'|'.$refreshToken);
         Cache::forget($cacheKey);
 
         return redirect()->route('settings.google-sheets')

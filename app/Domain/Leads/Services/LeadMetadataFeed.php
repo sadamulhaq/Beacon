@@ -11,7 +11,7 @@ use Illuminate\Support\Str;
 
 /**
  * The lead-metadata change feed for vigilo (LG-15, contract v1 — vigilo
- * `docs/LODGELY-CONTRACT.md`).
+ * `docs/BEACON-CONTRACT.md`).
  *
  * Privacy is structural, not a filter: {@see self::toContract()} builds every
  * item from an explicit list of non-personal columns, so a new PII column on
@@ -32,7 +32,7 @@ class LeadMetadataFeed
     public const MAX_LIMIT = 500;
 
     /**
-     * lodgely's internal source keys → the contract's `source_type`. The
+     * beacon's internal source keys → the contract's `source_type`. The
      * contract speaks of the kind of source, so both email importers are
      * `email` and both Meta keys (live importer, demo data) are `meta_lead_ads`.
      */

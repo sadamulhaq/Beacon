@@ -23,7 +23,7 @@ class LeadIngestorStatusCoercionTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'lodgely']);
+        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'beacon']);
     }
 
     public function test_unknown_status_and_priority_fall_back_to_defaults(): void
@@ -32,8 +32,8 @@ class LeadIngestorStatusCoercionTest extends TestCase
             'source'   => 'google_sheets',
             'full_name' => 'Alice',
             'email'    => 'alice@example.com',
-            'status'   => 'CREATED',   // not a lodgely status
-            'priority' => 'URGENT',    // not a lodgely priority
+            'status'   => 'CREATED',   // not a beacon status
+            'priority' => 'URGENT',    // not a beacon priority
         ]);
 
         $this->assertSame(LeadStatus::New, $lead->status);

@@ -206,7 +206,7 @@
     .copy.copied .ok { display: block; }
     .copy.copied .idle { display: none; }
 
-    /* ── Hero visual: sources → lodgely inbox ── */
+    /* ── Hero visual: sources → beacon inbox ── */
     .flow {
         position: relative;
         display: grid;

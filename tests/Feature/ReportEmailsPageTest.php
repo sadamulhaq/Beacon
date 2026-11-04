@@ -23,7 +23,7 @@ class ReportEmailsPageTest extends TestCase
 
     private function operator(): User
     {
-        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'lodgely']);
+        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'beacon']);
 
         return User::create([
             'name'      => 'Op',
@@ -47,7 +47,7 @@ class ReportEmailsPageTest extends TestCase
 
     public function test_clients_cannot_open_the_report_emails_page(): void
     {
-        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'lodgely']);
+        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'beacon']);
         $client = $this->client();
 
         $this->actingAs($client)

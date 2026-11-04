@@ -280,20 +280,20 @@ class AppServiceProvider extends ServiceProvider
         }
 
         if (config('app.debug')) {
-            Log::warning('lodgely.security.debug_enabled_in_production', [
+            Log::warning('beacon.security.debug_enabled_in_production', [
                 'hint' => 'Set APP_DEBUG=false. Debug mode renders configuration and request details on error pages.',
             ]);
         }
 
         $appHost = (string) parse_url((string) config('app.url'), PHP_URL_HOST);
         if (in_array($appHost, ['', 'localhost', '127.0.0.1'], true)) {
-            Log::warning('lodgely.security.app_url_not_public', [
+            Log::warning('beacon.security.app_url_not_public', [
                 'hint' => 'Set APP_URL to your public https:// address. Password-reset links are built from it.',
             ]);
         }
 
         if (! config('session.secure')) {
-            Log::warning('lodgely.security.insecure_session_cookie', [
+            Log::warning('beacon.security.insecure_session_cookie', [
                 'hint' => 'Set SESSION_SECURE_COOKIE=true when serving over HTTPS so session cookies are not sent over plain HTTP.',
             ]);
         }

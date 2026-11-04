@@ -18,7 +18,7 @@ use Illuminate\Support\Str;
  */
 class ResetUserTwoFactor extends Command
 {
-    protected $signature = 'lodgely:user:2fa-reset
+    protected $signature = 'beacon:user:2fa-reset
         {email : Login email of the user}
         {--force : Skip the confirmation prompt}';
 
@@ -49,7 +49,7 @@ class ResetUserTwoFactor extends Command
         // Sign out any remember-me cookies too, so the reset starts clean.
         $user->forceFill(['remember_token' => Str::random(60)])->save();
 
-        Log::warning('lodgely.auth.two_factor_disabled', ['user_id' => $user->id, 'by' => 'cli']);
+        Log::warning('beacon.auth.two_factor_disabled', ['user_id' => $user->id, 'by' => 'cli']);
 
         $this->info("Two-factor authentication turned off for {$email}. They can sign in with their password and set it up again.");
 

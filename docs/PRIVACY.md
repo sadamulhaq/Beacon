@@ -1,6 +1,6 @@
 # Privacy & GDPR notes for self-hosters
 
-lodgely is built with privacy-by-design defaults, but **you, the operator,
+beacon is built with privacy-by-design defaults, but **you, the operator,
 are the data controller** for everything you put in it. The product gives
 you the tools; the policies are yours.
 
@@ -8,8 +8,8 @@ you the tools; the policies are yours.
   Raw CSV rows / mock email bodies are kept in `raw_payload` for audit but
   are never displayed in summary views.
 - **Retention.** Every lead has a `retention_until` column, set when the
-  lead is ingested from `LODGELY_DEFAULT_RETENTION_DAYS` (empty in code =
-  keep forever; `.env.example` ships `365`). The `lodgely:leads:purge`
+  lead is ingested from `BEACON_DEFAULT_RETENTION_DAYS` (empty in code =
+  keep forever; `.env.example` ships `365`). The `beacon:leads:purge`
   command runs daily and **soft-deletes** leads past their date. Be aware
   that a soft-deleted lead still holds its name, email, phone, message,
   custom answers and `raw_payload`, and its notes and audit events stay too
@@ -24,7 +24,7 @@ you the tools; the policies are yours.
   leads, enforced both in queries and in mutations.
 - **Phone / email normalization** is for duplicate detection only; the
   original values remain visible to operators.
-- **No telemetry, no external calls** out of the box. lodgely does not
+- **No telemetry, no external calls** out of the box. beacon does not
   phone home.
 - **Lead-metadata API (vigilo).** `GET /api/v1/lead-metadata` answers
   only bearer tokens an operator created under *Settings → API tokens*

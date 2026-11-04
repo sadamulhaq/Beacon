@@ -138,7 +138,7 @@ class AiSummarizer
     /** Throws if AI is disabled at the config or tenant level. */
     public function settingsOrFail(int $tenantId): AiSetting
     {
-        if (! config('lodgely.ai.enabled')) {
+        if (! config('beacon.ai.enabled')) {
             throw new AiDisabledException('AI is disabled at the application level.');
         }
 

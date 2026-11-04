@@ -2,7 +2,7 @@
     <div>
         <h1 class="text-xl font-semibold text-slate-900 dark:text-slate-50">{{ __('Google Sheets') }}</h1>
         <p class="text-sm text-slate-500 dark:text-slate-400">
-            {{ __('Connect a Google account so lodgely can read data from Google Sheets.') }}
+            {{ __('Connect a Google account so beacon can read data from Google Sheets.') }}
         </p>
     </div>
 
@@ -10,7 +10,7 @@
     @if(!$appUrlIsHttps)
         <div class="rounded-lg border border-amber-300 dark:border-amber-700 bg-amber-50 dark:bg-amber-950/40 px-4 py-3 text-sm text-amber-900 dark:text-amber-200 space-y-1">
             <p class="font-medium">{{ __('APP_URL is not HTTPS') }}</p>
-            <p>{{ __('Google requires the redirect URI to use HTTPS for non-localhost apps. Update APP_URL in .env to your public HTTPS address (e.g. https://lodgely.example.com) before authorizing.') }}</p>
+            <p>{{ __('Google requires the redirect URI to use HTTPS for non-localhost apps. Update APP_URL in .env to your public HTTPS address (e.g. https://beacon.example.com) before authorizing.') }}</p>
         </div>
     @endif
 

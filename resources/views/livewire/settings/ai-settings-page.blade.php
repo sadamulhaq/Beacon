@@ -33,7 +33,7 @@
             <span>
                 <span class="text-sm font-medium text-slate-800 dark:text-slate-200">{{ __('Enable AI for this tenant') }}</span>
                 <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                    {{ __('When off, all AI buttons are hidden and no jobs run. Setting LODGELY_AI_ENABLED=false in .env removes the AI pages entirely.') }}
+                    {{ __('When off, all AI buttons are hidden and no jobs run. Setting BEACON_AI_ENABLED=false in .env removes the AI pages entirely.') }}
                 </p>
             </span>
         </label>
@@ -176,7 +176,7 @@
                     <label class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">{{ __('Leads per hourly run') }}</label>
                     <input type="number" min="1" max="200" step="1" wire:model="form.ranking_batch_size"
                            class="block w-full rounded-lg border-slate-300 dark:border-slate-600 dark:bg-slate-800 text-sm focus:border-brand-500 focus:ring-brand-500">
-                    <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">{{ __('Each lead is one model call; the daily cap (LODGELY_AI_MAX_CALLS_PER_DAY) is shared with summaries.') }}</p>
+                    <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">{{ __('Each lead is one model call; the daily cap (BEACON_AI_MAX_CALLS_PER_DAY) is shared with summaries.') }}</p>
                     @error('form.ranking_batch_size') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                 </div>
             </div>

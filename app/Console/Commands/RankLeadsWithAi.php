@@ -15,7 +15,7 @@ use Illuminate\Console\Command;
  */
 class RankLeadsWithAi extends Command
 {
-    protected $signature = 'lodgely:ai:rank-leads
+    protected $signature = 'beacon:ai:rank-leads
         {--limit=   : Override the batch size from AI settings}
         {--dry-run  : List the leads that would be ranked without calling the model}';
 

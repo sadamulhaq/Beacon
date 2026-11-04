@@ -13,7 +13,7 @@ Original scope, kept for history:
   `app/Importers/Meta/MetaAdsSource` (Marketing API insights) and
   `app/Importers/Google/GoogleAdsSource` (REST `googleAds:search`).
   Mocks still ship alongside for demo installs; the active set is
-  controlled by `LODGELY_AD_METRICS_SOURCES`.
+  controlled by `BEACON_AD_METRICS_SOURCES`.
 - A small `reports` table (campaign, source, date, metrics) with retention
   shorter than operational lead data by default.
 - Read-only Livewire views surfacing the rollups next to the inbox KPIs.

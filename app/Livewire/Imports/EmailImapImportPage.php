@@ -21,8 +21,8 @@ class EmailImapImportPage extends Component
     {
         abort_unless(auth()->user()?->isOperator(), 403);
 
-        $this->defaultClient   = config('lodgely.importers.email.imap.default_client_name') ?: null;
-        $this->defaultCampaign = config('lodgely.importers.email.imap.default_campaign_name') ?: null;
+        $this->defaultClient   = config('beacon.importers.email.imap.default_client_name') ?: null;
+        $this->defaultCampaign = config('beacon.importers.email.imap.default_campaign_name') ?: null;
     }
 
     protected function rules(): array
@@ -35,7 +35,7 @@ class EmailImapImportPage extends Component
 
     public function isConfigured(): bool
     {
-        return ! empty(config('lodgely.importers.email.imap.host'));
+        return ! empty(config('beacon.importers.email.imap.host'));
     }
 
     public function runImport(ImportRunner $runner, ImapLeadSource $source): void
@@ -63,10 +63,10 @@ class EmailImapImportPage extends Component
     {
         return view('livewire.imports.email-imap-import-page', [
             'recentImports' => Import::where('source', 'email_imap')->latest()->limit(10)->get(),
-            'imapHost'      => config('lodgely.importers.email.imap.host'),
-            'imapPort'      => config('lodgely.importers.email.imap.port'),
-            'imapEncryption' => config('lodgely.importers.email.imap.encryption'),
-            'imapMailbox'   => config('lodgely.importers.email.imap.mailbox'),
+            'imapHost'      => config('beacon.importers.email.imap.host'),
+            'imapPort'      => config('beacon.importers.email.imap.port'),
+            'imapEncryption' => config('beacon.importers.email.imap.encryption'),
+            'imapMailbox'   => config('beacon.importers.email.imap.mailbox'),
         ]);
     }
 }

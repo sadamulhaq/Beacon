@@ -1,35 +1,37 @@
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset=".github/logo-dark.png">
-    <img src=".github/logo.png" alt="lodgely logo" width="360" />
+    <img src=".github/logo.png" alt="beacon logo" width="360" />
   </picture>
 </p>
 
 <p align="center">
-  <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-blue.svg" alt="License: GPL-3.0"></a>
-  <img src="https://img.shields.io/badge/PHP-8.4%2B-777BB4?logo=php&logoColor=white" alt="PHP 8.4+">
-  <img src="https://img.shields.io/badge/Laravel-12.x-FF2D20?logo=laravel&logoColor=white" alt="Laravel 12">
-  <img src="https://img.shields.io/badge/Livewire-3.x-FB70A9?logo=livewire&logoColor=white" alt="Livewire 3">
-  <img src="https://img.shields.io/badge/version-0.59.0-6366F1" alt="Version 0.59.0">
-  <a href="https://github.com/vidual-labs/lodgely/stargazers"><img src="https://img.shields.io/github/stars/vidual-labs/lodgely?style=social" alt="GitHub Stars"></a>
+  <a href="LICENSE"></a>
+  
+  
+  
+  
+  <a href="https://github.com/sadamulhaq/Beacon/stargazers"></a>
 </p>
 
 <p align="center">
-  <a href=".github/media/lodgely-tour.mp4" title="Watch the 44-second lodgely tour">
-    <img src=".github/media/lodgely-tour-poster.png" alt="Watch the 44-second lodgely tour: every lead, one inbox" width="480" />
+  <a href=".github/media/beacon-tour.mp4" title="Watch the 44-second beacon tour">
+    <img src=".github/media/beacon-tour-poster.png" alt="Watch the 44-second beacon tour: every lead, one inbox" width="480" />
   </a>
   <br>
-  <sub>▶ <a href=".github/media/lodgely-tour.mp4">Watch the 44-second tour</a> — intake, duplicates, AI ranking, reporting, client portals, self-hosting</sub>
+  <sub>▶ <a href=".github/media/beacon-tour.mp4">Watch the 44-second tour</a> — intake, duplicates, AI ranking, reporting, client portals, self-hosting</sub>
 </p>
 
-# lodgely
+# beacon
 
-**lodgely** is a lightweight, open-source **lead intake hub** for small teams.
+Beacon is a renamed and modified version of Lodgely, changed on 2026-11-05. See the license files in this repository.
+
+**beacon** is a lightweight, open-source **lead intake hub** for small teams.
 It collects leads from CSV files, email (mock and real IMAP), webhook, Google Sheets fetch,
 Meta Lead Ads (API), OpenFlow forms, and manual entry, normalizes them into a single schema, and gives reviewers a
 clean inbox to prioritize, deduplicate and forward.
 
-> lodgely is intentionally **not** a CRM. No deals, no pipelines, no
+> beacon is intentionally **not** a CRM. No deals, no pipelines, no
 > sequences, no forecasts. It is the layer *before* a CRM — the place where
 > incoming leads from many sources stop being scattered and start being
 > actionable.
@@ -64,13 +66,13 @@ Deeper detail lives in [`docs/`](docs/): [Features](docs/FEATURES.md) ·
 
 - **Small businesses** that want to handle their own lead intake without a
   €100/seat CRM.
-- **Agencies** that handle leads for several client brands. One lodgely
+- **Agencies** that handle leads for several client brands. One beacon
   install hosts many `client_name`s; scoped logins let each client see only
   their own leads.
 - **Inhouse marketing teams** that just need a sane shared inbox for the
   leads coming out of forms, lists and inboxes.
 
-If you need a full sales pipeline, lodgely is the wrong tool. If you need a
+If you need a full sales pipeline, beacon is the wrong tool. If you need a
 clean place to *triage* leads before anything else happens, you are at home.
 
 ---
@@ -134,7 +136,7 @@ cases and gotchas — lives in **[docs/FEATURES.md](docs/FEATURES.md)**.
 - 🏷️ Client type presets (B2B / Jobs / B2C / Individual intent) — swaps the word "Lead" for "Applicant", "Prospect" or "Inquiry" on that client's own inbox, since not every client is sourcing B2B sales leads. Also relabels a handful of outcome statuses that read oddly outside B2B sales (Jobs: "Offer sent"/"Successful"/"Declined" → "Invited"/"Hired"/"Rejected"; Individual intent: "Successful" → "Enrolled") — most statuses stay as-is. Set per client user in `/users`; defaults to B2B (unchanged wording) when not set. Free-form label editing is not offered — presets only.
 - 👤 Per-user profile page (name, email, password, language, theme).
 - 🔑 Public password-recovery flow, enumeration-safe. Reset links are always built from `APP_URL`.
-- 🛡️ Optional two-factor authentication (TOTP authenticator app + single-use recovery codes) for operators, set up from the profile page. Lost both? `lodgely:user:2fa-reset <email>` on the server.
+- 🛡️ Optional two-factor authentication (TOTP authenticator app + single-use recovery codes) for operators, set up from the profile page. Lost both? `beacon:user:2fa-reset <email>` on the server.
 
 **Reporting & AI**
 
@@ -149,11 +151,11 @@ cases and gotchas — lives in **[docs/FEATURES.md](docs/FEATURES.md)**.
 
 **Integrations**
 
-- 🔭 Read-only **lead-metadata API** for [vigilo](https://github.com/vidual-labs/vigilo), the ads watchdog (`GET /api/v1/lead-metadata`). A change feed per client with status, enrichment flags and Meta ad ids, so vigilo can tell when ads spend but no leads arrive. Never names, contact details, messages, answers or click ids. Operators create and revoke scoped tokens under *Settings → API tokens*; tokens are stored hashed and shown once. See [Pairing with vigilo](#pairing-with-vigilo).
+- 🔭 Read-only **lead-metadata API** for vigilo, the ads watchdog (`GET /api/v1/lead-metadata`). A change feed per client with status, enrichment flags and Meta ad ids, so vigilo can tell when ads spend but no leads arrive. Never names, contact details, messages, answers or click ids. Operators create and revoke scoped tokens under *Settings → API tokens*; tokens are stored hashed and shown once. See [Pairing with vigilo](#pairing-with-vigilo).
 
 **Ops**
 
-- 🏠 Public landing page at `/` (product overview, deploy guide, discreet "Sign in" link). On by default; `LODGELY_LANDING_ENABLED=false` sends `/` straight to the inbox/login instead.
+- 🏠 Public landing page at `/` (product overview, deploy guide, discreet "Sign in" link). On by default; `BEACON_LANDING_ENABLED=false` sends `/` straight to the inbox/login instead.
 - 🧾 Full audit log of lead lifecycle changes.
 - 🗑️ Retention-aware (`retention_until`) with an opt-in GDPR purge command.
 - 💾 Backup & recovery — one-click `.zip` backups, UI restore, and matching artisan commands. Optional passphrase encryption of the database dump inside the archive, plus optional retention pruning.
@@ -182,7 +184,7 @@ Architecture seams are reserved but not yet implemented — see [ROADMAP.md](ROA
 - Docker Compose for local + small-VPS deployments
 - Google Sheets v4 REST API + OAuth 2.0 (optional; for the Sheets import source)
 
-A typical lodgely install runs comfortably on ~512 MB RAM.
+A typical beacon install runs comfortably on ~512 MB RAM.
 
 ---
 
@@ -190,8 +192,8 @@ A typical lodgely install runs comfortably on ~512 MB RAM.
 
 ```bash
 # 1. Clone and configure
-git clone https://github.com/vidual-labs/lodgely.git
-cd lodgely
+git clone https://github.com/sadamulhaq/Beacon.git
+cd Beacon
 cp .env.example .env
 ```
 
@@ -199,9 +201,9 @@ Open `.env` and set at minimum:
 
 | Key | What to set |
 |-----|-------------|
-| `APP_URL` | Your public URL, e.g. `https://lodgely.example.com` |
+| `APP_URL` | Your public URL, e.g. `https://beacon.example.com` |
 | `DB_PASSWORD` | A strong password (must match across all `DB_*` vars) |
-| `LODGELY_HTTP_PORT` | Host port for HTTP (default `8080`); change if that port is taken |
+| `BEACON_HTTP_PORT` | Host port for HTTP (default `8080`); change if that port is taken |
 | `SESSION_SECURE_COOKIE` | `true` if serving over HTTPS, `false` for plain HTTP |
 | `SESSION_DRIVER` | `file` is simplest; `database` works but requires the DB to be up first |
 
@@ -239,25 +241,25 @@ Then open your `APP_URL` and sign in with one of the seeded accounts:
 | client   | `client.acme@example.com`    | `password` | leads with `client_name = Acme Wellness`    |
 
 > 🔒 **Change these before going live.** The seeded accounts exist so
-> you can take lodgely for a spin — they should be removed or rotated
+> you can take beacon for a spin — they should be removed or rotated
 > on any real deployment.
 
 To create a fresh user:
 
 ```bash
-docker compose exec app php artisan lodgely:user:create \
+docker compose exec app php artisan beacon:user:create \
   --name="Jane Doe" --email=jane@example.com --role=operator
 # or, scoped client:
-docker compose exec app php artisan lodgely:user:create \
+docker compose exec app php artisan beacon:user:create \
   --name="Brand Owner" --email=owner@example.com --role=client \
   --client="Northwind Studio"
 ```
 
 ### Behind a reverse proxy or Cloudflare
 
-If lodgely sits behind Cloudflare, nginx, or any other reverse proxy:
+If beacon sits behind Cloudflare, nginx, or any other reverse proxy:
 
-- Set `APP_URL` to the **public** HTTPS URL (e.g. `https://lodgely.example.com`), not the internal address.
+- Set `APP_URL` to the **public** HTTPS URL (e.g. `https://beacon.example.com`), not the internal address.
 - The session cookie is `Secure` automatically once `APP_URL` starts with `https://` (the browser is on HTTPS even if the internal hop is HTTP). `SESSION_SECURE_COOKIE` overrides it if you need to.
 - Set `SESSION_DRIVER=file` or ensure `SESSION_DRIVER=database` is working before testing login.
 - Forwarded headers (`X-Forwarded-Proto` and friends) are trusted out of the box, so the app works behind a proxy with no extra config.
@@ -279,9 +281,9 @@ wants a few of them changed:
 | `SESSION_SECURE_COOKIE` | Leave unset: it follows `APP_URL` (on for `https://`). Set `false` only for a plain-HTTP test install. |
 | `SESSION_ENCRYPT=true` | Already the default in `.env.example`; keep it. |
 | `TRUSTED_PROXIES=<your proxy CIDR>` | See above. |
-| `LODGELY_BACKUP_PASSPHRASE` | **A backup archive contains every lead's name, email, phone and message body in cleartext.** Setting a passphrase encrypts the database dump inside new archives. Existing unencrypted archives keep restoring normally. Store the passphrase somewhere other than the server it protects — an encrypted archive cannot be recovered without it. |
-| `LODGELY_BACKUP_KEEP` | Archives otherwise accumulate forever, and each one is a full copy of your data that outlives `retention_until`. Set it to the number of archives to keep. |
-| `LODGELY_DEFAULT_RETENTION_DAYS` | Empty means leads are kept until deleted by hand. Set a window and run the scheduler so `lodgely:leads:purge` can act on it. |
+| `BEACON_BACKUP_PASSPHRASE` | **A backup archive contains every lead's name, email, phone and message body in cleartext.** Setting a passphrase encrypts the database dump inside new archives. Existing unencrypted archives keep restoring normally. Store the passphrase somewhere other than the server it protects — an encrypted archive cannot be recovered without it. |
+| `BEACON_BACKUP_KEEP` | Archives otherwise accumulate forever, and each one is a full copy of your data that outlives `retention_until`. Set it to the number of archives to keep. |
+| `BEACON_DEFAULT_RETENTION_DAYS` | Empty means leads are kept until deleted by hand. Set a window and run the scheduler so `beacon:leads:purge` can act on it. |
 
 Also on a public install:
 
@@ -294,8 +296,8 @@ Also on a public install:
 - **Install without dev dependencies** in production:
   `composer install --no-dev --optimize-autoloader`. The debug error page
   package is a dev dependency.
-- **Watch the auth log lines**: `lodgely.auth.login_failed` (masked email +
-  IP) and `lodgely.auth.two_factor_failed` show up in `docker compose logs app`.
+- **Watch the auth log lines**: `beacon.auth.login_failed` (masked email +
+  IP) and `beacon.auth.two_factor_failed` show up in `docker compose logs app`.
   A run of `two_factor_failed` means someone has that operator's password.
 
 The app logs a warning at boot when it is running in production (or with an
@@ -313,7 +315,7 @@ cp .env.example .env
 php artisan key:generate
 
 # Point .env at a local Postgres 16 instance
-# DB_HOST=127.0.0.1, DB_DATABASE=lodgely, ...
+# DB_HOST=127.0.0.1, DB_DATABASE=beacon, ...
 
 php artisan migrate --seed
 npm ci
@@ -333,14 +335,14 @@ ad-metrics import, report emails, GDPR purge) ever run:
 
 ```bash
 php artisan schedule:work
-# or add to crontab: * * * * * cd /path/to/lodgely && php artisan schedule:run
+# or add to crontab: * * * * * cd /path/to/beacon && php artisan schedule:run
 ```
 
 ---
 
 ## CSV import
 
-Upload any UTF-8 CSV with a header row from **Imports → CSV import**. lodgely
+Upload any UTF-8 CSV with a header row from **Imports → CSV import**. beacon
 recognizes the following column aliases (case-insensitive):
 
 | Logical field | Accepted column names                                |
@@ -358,39 +360,39 @@ A working sample lives at `database/samples/leads-sample.csv`.
 
 ## Pairing with vigilo
 
-[vigilo](https://github.com/vidual-labs/vigilo) watches the agency's ad
+vigilo watches the agency's ad
 accounts once a day and reports what is broken. To spot "ads spend, but no
 leads arrive" and cost per lead from real leads, it reads lead **metadata**
-from lodgely: lead id, submission and update time, status, source type, Meta
+from beacon: lead id, submission and update time, status, source type, Meta
 campaign/ad set/ad/form ids and the duplicate/qualified/contacted/organic
 flags. The feed is built from an explicit allow-list of columns, so it never
 carries a name, email, phone number, message, custom answer, raw payload,
 note, AI output or click id. Deleted leads go out once as `deleted: true`
 markers, so vigilo drops them too.
 
-1. In lodgely, open **Settings → API tokens**, create a token with the
+1. In beacon, open **Settings → API tokens**, create a token with the
    *Lead metadata* access and copy it (it is shown once; only a hash is
    stored).
-2. In vigilo's `.env`, set `VIGILO_LODGELY_ENABLED=true`,
-   `VIGILO_LODGELY_URL` (this install's `APP_URL`) and
-   `VIGILO_LODGELY_API_TOKEN`.
-3. In vigilo, enter each client's **lodgely client key**: the slug of the
-   lodgely client name (`Kanzlei Brenner & Partner` →
-   `kanzlei-brenner-partner`). Renaming the client in lodgely changes the key.
+2. In vigilo's `.env`, set `VIGILO_BEACON_ENABLED=true`,
+   `VIGILO_BEACON_URL` (this install's `APP_URL`) and
+   `VIGILO_BEACON_API_TOKEN`.
+3. In vigilo, enter each client's **beacon client key**: the slug of the
+   beacon client name (`Kanzlei Brenner & Partner` →
+   `kanzlei-brenner-partner`). Renaming the client in beacon changes the key.
 
 vigilo fetches its own ad data with the same agency credentials. Copy the
-values across; lodgely does not hand out ad-platform tokens over the API:
+values across; beacon does not hand out ad-platform tokens over the API:
 
-| lodgely | vigilo |
+| beacon | vigilo |
 |---|---|
-| `LODGELY_GOOGLE_ADS_*` | `VIGILO_GOOGLE_ADS_*` |
-| `LODGELY_META_ADS_ACCESS_TOKEN` | `VIGILO_META_ADS_ACCESS_TOKEN` |
+| `BEACON_GOOGLE_ADS_*` | `VIGILO_GOOGLE_ADS_*` |
+| `BEACON_META_ADS_ACCESS_TOKEN` | `VIGILO_META_ADS_ACCESS_TOKEN` |
 
 The endpoint is `GET /api/v1/lead-metadata?client=&cursor=&updated_since=&limit=`
 (bearer token, scope `lead-metadata:read`, 60 requests/minute per token,
 every request logged with token id, client key and row count only). The
 contract is specified in vigilo's
-[`docs/LODGELY-CONTRACT.md`](https://github.com/vidual-labs/vigilo/blob/main/docs/LODGELY-CONTRACT.md).
+`docs/BEACON-CONTRACT.md`.
 Revoking a token on the same page cuts vigilo off immediately.
 
 ---
@@ -418,7 +420,7 @@ Meta Lead Ads field mapping are documented in
 
 ## Privacy & GDPR notes for self-hosters
 
-lodgely is built with privacy-by-design defaults, but **you, the operator,
+beacon is built with privacy-by-design defaults, but **you, the operator,
 are the data controller** for everything you put in it. The product gives
 you the tools; the policies are yours: data minimization (only schema
 fields are stored, raw payloads kept only for audit), per-lead
@@ -426,7 +428,7 @@ fields are stored, raw payloads kept only for audit), per-lead
 trail (`lead_events`), strict client-scoped access, and no telemetry or
 external calls out of the box.
 
-Full detail, including what lodgely deliberately does **not** do yet
+Full detail, including what beacon deliberately does **not** do yet
 (consent capture, DSAR export, automatic erasure), is in
 **[docs/PRIVACY.md](docs/PRIVACY.md)**.
 
@@ -439,14 +441,14 @@ The handful of variables you're most likely to touch on a first install:
 | Variable | Purpose | Default |
 |----------|---------|---------|
 | `APP_URL` | Public URL of the install | `http://localhost:8080` |
-| `LODGELY_DEFAULT_RETENTION_DAYS` | Default lead retention for new leads; empty = keep until deleted by hand | empty (`.env.example` sets `365`) |
-| `LODGELY_EMAIL_IMPORT_DRIVER` | `mock` or `imap` | `mock` |
-| `LODGELY_AI_ENABLED` | Hard kill-switch for the AI module (opt-out). The normal on/off is the operator toggle on `/settings/ai` | `true` |
-| `LODGELY_AI_MAX_CALLS_PER_DAY` | Daily cap on completed AI calls per tenant, shared by summaries, qualification and automatic ranking (`0` = no cap) | `100` |
+| `BEACON_DEFAULT_RETENTION_DAYS` | Default lead retention for new leads; empty = keep until deleted by hand | empty (`.env.example` sets `365`) |
+| `BEACON_EMAIL_IMPORT_DRIVER` | `mock` or `imap` | `mock` |
+| `BEACON_AI_ENABLED` | Hard kill-switch for the AI module (opt-out). The normal on/off is the operator toggle on `/settings/ai` | `true` |
+| `BEACON_AI_MAX_CALLS_PER_DAY` | Daily cap on completed AI calls per tenant, shared by summaries, qualification and automatic ranking (`0` = no cap) | `100` |
 | `TRUSTED_PROXIES` | Proxy address/CIDR to trust for `X-Forwarded-*` | `*` (all) |
-| `LODGELY_BACKUP_PASSPHRASE` | Encrypts the dump inside new backup archives | empty (off) |
-| `LODGELY_BACKUP_KEEP` | Backup archives to retain on disk | empty (keep all) |
-| `LODGELY_LANDING_ENABLED` | Show the public landing page at `/`; `false` sends `/` straight to the inbox/login | `true` |
+| `BEACON_BACKUP_PASSPHRASE` | Encrypts the dump inside new backup archives | empty (off) |
+| `BEACON_BACKUP_KEEP` | Backup archives to retain on disk | empty (keep all) |
+| `BEACON_LANDING_ENABLED` | Show the public landing page at `/`; `false` sends `/` straight to the inbox/login | `true` |
 | `MAIL_MAILER` | Outbound mail transport (`log`, `smtp`) — prefer Settings → Email instead | `log` |
 | `DB_*` | Postgres credentials | see `.env.example` |
 
@@ -459,11 +461,11 @@ fallback. The full reference (40+ variables) is in
 
 ## Roadmap
 
-The forward roadmap — phased, with the shared OpenFlow ↔ lodgely interface
+The forward roadmap — phased, with the shared OpenFlow ↔ beacon interface
 contract — lives in **[ROADMAP.md](ROADMAP.md)**. In short: a versioned
 OpenFlow contract and a push path first, then rule-based qualification,
 attribution, and a real GDPR lifecycle (hard deletion, per-person export and
-erasure across both systems). The vigilo ↔ lodgely interface (the
+erasure across both systems). The vigilo ↔ beacon interface (the
 lead-metadata feed, LG-15) has its own shared section there.
 
 The history of everything already shipped (reporting, AI, Meta Lead Ads,
@@ -475,15 +477,15 @@ Google Sheets, i18n, dark mode, …) is in
 
 ## Ethical use
 
-lodgely is a marketing tool. We ask, as a non-binding ethical request,
-that you do **not** use lodgely to run lead intake for clients in:
+beacon is a marketing tool. We ask, as a non-binding ethical request,
+that you do **not** use beacon to run lead intake for clients in:
 
 - **Weapons and armaments**
 - **Fossil-fuel energy** (extraction, refining, distribution, generation)
 - **Internal-combustion / fossil-fuel passenger vehicles** — electric
   vehicles, bicycles and public transit are explicitly fine.
 
-This is a request from the maintainers, not a legal restriction (lodgely
+This is a request from the maintainers, not a legal restriction (beacon
 remains GPL-3.0). See the preamble in `LICENSE` for the full statement.
 
 ---

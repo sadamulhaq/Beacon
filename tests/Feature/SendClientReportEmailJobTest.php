@@ -21,7 +21,7 @@ class SendClientReportEmailJobTest extends TestCase
 
     private function setup_world(): array
     {
-        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'lodgely']);
+        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'beacon']);
 
         $op = User::create([
             'name' => 'Op', 'email' => 'op@example.com', 'password' => Hash::make('p'),
@@ -92,11 +92,11 @@ class SendClientReportEmailJobTest extends TestCase
     public function test_intro_html_strips_non_http_link_schemes(): void
     {
         [, $client, $email] = $this->setup_world();
-        $email->forceFill(['intro_markdown' => 'Click [here](javascript:alert(1)) or [here](https://lodgely.test).'])->save();
+        $email->forceFill(['intro_markdown' => 'Click [here](javascript:alert(1)) or [here](https://beacon.test).'])->save();
 
         $data = app(ReportEmailComposer::class)->compose($email, $client);
 
         $this->assertStringNotContainsString('javascript:', $data['intro_html']);
-        $this->assertStringContainsString('href="https://lodgely.test"', $data['intro_html']);
+        $this->assertStringContainsString('href="https://beacon.test"', $data['intro_html']);
     }
 }

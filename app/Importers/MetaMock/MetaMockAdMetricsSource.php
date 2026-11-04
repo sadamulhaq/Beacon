@@ -8,9 +8,9 @@ use App\Domain\Reporting\DTOs\AdMetricsSnapshot;
 class MetaMockAdMetricsSource implements AdMetricsSource
 {
     private const CAMPAIGNS = [
-        ['id' => 'META_C_001', 'name' => 'Lodgely – Brand Awareness Q2'],
-        ['id' => 'META_C_002', 'name' => 'Lodgely – Lead Gen Form – Properties'],
-        ['id' => 'META_C_003', 'name' => 'Lodgely – Retargeting – Website Visitors'],
+        ['id' => 'META_C_001', 'name' => 'Beacon – Brand Awareness Q2'],
+        ['id' => 'META_C_002', 'name' => 'Beacon – Lead Gen Form – Properties'],
+        ['id' => 'META_C_003', 'name' => 'Beacon – Retargeting – Website Visitors'],
     ];
 
     public function platform(): string

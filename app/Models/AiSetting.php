@@ -89,7 +89,7 @@ class AiSetting extends Model
      */
     public function isActive(): bool
     {
-        return (bool) config('lodgely.ai.enabled')
+        return (bool) config('beacon.ai.enabled')
             && (bool) $this->enabled
             && (bool) $this->provider;
     }
@@ -142,7 +142,7 @@ class AiSetting extends Model
         if ($this->base_url) {
             return rtrim((string) $this->base_url, '/');
         }
-        $default = config("lodgely.ai.defaults.{$this->provider}.base_url");
+        $default = config("beacon.ai.defaults.{$this->provider}.base_url");
 
         return $default ? rtrim((string) $default, '/') : null;
     }
@@ -151,6 +151,6 @@ class AiSetting extends Model
     public function effectiveModel(): ?string
     {
         return $this->model
-            ?: config("lodgely.ai.defaults.{$this->provider}.model");
+            ?: config("beacon.ai.defaults.{$this->provider}.model");
     }
 }

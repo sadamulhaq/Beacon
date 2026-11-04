@@ -28,7 +28,7 @@ class LeadOutcomeStatusTest extends TestCase
 
     private function clientFor(string $clientName): User
     {
-        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'lodgely']);
+        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'beacon']);
 
         $client = User::create([
             'name' => 'C', 'email' => 'c@example.com', 'password' => Hash::make('p'),
@@ -172,7 +172,7 @@ class LeadOutcomeStatusTest extends TestCase
 
     public function test_an_importer_can_deliver_an_outcome_status(): void
     {
-        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'lodgely']);
+        Tenant::firstOrCreate(['id' => Tenant::DEFAULT_ID], ['slug' => 'default', 'name' => 'beacon']);
 
         $lead = app(LeadIngestor::class)->ingest((new IncomingLead(
             source: 'csv',
