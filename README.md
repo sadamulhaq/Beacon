@@ -490,6 +490,6 @@ remains GPL-3.0). See the preamble in `LICENSE` for the full statement.
 
 ## License
 
-Based on Lodgely. Modified on 2026-11-05.
+Modified on 2026-11-05. Modifications Copyright (c) 2026 Sadam Ul Haq.
 
 GPL-3.0 — see `LICENSE`.
